@@ -44,6 +44,9 @@ working carefully:
 - measuring someone else's server, because yours never bound to the port
 - a peer blocked on a confirmation you never knew it was waiting for
 - an index still holding the old tree after a rejected push, staged to revert
+- averaging across a transient and comparing it against an instantaneous reading
+- a drain-style API whose return value carries the measurement you discarded
+- the guard you keep citing as authoritative, which no one ever made go red
 
 Every entry happened. The governing idea:
 
