@@ -49,6 +49,7 @@ working carefully:
 - the guard you keep citing as authoritative, which no one ever made go red
 - an absence-check whose observer is watching nothing, reporting a confident zero
 - naming a bug as a class, writing it up, and never sweeping for the second copy
+- publishing your own inference under the principal's name, in durable content
 
 Every entry happened. The governing idea:
 
