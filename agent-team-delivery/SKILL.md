@@ -455,11 +455,43 @@ server 佔用而**靜默失敗退出**;我接著對那個 port 量了好一陣�
 3. **main 若是生產線,land 就是 ship。** 「這會不會退步?」和「這該不該
    上線?」是兩個問題。
 4. **分支上游陷阱**:`git checkout -b X origin/main` 會讓 X 的上游指向
-   `origin/main`,一個裸 `git push` 就直接部署。開分支用 `git push -u`,
-   或推之前先 `git rev-parse --abbrev-ref @{upstream}`。
-5. 有「產生檔案」(shell 摘要、快取名)的專案,錄製要**兩趟、中間有 commit**
+   `origin/main`,一個裸 `git push` 就直接部署。**`git worktree add -b X
+   origin/main` 一樣會**——而每個 peer 的 worktree 都是這樣開的,所以這個
+   地雷會被**複製到每一個 peer 身上**。派工時就叫它們
+   `git branch --unset-upstream`,或推之前先
+   `git rev-parse --abbrev-ref @{upstream}`。真實案例:兩個 peer,一個有上游
+   一個沒有;**沒設上游的那個反而安全**,裸 push 會直接報錯。
+
+5. **rebase 要緊貼著 push,不是開工時做一次。**
+
+   ```
+   git fetch origin && git rebase origin/main && git push origin HEAD:main
+   ```
+
+   理由不是衝突,是**過期**。「我 rebase 過了」和「我 push」之間那段時間,
+   正好是其他人 land 東西的時候。
+
+   而 **push 被拒之後的收拾,比被拒本身危險。** 真實案例:我的本地 main
+   過期,commit 長在舊基底上,push 被拒;事後對齊時我用了 `reset --soft`,
+   **index 仍然握著舊的樹**,`git status` 顯示 `game.html` 被 **staged 成還原
+   回上一個 phase**。那個當下任何人 commit,都會把兩個 peer 的工作從 main 上
+   抹掉。
+
+   所以:**push 失敗之後,先把 `git status` 的每一行讀完,再做下一件事。**
+   還原一個檔案之前,先證明它只是過期、而不是誰的未存編輯:
+
+   ```
+   git show <old-sha>:<file> | diff - <file>    # 位元組相同才動它
+   ```
+
+6. **共用工作樹裡有別人的未提交檔案時,不要 stash、不要 commit、不要
+   `reset --hard`。** 需要乾淨基底就開一個自己的抽離 worktree,cherry-pick
+   過去再從那裡推。真實案例:rebase 被「有未暫存變更」擋住,而那些變更屬於
+   第三個 session——繞過去比清掉它安全得多。
+
+7. 有「產生檔案」(shell 摘要、快取名)的專案,錄製要**兩趟、中間有 commit**
    ——因為腳本會改寫它自己要雜湊的檔案。
-6. 部署後才驗:**靜態資源和 Worker 是分開部署的**,兩者不同步的空窗期會讓
+8. 部署後才驗:**靜態資源和 Worker 是分開部署的**,兩者不同步的空窗期會讓
    你把「還沒部署」誤判成「路由壞了」。
 
 ---
@@ -517,3 +549,5 @@ server 佔用而**靜默失敗退出**;我接著對那個 port 量了好一陣�
 **在不能分辨的點取樣**、**修好之後還照壞掉時的結論行動**、**量到別人的伺服器**
 
 **Land**:抽離 worktree merge → 檢查父節點 → 記得 main 可能就是生產線
+→ **rebase 緊貼著 push**;push 被拒之後先讀完 `git status` 再動手,index 可能還握著舊的樹
+→ 每個 peer 的 worktree 都可能繼承 `origin/main` 當上游:裸 `git push` 就是部署

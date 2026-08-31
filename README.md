@@ -43,6 +43,7 @@ working carefully:
 - a correct diagnosis that outlives the condition it diagnosed
 - measuring someone else's server, because yours never bound to the port
 - a peer blocked on a confirmation you never knew it was waiting for
+- an index still holding the old tree after a rejected push, staged to revert
 
 Every entry happened. The governing idea:
 
