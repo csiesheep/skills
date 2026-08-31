@@ -47,6 +47,8 @@ working carefully:
 - averaging across a transient and comparing it against an instantaneous reading
 - a drain-style API whose return value carries the measurement you discarded
 - the guard you keep citing as authoritative, which no one ever made go red
+- an absence-check whose observer is watching nothing, reporting a confident zero
+- naming a bug as a class, writing it up, and never sweeping for the second copy
 
 Every entry happened. The governing idea:
 
