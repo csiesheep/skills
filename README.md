@@ -42,6 +42,7 @@ working carefully:
 - a watcher that fires on activity rather than on completion
 - a correct diagnosis that outlives the condition it diagnosed
 - measuring someone else's server, because yours never bound to the port
+- a peer blocked on a confirmation you never knew it was waiting for
 
 Every entry happened. The governing idea:
 
