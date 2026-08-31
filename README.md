@@ -38,6 +38,8 @@ working carefully:
 - an absence-claim that passes because the population was empty
 - a dispatch that reports success without ever being delivered
 - sampling a curve at the points where two rival explanations agree
+- asking a peer to report back over a channel that has no return path
+- a watcher that fires on activity rather than on completion
 
 Every entry happened. The governing idea:
 
