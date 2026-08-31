@@ -40,6 +40,8 @@ working carefully:
 - sampling a curve at the points where two rival explanations agree
 - asking a peer to report back over a channel that has no return path
 - a watcher that fires on activity rather than on completion
+- a correct diagnosis that outlives the condition it diagnosed
+- measuring someone else's server, because yours never bound to the port
 
 Every entry happened. The governing idea:
 
