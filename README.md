@@ -51,6 +51,7 @@ working carefully:
 - naming a bug as a class, writing it up, and never sweeping for the second copy
 - publishing your own inference under the principal's name, in durable content
 - proving you have a permission, when the fix is to need no permission
+- relaying a peer's true-when-written measurement as the tree's current state
 
 Every entry happened. The governing idea:
 
