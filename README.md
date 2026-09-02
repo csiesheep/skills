@@ -52,6 +52,7 @@ working carefully:
 - publishing your own inference under the principal's name, in durable content
 - proving you have a permission, when the fix is to need no permission
 - relaying a peer's true-when-written measurement as the tree's current state
+- specifying a dimension because it is easy to assert, when reachability is the property
 
 Every entry happened. The governing idea:
 
