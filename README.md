@@ -53,6 +53,7 @@ working carefully:
 - proving you have a permission, when the fix is to need no permission
 - relaying a peer's true-when-written measurement as the tree's current state
 - specifying a dimension because it is easy to assert, when reachability is the property
+- a viewport that "fits" because the overflow was silently discarded
 
 Every entry happened. The governing idea:
 
