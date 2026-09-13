@@ -21,6 +21,7 @@ trigger on the phrases listed in its frontmatter.
 | Skill | What it's for |
 |---|---|
 | [`agent-team-delivery`](agent-team-delivery/SKILL.md) | Running several Claude sessions as a team: one orchestrator that prioritises, files issues, dispatches, verifies independently, and only then lands; peers that implement in their own worktrees. |
+| [`initialize_a_game`](initialize_a_game/SKILL.md) | Turning a board game's name into a project ready to build for the games hub: rulebook digest, name and licensing call, plan note, phone mockups, repo scaffold, then stop and wait for the owner. |
 
 ### agent-team-delivery
 
@@ -63,3 +64,15 @@ Every entry happened. The governing idea:
 ## Licence
 
 MIT.
+
+### initialize_a_game
+
+One command, `/initialize_a_game <board game name>`, produces a decision
+package rather than code: a rulebook digest in the owner's own words with
+every table and the unclear points listed, a name-and-licensing proposal
+(rules are not copyrightable, the title is a trademark, so pick an own name
+*before* the repo exists), an implementation plan on the M0–M5 shape the
+sibling games share, a canvas of phone mockups in both languages, and a
+scaffolded repo copied from the newest sibling. Then it stops. The
+`references/` folder carries the platform, repo, vault and deploy
+conventions the hub expects, and the plan template.
