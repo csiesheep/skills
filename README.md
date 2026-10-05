@@ -22,6 +22,7 @@ trigger on the phrases listed in its frontmatter.
 |---|---|
 | [`agent-team-delivery`](agent-team-delivery/SKILL.md) | Running several Claude sessions as a team: one orchestrator that prioritises, files issues, dispatches, verifies independently, and only then lands; peers that implement in their own worktrees. |
 | [`initialize_a_game`](initialize_a_game/SKILL.md) | Turning a board game's name into a project ready to build for the games hub: rulebook digest, name and licensing call, plan note, phone mockups, repo scaffold, then stop and wait for the owner. |
+| [`qwen21-three-view`](qwen21-three-view/SKILL.md) | One image of a person or character in, a front / side / back turnaround out, with Qwen Image 2.1 on a local ComfyUI. Reference frames for video generation. |
 
 ### agent-team-delivery
 
@@ -76,3 +77,21 @@ sibling games share, a canvas of phone mockups in both languages, and a
 scaffolded repo copied from the newest sibling. Then it stops. The
 `references/` folder carries the platform, repo, vault and deploy
 conventions the hub expects, and the plan template.
+
+### qwen21-three-view
+
+Give it one picture (photo or drawing, standing or seated) and it writes the
+prompts itself and returns three full-body views on white: front, right
+profile, back. The bundled script carries the angle instructions that held
+up in testing; the skill only describes the subject. What it learned the
+hard way:
+
+- one-sided accessories (one earring, a bag on one shoulder) get mirrored
+  unless you name the side of the *image* they appear on, per view
+- a turned source pose leaks into the "front" view as 3/4 unless the prompt
+  says *squarely* facing the camera
+- raising CFG straightens the pose but beautifies the face away from the
+  person, and at CFG 1 the negative prompt does nothing
+- the text encoder must be a Qwen3-VL 8B; a 32B one fails on a 5120 vs 4096
+  shape mismatch, and GGUF encoders without a vision tower cannot see the image
+
