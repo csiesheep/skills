@@ -23,6 +23,8 @@ trigger on the phrases listed in its frontmatter.
 | [`agent-team-delivery`](agent-team-delivery/SKILL.md) | Running several Claude sessions as a team: one orchestrator that prioritises, files issues, dispatches, verifies independently, and only then lands; peers that implement in their own worktrees. |
 | [`initialize_a_game`](initialize_a_game/SKILL.md) | Turning a board game's name into a project ready to build for the games hub: rulebook digest, name and licensing call, plan note, phone mockups, repo scaffold, then stop and wait for the owner. |
 | [`qwen21-three-view`](qwen21-three-view/SKILL.md) | One image of a person or character in, a front / side / back turnaround out, with Qwen Image 2.1 on a local ComfyUI. Reference frames for video generation. |
+| [`h3-reference-to-video`](h3-reference-to-video/SKILL.md) | Several pictures of one character (e.g. a three-view) in, a video with sound out, with MiniMax-H3 reference-to-video on a local ComfyUI. The pictures hold the look; the prompt says what happens. |
+| [`h3-multiframe-video`](h3-multiframe-video/SKILL.md) | Same engine, but pictures are pinned to seconds of the output (side at 2 s, back at 4 s...) and H3 fills the motion between them. |
 
 ### agent-team-delivery
 
@@ -94,4 +96,20 @@ hard way:
   person, and at CFG 1 the negative prompt does nothing
 - the text encoder must be a Qwen3-VL 8B; a 32B one fails on a 5120 vs 4096
   shape mismatch, and GGUF encoders without a vision tower cannot see the image
+
+### h3-reference-to-video and h3-multiframe-video
+
+Two skills over one script and one graph: ComfyUI's MiniMax-H3 reference-to-video
+template, taken from a successful run with an uncensored model set swapped in. With
+references only, H3 decides the timing; each `--keyframe picture@seconds` adds a guide
+node that pins that picture to that moment. Fed the three views from
+`qwen21-three-view`, a character turns a full circle with its face, outfit and
+one-sided earring intact. The skills refuse pictures of children (the model has an
+explicit LoRA merged in) and say so. Lessons kept in them:
+
+- a plain background drifts into an invented room unless the prompt pins it in every
+  sense, including the sound line ("indoor ambience" seemed to summon a living room)
+- the template's Lightning LoRA stays off: the fused model already has a turbo merged
+  in, and 8 steps is enough
+- keyframe order sets the spin direction; space keyframes about 1.5 s apart
 
