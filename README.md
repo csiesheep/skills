@@ -25,6 +25,7 @@ trigger on the phrases listed in its frontmatter.
 | [`qwen21-three-view`](qwen21-three-view/SKILL.md) | One image of a person or character in, a front / side / back turnaround out, with Qwen Image 2.1 on a local ComfyUI. Reference frames for video generation. |
 | [`h3-reference-to-video`](h3-reference-to-video/SKILL.md) | Several pictures of one character (e.g. a three-view) in, a video with sound out, with MiniMax-H3 reference-to-video on a local ComfyUI. The pictures hold the look; the prompt says what happens. |
 | [`h3-multiframe-video`](h3-multiframe-video/SKILL.md) | Same engine, but pictures are pinned to seconds of the output (side at 2 s, back at 4 s...) and H3 fills the motion between them. |
+| [`h3-character-replacement`](h3-character-replacement/SKILL.md) | A short clip plus a picture of a new character in; the same clip out with the subject redrawn as that character, keeping motion, timing and audio. SAM3 masks the subject, MiniMax-H3 reference-to-video does the rest. Consent-gated. |
 
 ### agent-team-delivery
 
@@ -112,4 +113,15 @@ explicit LoRA merged in) and say so. Lessons kept in them:
 - the template's Lightning LoRA stays off: the fused model already has a turbo merged
   in, and 8 steps is enough
 - keyframe order sets the spin direction; space keyframes about 1.5 s apart
+
+### h3-character-replacement
+
+The R2V graph with a masking front end: SAM3 finds the subject from a word ("person"),
+the subject is filled gray, and the masked clip goes to H3 as the video to edit, prompted
+as `[video editing + reference generation + audio reuse]` per MiniMax's guide. In the test
+the identity and the action carried over; whether the subject's size on screen followed
+the source depended on the seed.
+Because it swaps identities in real footage on an uncensored model set, it requires the
+consent of every real person involved and refuses minors, sexual content of real people
+and deceptive impersonation before it runs.
 
