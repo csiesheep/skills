@@ -1,13 +1,14 @@
 """Front / side / back views of one character from one image, with Qwen Image 2.1 on the local ComfyUI.
 
-Uploads the image, fills workflow_<variant>_api.json with the three view prompts,
-seed and settings, submits it, waits, and copies the three PNGs to --out-dir.
+Uploads the image, fills workflow_<variant>_api.json with one prompt per view (3 or 5 views, full
+body or head only), seed and settings, submits it, waits, and copies the PNGs to --out-dir.
 Standard library only (Pillow is used for the contact sheet when it is installed).
 
 Example:
   python three_view.py --image photo.jpg --subject "Photorealistic photo. A young woman with ..." \
       --front-extra "The tote bag hangs on her right shoulder, which appears on the left side of the image." \
       --back-extra "Long straight black hair down her back. The tote bag appears on the right side of the image."
+  python three_view.py --image photo.jpg --subject-file subject.txt --views 5 --framing head
 """
 import argparse
 import json
@@ -22,26 +23,42 @@ import urllib.request
 import uuid
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-VIEWS = ("front", "side", "back")
-ENCODE_NODE = {"front": "10", "side": "11", "back": "12"}
-SAVE_NODE = {"front": "40", "side": "41", "back": "42"}
-SAMPLER_NODES = ("20", "21", "22")
+# View sets, in turning order. "side" is the right profile (the character faces the right of the
+# image, so its own right side is toward the camera); "side_left" the opposite; "threequarter" is a
+# 45-degree turn on the way from the front to the right profile.
+VIEW_SETS = {"3": ("front", "side", "back"),
+             "5": ("front", "threequarter", "side", "back", "side_left")}
+# One branch per view in the graph: encoder 10+i, sampler 20+i, decode 30+i, save 40+i.
+BRANCH = ("10", "20", "30", "40")
 
-# Angle instructions that held up in testing (cartoon bust, standing photo, seated top-down photo).
-# "squarely facing" fixes the 3/4 drift a turned source pose causes; the side view names the
-# direction so the model does not flip it.
-ANGLE = {
-    "front": "Show the same {noun} from <image1> from the front view: standing, body and face squarely "
-             "facing the camera, shoulders level, eye-level shot, full body, character reference sheet "
-             "on a plain white background. ",
-    "side": "Show the same {noun} from <image1> from the right side view: standing, exact 90-degree "
-            "profile, facing to the right of the image, eye-level shot, full body, character reference "
-            "sheet on a plain white background. ",
-    "back": "Show the same {noun} from <image1> from the back view: standing, body squarely facing away "
-            "from the camera, face not visible, shoulders level, eye-level shot, full body, character "
-            "reference sheet on a plain white background. ",
+# Angle instructions. The full-body front / side / back wording held up in testing (cartoon bust,
+# standing photo, seated top-down photo): "squarely facing" fixes the 3/4 drift a turned source pose
+# causes, and naming the image side the character faces stops the model flipping profiles.
+ORIENT = {
+    "full": {
+        "front": "from the front view: standing, body and face squarely facing the camera, shoulders level",
+        "threequarter": "from a three-quarter view: standing, body and face turned 45 degrees toward the right "
+                        "side of the image, both eyes still visible",
+        "side": "from the right side view: standing, exact 90-degree profile, facing to the right of the image",
+        "side_left": "from the left side view: standing, exact 90-degree profile, facing to the left of the image",
+        "back": "from the back view: standing, body squarely facing away from the camera, face not visible, "
+                "shoulders level",
+    },
+    "head": {
+        "front": "from the front view: face and shoulders squarely facing the camera, head level",
+        "threequarter": "from a three-quarter view: head and shoulders turned 45 degrees toward the right side "
+                        "of the image, both eyes still visible",
+        "side": "from the right side view: exact 90-degree profile of the head, facing to the right of the image",
+        "side_left": "from the left side view: exact 90-degree profile of the head, facing to the left of the image",
+        "back": "from the back view: the back of the head and shoulders, squarely facing away from the camera, "
+                "face not visible",
+    },
 }
-FRAME = "Framed tightly: the full body fills the frame from head to shoes. "
+SHOT = {"full": "eye-level shot, full body, character reference sheet on a plain white background. ",
+        "head": "eye-level shot, head-and-shoulders close-up portrait, character reference sheet on a plain "
+                "white background. "}
+FRAME = {"full": "Framed tightly: the full body fills the frame from head to shoes. ",
+         "head": "Framed tightly: the head and the top of the shoulders fill the frame, nothing below the chest. "}
 KEEP = "Keep the identity, face, hairstyle, outfit, materials and style exactly the same. "
 KEEP_BACK = "Keep the identity, hairstyle, outfit, materials and style exactly the same. "
 
@@ -50,15 +67,36 @@ LOADERS = {"UNETLoader": "unet_name", "UnetLoaderGGUF": "unet_name",
            "CLIPLoader": "clip_name", "VAELoader": "vae_name"}
 
 
-def build_prompts(noun, subject, front_extra, side_extra, back_extra):
+def build_prompts(noun, subject, views, framing, extra):
     subject = subject.strip().rstrip(".") + ". "
-    extra = {"front": front_extra, "side": side_extra, "back": back_extra}
     out = {}
-    for v in VIEWS:
+    for v in views:
         keep = KEEP_BACK if v == "back" else KEEP
-        e = (extra[v].strip().rstrip(".") + ". ") if extra[v] else ""
-        out[v] = (ANGLE[v].format(noun=noun) + FRAME + keep + e + subject).strip()
+        e = (extra[v].strip().rstrip(".") + ". ") if extra.get(v) else ""
+        angle = f"Show the same {noun} from <image1> {ORIENT[framing][v]}, {SHOT[framing]}"
+        out[v] = (angle + FRAME[framing] + keep + e + subject).strip()
     return out
+
+
+def build_branches(graph, views, prompts, resolution, seed, steps, cfg, stem):
+    """Replace the template's view branches with one branch per view (in place); {view: save node id}."""
+    template = {k: json.dumps(graph[k]) for k in BRANCH}
+    for k in [k for k in graph if 10 <= int(k) < 50]:
+        del graph[k]
+    save = {}
+    for i, v in enumerate(views):
+        enc, smp, dec, out = (str(int(b) + i) for b in BRANCH)
+        graph[enc] = json.loads(template["10"])
+        graph[enc]["inputs"].update(prompt=prompts[v], resolution=resolution)
+        graph[smp] = json.loads(template["20"])
+        graph[smp]["inputs"].update(seed=seed, steps=steps, cfg=cfg, positive=[enc, 0], negative=[enc, 1],
+                                    latent_image=[enc, 2])
+        graph[dec] = json.loads(template["30"])
+        graph[dec]["inputs"]["samples"] = [smp, 0]
+        graph[out] = json.loads(template["40"])
+        graph[out]["inputs"].update(images=[dec, 0], filename_prefix=f"three_view/{stem}_{seed}_{v}")
+        save[v] = out
+    return save
 
 
 def http_json(url, data=None, timeout=60):
@@ -122,8 +160,13 @@ def main():
     ap.add_argument("--image", required=True)
     ap.add_argument("--subject", help="who/what to draw: style, hair, outfit, accessories, expression")
     ap.add_argument("--subject-file", help="UTF-8 file holding --subject (use for non-ASCII text)")
+    ap.add_argument("--views", choices=sorted(VIEW_SETS), default="3",
+                    help="3: front, right profile, back; 5: adds a 3/4 view and the left profile")
+    ap.add_argument("--framing", choices=("full", "head"), default="full", help="full body, or head and shoulders")
+    ap.add_argument("--extra", action="append", default=[], metavar="VIEW=TEXT",
+                    help="a sentence for one view only, e.g. 'side_left=No earring on this ear'; repeat")
     ap.add_argument("--front-extra", default="", help="front-only sentence, e.g. which side a one-sided accessory is on")
-    ap.add_argument("--side-extra", default="")
+    ap.add_argument("--side-extra", default="", help="right-profile-only sentence")
     ap.add_argument("--back-extra", default="", help="back-only sentence: hair from behind, one-sided accessories")
     ap.add_argument("--noun", default="person", help="'person' for photos, 'character' for drawings")
     ap.add_argument("--variant", choices=("standard", "uncensored"), default="standard")
@@ -146,20 +189,23 @@ def main():
     if not os.path.isfile(a.image):
         sys.exit(f"image not found: {a.image}")
 
+    views = VIEW_SETS[a.views]
+    extra = {"front": a.front_extra, "side": a.side_extra, "back": a.back_extra}
+    for item in a.extra:
+        view, sep, text = item.partition("=")
+        if not sep or view not in views:
+            sys.exit(f"--extra must be VIEW=TEXT with VIEW one of {', '.join(views)}; got {item!r}")
+        extra[view] = text
     seed = a.seed if a.seed is not None else random.randint(1, 2**31 - 1)
-    prompts = build_prompts(a.noun, subject, a.front_extra, a.side_extra, a.back_extra)
+    prompts = build_prompts(a.noun, subject, views, a.framing, extra)
     with open(os.path.join(HERE, f"workflow_{a.variant}_api.json"), encoding="utf-8") as f:
         graph = json.load(f)
     stem = os.path.splitext(os.path.basename(a.image))[0]
-    for v in VIEWS:
-        graph[ENCODE_NODE[v]]["inputs"]["prompt"] = prompts[v]
-        graph[ENCODE_NODE[v]]["inputs"]["resolution"] = a.resolution
-        graph[SAVE_NODE[v]]["inputs"]["filename_prefix"] = f"three_view/{stem}_{seed}_{v}"
-    for n in SAMPLER_NODES:
-        graph[n]["inputs"].update(seed=seed, steps=a.steps, cfg=a.cfg)
+    save_node = build_branches(graph, views, prompts, a.resolution, seed, a.steps, a.cfg, stem)
 
     if a.dry_run:
-        print(json.dumps({"seed": seed, "prompts": prompts}, ensure_ascii=False, indent=1))
+        print(json.dumps({"seed": seed, "views": list(views), "framing": a.framing, "prompts": prompts,
+                          "graph": graph}, ensure_ascii=False, indent=1))
         return
 
     try:
@@ -189,8 +235,8 @@ def main():
 
     os.makedirs(a.out_dir, exist_ok=True)
     saved = []
-    for v in VIEWS:
-        img = hist["outputs"][SAVE_NODE[v]]["images"][0]
+    for v in views:
+        img = hist["outputs"][save_node[v]]["images"][0]
         q = urllib.parse.urlencode({"filename": img["filename"], "subfolder": img["subfolder"], "type": img["type"]})
         dest = os.path.join(a.out_dir, f"{stem}_{seed}_{v}.png")
         with urllib.request.urlopen(f"{a.server}/view?{q}", timeout=120) as r, open(dest, "wb") as f:
