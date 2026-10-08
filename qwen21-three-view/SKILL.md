@@ -112,6 +112,23 @@ Defaults in the script came from a sweep on a real photo (2026-10-05):
 
 Change them only when the user asks; `--steps`, `--cfg`, `--resolution` are there for that.
 
+**Higher resolution** (`--resolution`, multiples of 32; the encoder node accepts up to 4096). Measured
+2026-10-08: one full-body photo, 5 views, seed 1234, the same prompts, standard variant, RTX 3090,
+ComfyUI execution time:
+
+| resolution | output (portrait source) | 5 views | per view | vs 1280 |
+|---|---|---|---|---|
+| 1280 | 1120×1472 | 299 s | ~60 s | 1× |
+| 1536 | 1312×1792 | 485 s | ~97 s | 1.6× |
+| 2048 | 1760×2368 | 994 s | ~199 s | 3.3× |
+
+Time grows faster than the pixel count: 2048 has 2.56× the pixels of 1280 but took 3.3× as long. All 15 views were
+usable: right angles, no face on the back, the bag on the right side, no repeated limbs or broken composition. Higher
+resolution did not improve likeness. At 2048 the figure filled less of the frame, so part of the extra pixels is
+white margin. Small details still drift between runs (drop earrings became hoops at 1536 and 2048). Use 1536 or 2048
+only when the views must be large, and expect 8 or 17 minutes for 5 views. One run per setting, so treat these as
+rough figures. The Comfy Studio 3-view page offers 1280 / 1536 / 2048.
+
 ## Rules
 
 - **Variant**: use `standard` unless the user asks for `uncensored`. Both gave nearly the
