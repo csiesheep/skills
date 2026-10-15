@@ -1,0 +1,12158 @@
+{
+"about": "PTT marvel 板 9395 篇（2003 到 2026，經驗、翻譯、精華區）用 Claude Opus 5.5 標註後算出的抽樣表。分數是推文數在同年同標籤裡的百分位；高分組是前 25%。權重 =(高分組次數+1)^0.7。範例只有模型改寫的一句話前提和錨點類型，不含原文、標題或作者。產生於 2026-10-14。",
+"n_stories": 7254,
+"n_scored": 5770,
+"n_top": 3350,
+"settings": {
+"home": {
+"n": 1095,
+"n_high": 601,
+"weight": 88.251
+},
+"rental": {
+"n": 512,
+"n_high": 329,
+"weight": 57.938
+},
+"road": {
+"n": 516,
+"n_high": 314,
+"weight": 56.081
+},
+"childhood_home": {
+"n": 388,
+"n_high": 222,
+"weight": 44.037
+},
+"mountain": {
+"n": 308,
+"n_high": 179,
+"weight": 37.904
+},
+"other": {
+"n": 284,
+"n_high": 167,
+"weight": 36.117
+},
+"school": {
+"n": 281,
+"n_high": 159,
+"weight": 34.905
+},
+"hotel": {
+"n": 256,
+"n_high": 145,
+"weight": 32.738
+},
+"abroad": {
+"n": 329,
+"n_high": 144,
+"weight": 32.58
+},
+"military": {
+"n": 186,
+"n_high": 124,
+"weight": 29.365
+},
+"hospital": {
+"n": 189,
+"n_high": 110,
+"weight": 27.023
+},
+"old_house": {
+"n": 161,
+"n_high": 110,
+"weight": 27.023
+},
+"temple": {
+"n": 156,
+"n_high": 103,
+"weight": 25.818
+},
+"dorm": {
+"n": 188,
+"n_high": 102,
+"weight": 25.644
+},
+"store": {
+"n": 167,
+"n_high": 97,
+"weight": 24.766
+},
+"funeral": {
+"n": 127,
+"n_high": 90,
+"weight": 23.514
+},
+"water": {
+"n": 147,
+"n_high": 84,
+"weight": 22.418
+},
+"stairwell": {
+"n": 125,
+"n_high": 66,
+"weight": 18.978
+},
+"office": {
+"n": 110,
+"n_high": 60,
+"weight": 17.772
+},
+"ruins": {
+"n": 92,
+"n_high": 57,
+"weight": 17.155
+},
+"transport": {
+"n": 99,
+"n_high": 48,
+"weight": 15.245
+},
+"night_shift": {
+"n": 54,
+"n_high": 39,
+"weight": 13.226
+}
+},
+"mechanisms_primary": {
+"presence": {
+"n": 707,
+"n_high": 428,
+"weight": 69.618
+},
+"retro_reveal": {
+"n": 768,
+"n_high": 425,
+"weight": 69.277
+},
+"proxy_sighting": {
+"n": 403,
+"n_high": 278,
+"weight": 51.514
+},
+"identity_swap": {
+"n": 508,
+"n_high": 263,
+"weight": 49.559
+},
+"object": {
+"n": 452,
+"n_high": 252,
+"weight": 48.104
+},
+"escalation": {
+"n": 431,
+"n_high": 243,
+"weight": 46.9
+},
+"possession": {
+"n": 375,
+"n_high": 237,
+"weight": 46.09
+},
+"witness_mismatch": {
+"n": 418,
+"n_high": 232,
+"weight": 45.41
+},
+"taboo": {
+"n": 378,
+"n_high": 212,
+"weight": 42.645
+},
+"dead_contact": {
+"n": 328,
+"n_high": 210,
+"weight": 42.364
+},
+"sound_only": {
+"n": 279,
+"n_high": 155,
+"weight": 34.292
+},
+"dream": {
+"n": 253,
+"n_high": 152,
+"weight": 33.829
+},
+"benign": {
+"n": 181,
+"n_high": 116,
+"weight": 28.037
+},
+"repetition": {
+"n": 145,
+"n_high": 81,
+"weight": 21.861
+},
+"time_slip": {
+"n": 144,
+"n_high": 66,
+"weight": 18.978
+}
+},
+"mechanisms_any": {
+"retro_reveal": {
+"n": 2551,
+"n_high": 1428,
+"weight": 161.63
+},
+"presence": {
+"n": 2173,
+"n_high": 1265,
+"weight": 148.492
+},
+"escalation": {
+"n": 1815,
+"n_high": 1053,
+"weight": 130.614
+},
+"taboo": {
+"n": 1335,
+"n_high": 788,
+"weight": 106.648
+},
+"witness_mismatch": {
+"n": 1222,
+"n_high": 704,
+"weight": 98.567
+},
+"object": {
+"n": 1077,
+"n_high": 615,
+"weight": 89.682
+},
+"proxy_sighting": {
+"n": 797,
+"n_high": 556,
+"weight": 83.579
+},
+"benign": {
+"n": 752,
+"n_high": 508,
+"weight": 78.47
+},
+"dead_contact": {
+"n": 714,
+"n_high": 454,
+"weight": 72.545
+},
+"sound_only": {
+"n": 834,
+"n_high": 450,
+"weight": 72.098
+},
+"dream": {
+"n": 687,
+"n_high": 421,
+"weight": 68.821
+},
+"possession": {
+"n": 633,
+"n_high": 401,
+"weight": 66.521
+},
+"identity_swap": {
+"n": 793,
+"n_high": 394,
+"weight": 65.708
+},
+"repetition": {
+"n": 688,
+"n_high": 375,
+"weight": 63.479
+},
+"time_slip": {
+"n": 301,
+"n_high": 159,
+"weight": 34.905
+}
+},
+"endings": {
+"open": {
+"n": 2332,
+"n_high": 1295,
+"weight": 150.947
+},
+"explained": {
+"n": 1315,
+"n_high": 896,
+"weight": 116.669
+},
+"twist": {
+"n": 1395,
+"n_high": 723,
+"weight": 100.419
+},
+"fade": {
+"n": 728,
+"n_high": 436,
+"weight": 70.524
+}
+},
+"pairs": {
+"home|dead_contact": {
+"n": 120,
+"n_high": 80,
+"weight": 21.674
+},
+"home|presence": {
+"n": 125,
+"n_high": 72,
+"weight": 20.152
+},
+"rental|presence": {
+"n": 96,
+"n_high": 62,
+"weight": 18.178
+},
+"home|object": {
+"n": 109,
+"n_high": 58,
+"weight": 17.362
+},
+"home|retro_reveal": {
+"n": 132,
+"n_high": 58,
+"weight": 17.362
+},
+"home|possession": {
+"n": 80,
+"n_high": 48,
+"weight": 15.245
+},
+"home|dream": {
+"n": 72,
+"n_high": 48,
+"weight": 15.245
+},
+"road|presence": {
+"n": 77,
+"n_high": 47,
+"weight": 15.027
+},
+"road|retro_reveal": {
+"n": 75,
+"n_high": 47,
+"weight": 15.027
+},
+"home|proxy_sighting": {
+"n": 65,
+"n_high": 41,
+"weight": 13.686
+},
+"home|identity_swap": {
+"n": 92,
+"n_high": 36,
+"weight": 12.524
+},
+"rental|escalation": {
+"n": 62,
+"n_high": 35,
+"weight": 12.286
+},
+"road|witness_mismatch": {
+"n": 57,
+"n_high": 35,
+"weight": 12.286
+},
+"hotel|presence": {
+"n": 55,
+"n_high": 32,
+"weight": 11.56
+},
+"home|benign": {
+"n": 47,
+"n_high": 32,
+"weight": 11.56
+},
+"home|sound_only": {
+"n": 64,
+"n_high": 32,
+"weight": 11.56
+},
+"rental|object": {
+"n": 44,
+"n_high": 32,
+"weight": 11.56
+},
+"rental|retro_reveal": {
+"n": 51,
+"n_high": 31,
+"weight": 11.314
+},
+"home|taboo": {
+"n": 50,
+"n_high": 30,
+"weight": 11.065
+},
+"road|proxy_sighting": {
+"n": 42,
+"n_high": 30,
+"weight": 11.065
+},
+"home|escalation": {
+"n": 68,
+"n_high": 30,
+"weight": 11.065
+},
+"childhood_home|retro_reveal": {
+"n": 56,
+"n_high": 29,
+"weight": 10.814
+},
+"mountain|retro_reveal": {
+"n": 44,
+"n_high": 28,
+"weight": 10.56
+},
+"childhood_home|object": {
+"n": 45,
+"n_high": 28,
+"weight": 10.56
+},
+"rental|identity_swap": {
+"n": 46,
+"n_high": 28,
+"weight": 10.56
+},
+"road|identity_swap": {
+"n": 42,
+"n_high": 28,
+"weight": 10.56
+},
+"other|retro_reveal": {
+"n": 46,
+"n_high": 26,
+"weight": 10.045
+},
+"home|witness_mismatch": {
+"n": 47,
+"n_high": 25,
+"weight": 9.783
+},
+"rental|proxy_sighting": {
+"n": 29,
+"n_high": 25,
+"weight": 9.783
+},
+"rental|dream": {
+"n": 36,
+"n_high": 24,
+"weight": 9.518
+},
+"mountain|identity_swap": {
+"n": 41,
+"n_high": 24,
+"weight": 9.518
+},
+"funeral|dead_contact": {
+"n": 36,
+"n_high": 24,
+"weight": 9.518
+},
+"temple|proxy_sighting": {
+"n": 32,
+"n_high": 22,
+"weight": 8.979
+},
+"road|escalation": {
+"n": 38,
+"n_high": 22,
+"weight": 8.979
+},
+"other|possession": {
+"n": 31,
+"n_high": 22,
+"weight": 8.979
+},
+"school|escalation": {
+"n": 29,
+"n_high": 22,
+"weight": 8.979
+},
+"rental|witness_mismatch": {
+"n": 34,
+"n_high": 22,
+"weight": 8.979
+},
+"childhood_home|presence": {
+"n": 42,
+"n_high": 22,
+"weight": 8.979
+},
+"hotel|escalation": {
+"n": 32,
+"n_high": 21,
+"weight": 8.704
+},
+"mountain|taboo": {
+"n": 36,
+"n_high": 21,
+"weight": 8.704
+},
+"dorm|presence": {
+"n": 34,
+"n_high": 21,
+"weight": 8.704
+},
+"mountain|presence": {
+"n": 29,
+"n_high": 20,
+"weight": 8.425
+},
+"childhood_home|escalation": {
+"n": 34,
+"n_high": 20,
+"weight": 8.425
+},
+"school|retro_reveal": {
+"n": 29,
+"n_high": 20,
+"weight": 8.425
+},
+"road|taboo": {
+"n": 34,
+"n_high": 19,
+"weight": 8.142
+},
+"abroad|retro_reveal": {
+"n": 51,
+"n_high": 19,
+"weight": 8.142
+},
+"hospital|proxy_sighting": {
+"n": 24,
+"n_high": 19,
+"weight": 8.142
+},
+"school|witness_mismatch": {
+"n": 36,
+"n_high": 19,
+"weight": 8.142
+},
+"hospital|retro_reveal": {
+"n": 39,
+"n_high": 19,
+"weight": 8.142
+},
+"other|proxy_sighting": {
+"n": 28,
+"n_high": 19,
+"weight": 8.142
+},
+"childhood_home|possession": {
+"n": 27,
+"n_high": 19,
+"weight": 8.142
+},
+"other|witness_mismatch": {
+"n": 25,
+"n_high": 18,
+"weight": 7.855
+},
+"old_house|retro_reveal": {
+"n": 29,
+"n_high": 18,
+"weight": 7.855
+},
+"school|presence": {
+"n": 33,
+"n_high": 18,
+"weight": 7.855
+},
+"abroad|identity_swap": {
+"n": 48,
+"n_high": 18,
+"weight": 7.855
+},
+"road|repetition": {
+"n": 26,
+"n_high": 18,
+"weight": 7.855
+},
+"temple|possession": {
+"n": 27,
+"n_high": 18,
+"weight": 7.855
+},
+"stairwell|presence": {
+"n": 32,
+"n_high": 17,
+"weight": 7.563
+},
+"hotel|retro_reveal": {
+"n": 29,
+"n_high": 17,
+"weight": 7.563
+},
+"road|time_slip": {
+"n": 32,
+"n_high": 17,
+"weight": 7.563
+},
+"childhood_home|dead_contact": {
+"n": 30,
+"n_high": 17,
+"weight": 7.563
+},
+"rental|possession": {
+"n": 26,
+"n_high": 17,
+"weight": 7.563
+},
+"school|proxy_sighting": {
+"n": 27,
+"n_high": 17,
+"weight": 7.563
+},
+"childhood_home|dream": {
+"n": 22,
+"n_high": 17,
+"weight": 7.563
+},
+"funeral|retro_reveal": {
+"n": 19,
+"n_high": 16,
+"weight": 7.266
+},
+"temple|benign": {
+"n": 19,
+"n_high": 15,
+"weight": 6.964
+},
+"military|retro_reveal": {
+"n": 24,
+"n_high": 15,
+"weight": 6.964
+},
+"other|identity_swap": {
+"n": 24,
+"n_high": 15,
+"weight": 6.964
+},
+"rental|taboo": {
+"n": 22,
+"n_high": 15,
+"weight": 6.964
+},
+"store|identity_swap": {
+"n": 21,
+"n_high": 15,
+"weight": 6.964
+},
+"water|retro_reveal": {
+"n": 30,
+"n_high": 15,
+"weight": 6.964
+},
+"hotel|proxy_sighting": {
+"n": 18,
+"n_high": 14,
+"weight": 6.657
+},
+"abroad|possession": {
+"n": 25,
+"n_high": 14,
+"weight": 6.657
+},
+"water|identity_swap": {
+"n": 27,
+"n_high": 14,
+"weight": 6.657
+},
+"rental|sound_only": {
+"n": 25,
+"n_high": 14,
+"weight": 6.657
+},
+"childhood_home|witness_mismatch": {
+"n": 20,
+"n_high": 14,
+"weight": 6.657
+},
+"military|presence": {
+"n": 22,
+"n_high": 14,
+"weight": 6.657
+},
+"mountain|sound_only": {
+"n": 17,
+"n_high": 14,
+"weight": 6.657
+},
+"school|object": {
+"n": 30,
+"n_high": 14,
+"weight": 6.657
+},
+"old_house|presence": {
+"n": 15,
+"n_high": 14,
+"weight": 6.657
+},
+"hospital|possession": {
+"n": 18,
+"n_high": 13,
+"weight": 6.343
+},
+"dorm|retro_reveal": {
+"n": 17,
+"n_high": 13,
+"weight": 6.343
+},
+"military|witness_mismatch": {
+"n": 22,
+"n_high": 13,
+"weight": 6.343
+},
+"childhood_home|taboo": {
+"n": 25,
+"n_high": 13,
+"weight": 6.343
+},
+"store|presence": {
+"n": 18,
+"n_high": 13,
+"weight": 6.343
+},
+"store|retro_reveal": {
+"n": 23,
+"n_high": 13,
+"weight": 6.343
+},
+"abroad|escalation": {
+"n": 24,
+"n_high": 12,
+"weight": 6.022
+},
+"military|proxy_sighting": {
+"n": 16,
+"n_high": 12,
+"weight": 6.022
+},
+"old_house|object": {
+"n": 18,
+"n_high": 12,
+"weight": 6.022
+},
+"military|object": {
+"n": 15,
+"n_high": 12,
+"weight": 6.022
+},
+"road|sound_only": {
+"n": 19,
+"n_high": 12,
+"weight": 6.022
+},
+"abroad|presence": {
+"n": 25,
+"n_high": 12,
+"weight": 6.022
+},
+"funeral|proxy_sighting": {
+"n": 16,
+"n_high": 12,
+"weight": 6.022
+},
+"mountain|escalation": {
+"n": 26,
+"n_high": 12,
+"weight": 6.022
+},
+"abroad|object": {
+"n": 32,
+"n_high": 12,
+"weight": 6.022
+},
+"stairwell|retro_reveal": {
+"n": 21,
+"n_high": 11,
+"weight": 5.694
+},
+"military|taboo": {
+"n": 15,
+"n_high": 11,
+"weight": 5.694
+},
+"school|identity_swap": {
+"n": 26,
+"n_high": 11,
+"weight": 5.694
+},
+"childhood_home|benign": {
+"n": 19,
+"n_high": 11,
+"weight": 5.694
+},
+"mountain|witness_mismatch": {
+"n": 25,
+"n_high": 11,
+"weight": 5.694
+},
+"temple|taboo": {
+"n": 18,
+"n_high": 11,
+"weight": 5.694
+},
+"water|taboo": {
+"n": 18,
+"n_high": 11,
+"weight": 5.694
+},
+"water|presence": {
+"n": 16,
+"n_high": 11,
+"weight": 5.694
+},
+"childhood_home|identity_swap": {
+"n": 25,
+"n_high": 11,
+"weight": 5.694
+},
+"military|sound_only": {
+"n": 15,
+"n_high": 11,
+"weight": 5.694
+},
+"other|object": {
+"n": 18,
+"n_high": 10,
+"weight": 5.358
+},
+"hotel|dream": {
+"n": 15,
+"n_high": 10,
+"weight": 5.358
+},
+"office|presence": {
+"n": 13,
+"n_high": 10,
+"weight": 5.358
+},
+"other|presence": {
+"n": 23,
+"n_high": 10,
+"weight": 5.358
+},
+"road|object": {
+"n": 17,
+"n_high": 10,
+"weight": 5.358
+},
+"abroad|taboo": {
+"n": 28,
+"n_high": 10,
+"weight": 5.358
+},
+"mountain|possession": {
+"n": 15,
+"n_high": 10,
+"weight": 5.358
+},
+"road|possession": {
+"n": 20,
+"n_high": 10,
+"weight": 5.358
+},
+"old_house|taboo": {
+"n": 17,
+"n_high": 10,
+"weight": 5.358
+},
+"mountain|repetition": {
+"n": 17,
+"n_high": 10,
+"weight": 5.358
+},
+"road|dead_contact": {
+"n": 14,
+"n_high": 9,
+"weight": 5.012
+},
+"abroad|dead_contact": {
+"n": 16,
+"n_high": 9,
+"weight": 5.012
+},
+"military|possession": {
+"n": 13,
+"n_high": 9,
+"weight": 5.012
+},
+"store|witness_mismatch": {
+"n": 17,
+"n_high": 9,
+"weight": 5.012
+},
+"other|taboo": {
+"n": 17,
+"n_high": 9,
+"weight": 5.012
+},
+"old_house|dead_contact": {
+"n": 12,
+"n_high": 9,
+"weight": 5.012
+},
+"hotel|identity_swap": {
+"n": 16,
+"n_high": 9,
+"weight": 5.012
+},
+"rental|dead_contact": {
+"n": 15,
+"n_high": 9,
+"weight": 5.012
+},
+"dorm|proxy_sighting": {
+"n": 13,
+"n_high": 9,
+"weight": 5.012
+},
+"hotel|possession": {
+"n": 16,
+"n_high": 8,
+"weight": 4.656
+},
+"office|object": {
+"n": 16,
+"n_high": 8,
+"weight": 4.656
+},
+"mountain|benign": {
+"n": 12,
+"n_high": 8,
+"weight": 4.656
+},
+"old_house|possession": {
+"n": 14,
+"n_high": 8,
+"weight": 4.656
+},
+"childhood_home|sound_only": {
+"n": 17,
+"n_high": 8,
+"weight": 4.656
+},
+"other|time_slip": {
+"n": 12,
+"n_high": 8,
+"weight": 4.656
+},
+"hospital|escalation": {
+"n": 15,
+"n_high": 8,
+"weight": 4.656
+},
+"school|taboo": {
+"n": 18,
+"n_high": 8,
+"weight": 4.656
+},
+"rental|benign": {
+"n": 11,
+"n_high": 8,
+"weight": 4.656
+},
+"military|identity_swap": {
+"n": 12,
+"n_high": 8,
+"weight": 4.656
+},
+"night_shift|presence": {
+"n": 9,
+"n_high": 8,
+"weight": 4.656
+},
+"ruins|object": {
+"n": 10,
+"n_high": 8,
+"weight": 4.656
+},
+"funeral|taboo": {
+"n": 15,
+"n_high": 8,
+"weight": 4.656
+},
+"ruins|retro_reveal": {
+"n": 14,
+"n_high": 8,
+"weight": 4.656
+},
+"dorm|possession": {
+"n": 11,
+"n_high": 8,
+"weight": 4.656
+},
+"hotel|object": {
+"n": 16,
+"n_high": 8,
+"weight": 4.656
+},
+"ruins|presence": {
+"n": 10,
+"n_high": 8,
+"weight": 4.656
+},
+"hospital|witness_mismatch": {
+"n": 13,
+"n_high": 8,
+"weight": 4.656
+},
+"store|proxy_sighting": {
+"n": 16,
+"n_high": 8,
+"weight": 4.656
+},
+"hospital|dead_contact": {
+"n": 10,
+"n_high": 8,
+"weight": 4.656
+},
+"abroad|proxy_sighting": {
+"n": 13,
+"n_high": 8,
+"weight": 4.656
+},
+"dorm|taboo": {
+"n": 12,
+"n_high": 8,
+"weight": 4.656
+},
+"old_house|proxy_sighting": {
+"n": 8,
+"n_high": 7,
+"weight": 4.287
+},
+"funeral|possession": {
+"n": 8,
+"n_high": 7,
+"weight": 4.287
+},
+"hospital|presence": {
+"n": 15,
+"n_high": 7,
+"weight": 4.287
+},
+"dorm|escalation": {
+"n": 14,
+"n_high": 7,
+"weight": 4.287
+},
+"temple|dream": {
+"n": 9,
+"n_high": 7,
+"weight": 4.287
+},
+"hotel|witness_mismatch": {
+"n": 16,
+"n_high": 7,
+"weight": 4.287
+},
+"hotel|sound_only": {
+"n": 17,
+"n_high": 7,
+"weight": 4.287
+},
+"transport|time_slip": {
+"n": 15,
+"n_high": 7,
+"weight": 4.287
+},
+"dorm|sound_only": {
+"n": 19,
+"n_high": 7,
+"weight": 4.287
+},
+"school|possession": {
+"n": 17,
+"n_high": 7,
+"weight": 4.287
+},
+"hospital|identity_swap": {
+"n": 13,
+"n_high": 7,
+"weight": 4.287
+},
+"home|repetition": {
+"n": 16,
+"n_high": 7,
+"weight": 4.287
+},
+"store|object": {
+"n": 16,
+"n_high": 7,
+"weight": 4.287
+},
+"childhood_home|repetition": {
+"n": 10,
+"n_high": 7,
+"weight": 4.287
+},
+"other|escalation": {
+"n": 13,
+"n_high": 7,
+"weight": 4.287
+},
+"hospital|sound_only": {
+"n": 11,
+"n_high": 7,
+"weight": 4.287
+},
+"abroad|witness_mismatch": {
+"n": 21,
+"n_high": 7,
+"weight": 4.287
+},
+"water|dead_contact": {
+"n": 10,
+"n_high": 7,
+"weight": 4.287
+},
+"dorm|object": {
+"n": 7,
+"n_high": 7,
+"weight": 4.287
+},
+"office|escalation": {
+"n": 9,
+"n_high": 7,
+"weight": 4.287
+},
+"temple|retro_reveal": {
+"n": 13,
+"n_high": 7,
+"weight": 4.287
+},
+"water|witness_mismatch": {
+"n": 9,
+"n_high": 7,
+"weight": 4.287
+},
+"old_house|sound_only": {
+"n": 10,
+"n_high": 6,
+"weight": 3.905
+},
+"other|dream": {
+"n": 12,
+"n_high": 6,
+"weight": 3.905
+},
+"store|escalation": {
+"n": 9,
+"n_high": 6,
+"weight": 3.905
+},
+"stairwell|sound_only": {
+"n": 11,
+"n_high": 6,
+"weight": 3.905
+},
+"night_shift|proxy_sighting": {
+"n": 6,
+"n_high": 6,
+"weight": 3.905
+},
+"mountain|object": {
+"n": 16,
+"n_high": 6,
+"weight": 3.905
+},
+"old_house|identity_swap": {
+"n": 9,
+"n_high": 6,
+"weight": 3.905
+},
+"store|possession": {
+"n": 9,
+"n_high": 6,
+"weight": 3.905
+},
+"ruins|identity_swap": {
+"n": 13,
+"n_high": 6,
+"weight": 3.905
+},
+"office|retro_reveal": {
+"n": 12,
+"n_high": 6,
+"weight": 3.905
+},
+"transport|retro_reveal": {
+"n": 9,
+"n_high": 6,
+"weight": 3.905
+},
+"old_house|witness_mismatch": {
+"n": 8,
+"n_high": 6,
+"weight": 3.905
+},
+"stairwell|witness_mismatch": {
+"n": 12,
+"n_high": 6,
+"weight": 3.905
+},
+"military|escalation": {
+"n": 14,
+"n_high": 6,
+"weight": 3.905
+},
+"other|sound_only": {
+"n": 11,
+"n_high": 6,
+"weight": 3.905
+},
+"mountain|proxy_sighting": {
+"n": 12,
+"n_high": 6,
+"weight": 3.905
+},
+"ruins|taboo": {
+"n": 11,
+"n_high": 6,
+"weight": 3.905
+},
+"temple|escalation": {
+"n": 6,
+"n_high": 6,
+"weight": 3.905
+},
+"abroad|time_slip": {
+"n": 15,
+"n_high": 6,
+"weight": 3.905
+},
+"ruins|proxy_sighting": {
+"n": 7,
+"n_high": 6,
+"weight": 3.905
+},
+"transport|identity_swap": {
+"n": 14,
+"n_high": 6,
+"weight": 3.905
+},
+"rental|repetition": {
+"n": 12,
+"n_high": 6,
+"weight": 3.905
+},
+"mountain|time_slip": {
+"n": 12,
+"n_high": 5,
+"weight": 3.505
+},
+"military|repetition": {
+"n": 8,
+"n_high": 5,
+"weight": 3.505
+},
+"dorm|dream": {
+"n": 16,
+"n_high": 5,
+"weight": 3.505
+},
+"school|time_slip": {
+"n": 8,
+"n_high": 5,
+"weight": 3.505
+},
+"office|witness_mismatch": {
+"n": 10,
+"n_high": 5,
+"weight": 3.505
+},
+"dorm|witness_mismatch": {
+"n": 17,
+"n_high": 5,
+"weight": 3.505
+},
+"school|dream": {
+"n": 9,
+"n_high": 5,
+"weight": 3.505
+},
+"stairwell|escalation": {
+"n": 9,
+"n_high": 5,
+"weight": 3.505
+},
+"other|benign": {
+"n": 9,
+"n_high": 5,
+"weight": 3.505
+},
+"dorm|identity_swap": {
+"n": 11,
+"n_high": 5,
+"weight": 3.505
+},
+"night_shift|identity_swap": {
+"n": 7,
+"n_high": 5,
+"weight": 3.505
+},
+"road|dream": {
+"n": 13,
+"n_high": 5,
+"weight": 3.505
+},
+"abroad|sound_only": {
+"n": 11,
+"n_high": 5,
+"weight": 3.505
+},
+"transport|taboo": {
+"n": 8,
+"n_high": 5,
+"weight": 3.505
+},
+"night_shift|escalation": {
+"n": 8,
+"n_high": 5,
+"weight": 3.505
+},
+"school|sound_only": {
+"n": 7,
+"n_high": 5,
+"weight": 3.505
+},
+"road|benign": {
+"n": 10,
+"n_high": 5,
+"weight": 3.505
+},
+"abroad|dream": {
+"n": 9,
+"n_high": 5,
+"weight": 3.505
+},
+"abroad|benign": {
+"n": 7,
+"n_high": 5,
+"weight": 3.505
+},
+"store|taboo": {
+"n": 7,
+"n_high": 5,
+"weight": 3.505
+},
+"funeral|presence": {
+"n": 6,
+"n_high": 5,
+"weight": 3.505
+},
+"military|benign": {
+"n": 5,
+"n_high": 5,
+"weight": 3.505
+},
+"office|sound_only": {
+"n": 7,
+"n_high": 4,
+"weight": 3.085
+},
+"store|benign": {
+"n": 7,
+"n_high": 4,
+"weight": 3.085
+},
+"office|dead_contact": {
+"n": 10,
+"n_high": 4,
+"weight": 3.085
+},
+"transport|witness_mismatch": {
+"n": 10,
+"n_high": 4,
+"weight": 3.085
+},
+"stairwell|identity_swap": {
+"n": 7,
+"n_high": 4,
+"weight": 3.085
+},
+"funeral|benign": {
+"n": 6,
+"n_high": 4,
+"weight": 3.085
+},
+"other|dead_contact": {
+"n": 10,
+"n_high": 4,
+"weight": 3.085
+},
+"office|proxy_sighting": {
+"n": 9,
+"n_high": 4,
+"weight": 3.085
+},
+"ruins|escalation": {
+"n": 8,
+"n_high": 4,
+"weight": 3.085
+},
+"hospital|dream": {
+"n": 8,
+"n_high": 4,
+"weight": 3.085
+},
+"old_house|benign": {
+"n": 5,
+"n_high": 4,
+"weight": 3.085
+},
+"childhood_home|proxy_sighting": {
+"n": 11,
+"n_high": 4,
+"weight": 3.085
+},
+"funeral|sound_only": {
+"n": 5,
+"n_high": 4,
+"weight": 3.085
+},
+"old_house|escalation": {
+"n": 5,
+"n_high": 4,
+"weight": 3.085
+},
+"home|time_slip": {
+"n": 8,
+"n_high": 4,
+"weight": 3.085
+},
+"hospital|object": {
+"n": 6,
+"n_high": 4,
+"weight": 3.085
+},
+"temple|object": {
+"n": 8,
+"n_high": 4,
+"weight": 3.085
+},
+"dorm|repetition": {
+"n": 7,
+"n_high": 4,
+"weight": 3.085
+},
+"school|dead_contact": {
+"n": 5,
+"n_high": 4,
+"weight": 3.085
+},
+"ruins|possession": {
+"n": 5,
+"n_high": 4,
+"weight": 3.085
+},
+"transport|object": {
+"n": 8,
+"n_high": 4,
+"weight": 3.085
+},
+"hotel|taboo": {
+"n": 8,
+"n_high": 4,
+"weight": 3.085
+},
+"night_shift|witness_mismatch": {
+"n": 4,
+"n_high": 4,
+"weight": 3.085
+},
+"office|possession": {
+"n": 5,
+"n_high": 3,
+"weight": 2.639
+},
+"water|proxy_sighting": {
+"n": 4,
+"n_high": 3,
+"weight": 2.639
+},
+"old_house|repetition": {
+"n": 5,
+"n_high": 3,
+"weight": 2.639
+},
+"night_shift|retro_reveal": {
+"n": 5,
+"n_high": 3,
+"weight": 2.639
+},
+"temple|dead_contact": {
+"n": 6,
+"n_high": 3,
+"weight": 2.639
+},
+"office|taboo": {
+"n": 6,
+"n_high": 3,
+"weight": 2.639
+},
+"water|benign": {
+"n": 6,
+"n_high": 3,
+"weight": 2.639
+},
+"hotel|dead_contact": {
+"n": 3,
+"n_high": 3,
+"weight": 2.639
+},
+"store|dead_contact": {
+"n": 5,
+"n_high": 3,
+"weight": 2.639
+},
+"temple|witness_mismatch": {
+"n": 10,
+"n_high": 3,
+"weight": 2.639
+},
+"dorm|dead_contact": {
+"n": 9,
+"n_high": 3,
+"weight": 2.639
+},
+"stairwell|object": {
+"n": 6,
+"n_high": 3,
+"weight": 2.639
+},
+"stairwell|proxy_sighting": {
+"n": 3,
+"n_high": 3,
+"weight": 2.639
+},
+"office|dream": {
+"n": 5,
+"n_high": 3,
+"weight": 2.639
+},
+"mountain|dead_contact": {
+"n": 3,
+"n_high": 3,
+"weight": 2.639
+},
+"store|time_slip": {
+"n": 9,
+"n_high": 3,
+"weight": 2.639
+},
+"hospital|benign": {
+"n": 6,
+"n_high": 3,
+"weight": 2.639
+},
+"transport|dead_contact": {
+"n": 3,
+"n_high": 3,
+"weight": 2.639
+},
+"hotel|repetition": {
+"n": 6,
+"n_high": 3,
+"weight": 2.639
+},
+"night_shift|dead_contact": {
+"n": 4,
+"n_high": 3,
+"weight": 2.639
+},
+"stairwell|taboo": {
+"n": 6,
+"n_high": 3,
+"weight": 2.639
+},
+"transport|proxy_sighting": {
+"n": 4,
+"n_high": 3,
+"weight": 2.639
+},
+"temple|presence": {
+"n": 4,
+"n_high": 3,
+"weight": 2.639
+},
+"temple|identity_swap": {
+"n": 3,
+"n_high": 3,
+"weight": 2.639
+},
+"water|dream": {
+"n": 3,
+"n_high": 3,
+"weight": 2.639
+},
+"funeral|repetition": {
+"n": 3,
+"n_high": 3,
+"weight": 2.639
+},
+"stairwell|dead_contact": {
+"n": 3,
+"n_high": 3,
+"weight": 2.639
+},
+"school|repetition": {
+"n": 4,
+"n_high": 3,
+"weight": 2.639
+},
+"office|identity_swap": {
+"n": 6,
+"n_high": 2,
+"weight": 2.158
+},
+"hospital|taboo": {
+"n": 3,
+"n_high": 2,
+"weight": 2.158
+},
+"funeral|object": {
+"n": 4,
+"n_high": 2,
+"weight": 2.158
+},
+"transport|dream": {
+"n": 5,
+"n_high": 2,
+"weight": 2.158
+},
+"stairwell|dream": {
+"n": 3,
+"n_high": 2,
+"weight": 2.158
+},
+"store|repetition": {
+"n": 4,
+"n_high": 2,
+"weight": 2.158
+},
+"abroad|repetition": {
+"n": 4,
+"n_high": 2,
+"weight": 2.158
+},
+"other|repetition": {
+"n": 5,
+"n_high": 2,
+"weight": 2.158
+},
+"transport|presence": {
+"n": 8,
+"n_high": 2,
+"weight": 2.158
+},
+"stairwell|time_slip": {
+"n": 6,
+"n_high": 2,
+"weight": 2.158
+},
+"store|sound_only": {
+"n": 3,
+"n_high": 2,
+"weight": 2.158
+},
+"water|object": {
+"n": 9,
+"n_high": 2,
+"weight": 2.158
+},
+"transport|possession": {
+"n": 4,
+"n_high": 2,
+"weight": 2.158
+},
+"old_house|dream": {
+"n": 5,
+"n_high": 2,
+"weight": 2.158
+},
+"funeral|identity_swap": {
+"n": 5,
+"n_high": 2,
+"weight": 2.158
+},
+"water|time_slip": {
+"n": 4,
+"n_high": 2,
+"weight": 2.158
+},
+"water|escalation": {
+"n": 4,
+"n_high": 2,
+"weight": 2.158
+},
+"childhood_home|time_slip": {
+"n": 5,
+"n_high": 2,
+"weight": 2.158
+},
+"military|dream": {
+"n": 3,
+"n_high": 2,
+"weight": 2.158
+},
+"ruins|witness_mismatch": {
+"n": 3,
+"n_high": 2,
+"weight": 2.158
+},
+"store|dream": {
+"n": 3,
+"n_high": 1,
+"weight": 1.625
+},
+"hospital|repetition": {
+"n": 3,
+"n_high": 1,
+"weight": 1.625
+},
+"school|benign": {
+"n": 3,
+"n_high": 1,
+"weight": 1.625
+},
+"rental|time_slip": {
+"n": 3,
+"n_high": 1,
+"weight": 1.625
+},
+"stairwell|repetition": {
+"n": 6,
+"n_high": 1,
+"weight": 1.625
+},
+"transport|escalation": {
+"n": 3,
+"n_high": 1,
+"weight": 1.625
+},
+"ruins|sound_only": {
+"n": 3,
+"n_high": 1,
+"weight": 1.625
+},
+"ruins|time_slip": {
+"n": 3,
+"n_high": 1,
+"weight": 1.625
+},
+"transport|repetition": {
+"n": 4,
+"n_high": 1,
+"weight": 1.625
+},
+"hotel|time_slip": {
+"n": 4,
+"n_high": 1,
+"weight": 1.625
+},
+"water|sound_only": {
+"n": 3,
+"n_high": 1,
+"weight": 1.625
+},
+"hotel|benign": {
+"n": 5,
+"n_high": 1,
+"weight": 1.625
+},
+"mountain|dream": {
+"n": 3,
+"n_high": 1,
+"weight": 1.625
+},
+"hospital|time_slip": {
+"n": 5,
+"n_high": 0,
+"weight": 1.0
+},
+"night_shift|taboo": {
+"n": 4,
+"n_high": 0,
+"weight": 1.0
+}
+},
+"beats_top": {
+"normal": 0.23,
+"anomaly": 0.193,
+"denial": 0.063,
+"escalation": 0.204,
+"reveal": 0.164,
+"aftermath": 0.145
+},
+"ghost_dist_top": {
+"0": 49,
+"1": 1062,
+"2": 538,
+"3": 1701
+},
+"length_top": {
+"p25": 985,
+"p50": 1646,
+"p75": 2898
+},
+"examples": [
+{
+"setting": "rental",
+"mechanisms": [
+"dead_contact",
+"retro_reveal",
+"object"
+],
+"ending": "twist",
+"ghost": 2,
+"premise": "男子搬家當晚以為又是鬼壓床，其實是腦出血，昏迷中聽見亡母替他向神靈求情",
+"anchors": [
+"為省續約費而搬家",
+"宅急便指定最晚時段",
+"送報機車的引擎聲",
+"主管請管理員開門",
+"蛛網膜下腔出血",
+"轉回一般病房"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"object",
+"escalation",
+"taboo"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "製作軍官命案特輯時，同事接連出意外，遺體照片怎樣都放不上翻拍架",
+"anchors": [
+"BETA CAM攝影機翻拍",
+"每張相片拍十秒",
+"雙面膠固定相片",
+"美工組打內線叫人",
+"老闆給錢買四果牲禮",
+"隨身聽卡在床縫"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"dream",
+"repetition",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "牙醫助理在診所午睡，兩人做同一個怪夢，後來又聽說診所曾有工人猝死",
+"anchors": [
+"候診椅併成床午睡",
+"午休十二點到兩點",
+"和式木地板要脫鞋",
+"老闆信基督不拜拜",
+"診所後院鯉魚池",
+"工人猝死在辦公椅"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"dead_contact",
+"dream",
+"benign"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "從小沒能送終的兒子夢見亡母叫他回家，憑記憶找回外婆家，才知道這是她的遺願",
+"anchors": [
+"戶政事務所假日沒開",
+"電線杆上的計程車貼紙",
+"鄉下報阿公阿嬤名字找人",
+"三合院前的淑女車",
+"去廟口買餅乾",
+"表弟請假回鄉"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"witness_mismatch",
+"escalation",
+"repetition"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "研究生深夜搭電梯下樓，電梯卻連兩晚自己往上跑，還每層都停、門一開都沒人",
+"anchors": [
+"前身是日軍醫院的校區",
+"電梯台語樓層播報",
+"樓層面板只亮著1",
+"警衛午夜巡樓檢查電源",
+"監視器只留三天錄影",
+"南北棟三樓以上有通道"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"object",
+"retro_reveal",
+"possession"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "小孩被貨車輾過卻沒受傷，傳了兩代的舊娃娃斷成兩半，師父說它替孩子擋了死劫",
+"anchors": [
+"漁寮貨車載魚貨",
+"路肩和柏油的高低差",
+"只看感冒的鄉下小診所",
+"隔天轉市立醫院複檢",
+"舊相本裡都抱著娃娃",
+"收驚時給師父看殘骸"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"time_slip",
+"escalation",
+"taboo"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "拍攝懸案特輯的製作人夜裡騎車迷途，被引到死者生前單位，後製也接連出事",
+"anchors": [
+"十分鐘車程騎了五十分鐘",
+"海軍總部燙金招牌",
+"士林夜市前的人潮",
+"高架路肩腳踩護欄",
+"警局做筆錄臉色慘白",
+"剪接室跳電燒保險絲"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"presence",
+"possession",
+"taboo"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "容易卡陰的同學在山中精舍出手救人，當晚就在浴室被不明東西按進水盆",
+"anchors": [
+"慈濟導師念靜思語",
+"美術班不跟普通班畢旅",
+"操場堆滿廢棄課桌椅",
+"木地板走起來嘎吱響",
+"十元硬幣撬開門鎖",
+"磁磚牆角長青苔"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"object",
+"dead_contact",
+"presence"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "新兵下部隊不久，無人站崗的空哨深夜打電話到連部要求換班，全連被叫起緊急集合",
+"anchors": [
+"安全士官守總機打盹",
+"各哨回報的燈號",
+"全連三分鐘緊急集合",
+"工兵檢查營區線路",
+"穿軍服配木槍的假人",
+"請道士祭拜後燒掉"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"possession",
+"presence"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "女同事受驚後失神如木偶，曾任行刑官的老闆父親穿上軍服一句話把附身的東西喝走",
+"anchors": [
+"老闆一家住一樓",
+"燒餅夾油條請員工",
+"下班路上被輾過的動物",
+"換上舊軍官服",
+"6666元壓驚紅包",
+"女同事身高164公分"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"object",
+"witness_mismatch",
+"escalation"
+],
+"ending": "fade",
+"ghost": 2,
+"premise": "牙助在時髦的牙醫診所做了四年，地下室和技工室陸續出現說不通的怪事",
+"anchors": [
+"晚班14點到22點",
+"正職負責關電源",
+"地下室員工休息室",
+"百葉式更衣拉門",
+"震石膏的震盪機",
+"幫新病人拍全口X光"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"witness_mismatch",
+"time_slip",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "留學生在中餐館打工，霧夜突然滿座，還被怪臉客人追問米的產地，事後才知老闆可能辦了陰間宴",
+"anchors": [
+"小費行情一成五",
+"老闆娘拿計算機算帳",
+"停車場橙色燈穿霧",
+"米袋印泰國長米",
+"牆上時鐘十點五十五",
+"開車走148街回家"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"proxy_sighting",
+"retro_reveal",
+"repetition"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "幫日本朋友搬家後，隔壁空房每晚凌晨傳來規律撞牆聲，原來是吊著的女人在晃",
+"anchors": [
+"搬家後向鄰居拜訪",
+"信件口貼受取拒否",
+"陽台相連可跨過去",
+"樓中樓閣樓套房",
+"終電回吉祥寺",
+"居酒屋點朝日啤酒"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"presence",
+"escalation",
+"sound_only"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "常被鬼壓床的男子細數幾次經歷，最後一次在永和租屋處竟遇上好色的無形之物",
+"anchors": [
+"睡前習慣留一盞小燈",
+"整片採光窗讓人淺眠",
+"廁所黃燈泡光從門縫透入",
+"弟弟在隔壁玩電腦",
+"自創的確認被壓步驟",
+"壓力從腳底一路爬到胸口"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"retro_reveal",
+"dream",
+"benign"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "撿來的幼犬病死後去拜土地公，失明母親當晚夢見老人帶著那隻狗",
+"anchors": [
+"西屯山上公司常有棄犬",
+"幼犬有蛔蟲營養不良",
+"姊妹輪流抱狗入睡",
+"動物醫院代辦火化",
+"飼主欄填自己名字",
+"供桌旁擺著長椅"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"repetition",
+"escalation",
+"witness_mismatch"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "出差住旅館，深夜一群女生的笑鬧聲反覆上樓，他越想聽清楚，就越被對方察覺",
+"anchors": [
+"臨時和同事擠一張床",
+"房間離樓梯有段距離",
+"半夜十二點多才睡",
+"拖鞋踩樓梯的啪啪聲",
+"門縫透進走廊燈光"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"time_slip",
+"retro_reveal",
+"benign"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "五歲落入湍急圳溝獲救，長大才知那條溝年年淹死孩童，直到土地廟建成才停",
+"anchors": [
+"酒家林立的老街夜晚",
+"四合院廣場私下鬥毆",
+"竹子搭的小橋底",
+"開洗衣店的年輕人",
+"烏溪支流的人工圳溝",
+"圳溝加蓋成地下河"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"retro_reveal",
+"taboo",
+"presence"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "作者在表舅溺斃的碧潭邊隨口招靈，之後一直感應到濕淋淋的女人，原來是冥婚的表舅媽",
+"anchors": [
+"草屯三合院門口番石榴樹",
+"彰化客運開過家門",
+"嬸婆跑去客運站問人",
+"屍體卡在岩石縫中",
+"整脊師傅捏幾下就說中標",
+"神壇超渡花幾百塊"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"identity_swap",
+"retro_reveal",
+"dead_contact"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "有靈感的女子靠亡友託夢上山尋屍，再回災區時發現先前安慰的小女孩早已罹難",
+"anchors": [
+"八八水災救災中心",
+"國軍搭直升機進災區",
+"右手戴一起挑的錶",
+"靠耳環認出遺容",
+"同款糖果包裝紙",
+"衣物靈擺全丟在災區"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"presence",
+"escalation",
+"witness_mismatch"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "女大生獨租雅房兩年，怪事不斷卻總忘了說，搬回家後才懷疑房裡另有室友",
+"anchors": [
+"MSN半夜訊息",
+"注音亂碼紅字",
+"社團開會點人頭",
+"播音樂睡覺被關掉",
+"夏天開門窗睡覺",
+"隔壁住社團學長"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"witness_mismatch",
+"possession",
+"object"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "美術班學生為畫素描親身演出上吊拍照，卻被無形之力真的吊起",
+"anchors": [
+"學測後的備審作品集",
+"地下室窗外的天井",
+"長廊中間的發電機",
+"椅子上疊十幾層巧拼",
+"腳架與閃光燈設定",
+"超商i-bon印素材"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"dead_contact",
+"escalation",
+"taboo"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "目睹同學惡作劇毒死照顧孩子的老爺爺卻沉默，多年後撞見死去奶奶的怨靈在找人",
+"anchors": [
+"放學後聚在老人家吃晚餐",
+"蔬菜濃湯配唐揚炸雞",
+"老師分區送學生回家",
+"湯裡驗出老鼠藥",
+"全校集合宣布禁令",
+"雙薪家庭的獨子"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"possession",
+"retro_reveal",
+"taboo"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "表弟婚前請神降駕，神明揭穿祖父六十多年前滅門舊案，冤魂正要來索新郎的命",
+"anchors": [
+"婚前一晚拜天公",
+"南鯤鯓請來的開基神尊",
+"手轎寫出工整標楷字",
+"擲筊三、四十次都不成",
+"乩身攤成一字馬",
+"手轎斷了三個角"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"retro_reveal",
+"taboo"
+],
+"ending": "twist",
+"ghost": 0,
+"premise": "在大陸實習時目睹老婦車禍，媳婦當街咒罵，頭七後她一家竟在樓上火災中喪命",
+"anchors": [
+"二月江西濕冷",
+"工作室樓上是住戶",
+"當地學生勸別叫救護車",
+"媳婦從工廠被叫來",
+"請假被扣工錢",
+"靈堂火燭倒下起火"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"taboo",
+"object",
+"escalation"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "攝影者在深山巨木上睡過頭，半夜被一群高大白衣女包圍搜尋，靠護身符躲過",
+"anchors": [
+"車停路邊再走一小時",
+"樹皮上有熊爪痕",
+"備鐮刀和求生刀防熊",
+"沒帶手電筒",
+"手錶顯示半夜十二點",
+"紅白護身符變全黑"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"dream",
+"escalation",
+"dead_contact"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "出差回國後新家夜夜鬼壓床，原來是從國外跟來的前世丈夫，入夢逼她猜出他的死因",
+"anchors": [
+"九個女生合租四層透天",
+"暑假室友都回老家",
+"去印尼開四天會議",
+"朋友來幫忙組衣櫃",
+"說好六點叫醒去吃飯",
+"空著的三樓有搬家具聲"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"retro_reveal",
+"escalation",
+"dead_contact"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "高中女生租下房東女兒的房間，才得知女兒早已遇害，忌日當晚亡靈回來了",
+"anchors": [
+"房租加管理費的金額",
+"只有一扇對防火巷的氣窗",
+"粉紅蕾絲封面的相簿",
+"半夜放的老歌",
+"85度C外面的座位",
+"蘋果日報打了馬賽克的屍照"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"repetition",
+"escalation",
+"taboo"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "女高中生繞路散步，沿途不斷碰到長相記不住的老人，依序向她討要身上恰好帶著的東西",
+"anchors": [
+"提前三站下電車",
+"靠超市看板認方向",
+"講義裡夾的隨堂測驗",
+"教室撿到的半截鉛筆",
+"只剩鈴鐺的舊吊飾",
+"新生入學發的假花胸針"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"object",
+"retro_reveal",
+"presence"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "出團住渡假村，房內照片窗外多出人影，同房女生嚇得把那張床讓給不知情的男人睡",
+"anchors": [
+"公司出團分配房間",
+"領團小姐幫忙拍照",
+"落地窗外是露台接湖",
+"公司相機原始檔",
+"放大照片才看見人臉",
+"SONY相機型號"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"retro_reveal",
+"witness_mismatch",
+"escalation"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "套房打麻將時屋主一路連莊，牌友看到她身後簾下有雙踮著的腳，後來屋主親眼見到上吊女鬼",
+"anchors": [
+"酒吧吧檯夜班作息",
+"長型套房掛布簾隔間",
+"簾下離地四五十公分",
+"麻將東風局連莊自摸",
+"隔天請吃飯賠罪",
+"房東默默退押金"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"benign",
+"object",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "照通靈人指點用雞腿便當拜地基主，十多年賣不掉的山上土地一個多月內全部脫手",
+"anchors": [
+"台中店面招租不出去",
+"樓下餐廳買雞腿便當",
+"開車上山一小時",
+"金紙香燭帶上山",
+"賣地網頁早已下架",
+"親戚一波波來問"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"possession",
+"proxy_sighting",
+"presence"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "女同事鬼月被拉去夜遊墳場後變得異常安靜，老闆的苗族母親在辦公室徒手把東西拔出來",
+"anchors": [
+"MSN聊天室午休開會",
+"鬼門開隔天夜遊墓地",
+"雲南苗族的老闆母親",
+"手腕上三只雕花手環",
+"3636元紅包",
+"下班後一人一碗粥"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"object",
+"witness_mismatch",
+"repetition"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "男子掛失補辦所有證件後，皮夾竟出現在他反覆搜過的背包裡，像被遮了眼",
+"anchors": [
+"補辦身分證駕照健保卡",
+"高爾夫球背包上雜物下放鞋",
+"週末南北奔波兩趟",
+"行李廂無故被打開",
+"妻子出差兩天才回家",
+"西雅圖開車到溫哥華喜宴"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"dead_contact",
+"benign",
+"repetition"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "愛玩手機的父親過世並燒了紙紮手機後，女兒開始在關鍵時刻接到無號碼來電",
+"anchors": [
+"Anycall彩色手機",
+"醫院公用電話無來電顯示",
+"慢性精神病房九年",
+"語音信箱查無留言",
+"紙紮智慧型手機",
+"用公用電話打119找舅舅"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"dead_contact",
+"retro_reveal",
+"taboo"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "認定觀落陰只是催眠的人親身一試，竟在陰間遇見不知已過世的舊同學",
+"anchors": [
+"雙層紅布中間夾符紙",
+"法師搖鈴唸咒引導",
+"壇前十來張塑膠椅",
+"翻畢業紀念冊找電話",
+"水電學徒高處摔落",
+"猜手中綠豆顆數"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"proxy_sighting",
+"retro_reveal",
+"possession"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "母親陪我找通靈友人問弟弟的事，竟揭出早年流掉的女嬰一直跟著弟弟",
+"anchors": [
+"寫上姓名與生辰八字",
+"通靈人在紙上畫來畫去",
+"三十年前裝的避孕器",
+"一個多月大的胎兒",
+"點地藏燈超渡",
+"弟弟吵完架又來按摩撒嬌"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"proxy_sighting",
+"witness_mismatch",
+"presence"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "舊大體室改建的系館地下室，深夜視訊和打電動時，都有不存在的長髮人出現",
+"anchors": [
+"日據時代留下的系館",
+"地下室曾泡福馬林大體",
+"改成系所桌球室",
+"深夜做細胞培養滅菌",
+"紫外線操作台與水槽",
+"對開木門中間小門"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"escalation",
+"retro_reveal",
+"sound_only"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "小六生晚上回校拿便當，被暑假車禍身亡的老師一路追到警衛室",
+"anchors": [
+"冬天傍晚回校拿便當盒",
+"警衛伯伯幫忙開教室門",
+"監視器畫面燈一明一滅",
+"醒來在醫院做筆錄",
+"嘉義宮廟收驚",
+"寒假學校辦法會"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"witness_mismatch",
+"object",
+"escalation"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "被全村排擠的男子在母親七七那天自盡，之後村裡接連出事，現場的照片也不見了",
+"anchors": [
+"徒步一小時的上學路",
+"村裡沒有便利商店",
+"在玄關土下座謝罪",
+"車胎被人刺破",
+"四十九日的忌日",
+"村莊後來被合併"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"retro_reveal",
+"dead_contact",
+"identity_swap"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "送貨司機朋友趁工作空檔來參加慶生，說路上狗一直叫、頭很痛，幾小時後傳來他的死訊",
+"anchors": [
+"夜校下課接著跑貨運",
+"凌晨到中午的送貨班",
+"工作空檔一點到兩點",
+"沙鹿的醫院",
+"爆胎撞斷電線桿",
+"依民眾報案推算時間"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"presence",
+"escalation"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "常見鬼的大學生被按頭壓床，氣到反抓住女鬼的手，拳腳相向直到她消失",
+"anchors": [
+"七點鬧鐘按掉再睡",
+"記憶床墊整臉陷下去",
+"頭側著才能呼吸",
+"九點要上班",
+"醒來已過八點"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"proxy_sighting",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "墮胎沒拿掉的孩子被親戚說剋人，大學時陰陽眼室友說鬼都會躲著她",
+"anchors": [
+"避孕器勾到胎頭",
+"墮胎後血塊裝滿鐵盆",
+"臨盆前胎位轉向緊急剖腹",
+"當警察的父親遭車拖行",
+"親戚罵她斷掌命凶",
+"女鬼一律叫姐姐"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"dead_contact",
+"benign",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "外孫女回憶外公臨終前後幾件巧合，像是外公託夢、預言自己回家，還暗中幫她叫醒舅舅。",
+"anchors": [
+"行天宮求的籤詩",
+"冬至前一天過世",
+"救護車聯絡人簽名",
+"師父帶家人助念十小時",
+"半夜三點輪班守夜",
+"鄰居工廠要出車請移車"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"possession",
+"retro_reveal",
+"escalation"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "姊姊訂婚前夜姊夫醉酒後被神明附身，宮廟師姐來溝通才知是王爺罰他貪杯",
+"anchors": [
+"訂婚前夜試喝威士忌",
+"垃圾袋黏住分不開",
+"手指扣門把成蓮花指",
+"擲筊得聖筊",
+"家裡只剩一捆金紙",
+"台南家族宮廟乩身"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"escalation",
+"proxy_sighting",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "大學生合租便宜的打通公寓，怪事一路升級，搬家時師父道出陽台外飄著女鬼",
+"anchors": [
+"嘉義大學學生合租",
+"機車進斜坡爆胎",
+"廚房門透明漆畫符",
+"電梯鏡子照到自己",
+"浴室格狀輕鋼架天花板",
+"嘉義市彌陀路"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"witness_mismatch",
+"retro_reveal",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "國三生假日留校，七人圍堵頂樓一個裹黑布的男人，他卻在封閉的校舍裡憑空消失",
+"anchors": [
+"端午連假到校自習",
+"警衛兩點半下班",
+"校舍平面圖標記",
+"樓梯間鐵門封住",
+"大禮堂黑色布簾",
+"交給老師後沒下文"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"sound_only",
+"repetition",
+"escalation"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "神經大條的大一女生獨守寢室，室友的空床整個下午像有小孩在翻滾作響",
+"anchors": [
+"宿舍沒有四樓",
+"往生室隔小路對著球場",
+"球場十二點自動熄燈",
+"床縫夾著一本聖經",
+"買巧拼鋪地板",
+"玩仙劍三黃泉路"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"sound_only",
+"escalation",
+"proxy_sighting"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "敏感體質的弟弟屢遇怪事，某晚獨自在家聽見沒人的餐桌被猛力拍打",
+"anchors": [
+"半夜偷看漫畫",
+"指關節敲木頭聲",
+"電視正播死亡筆記本",
+"爸媽去台北整天不在",
+"回高雄老家求神符",
+"請地基主幫忙"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"presence",
+"benign"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "夜裡繞路經過怪廟，停下看無人觀賞的布袋戲後機車發不動，靠黑狗吠叫才脫身",
+"anchors": [
+"加班到晚上九點多",
+"大路白天在修路",
+"廟旁有隻兇黑狗",
+"包包掛的小手電筒",
+"機車熄火改用踩發",
+"隔天請假在家"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"presence",
+"object"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "夜班員工在公司頂樓休息室小睡，感覺好多隻手在拍棉被，醒來發現被子上留有壓痕",
+"anchors": [
+"跟警衛借休息室房卡",
+"三張床用簾子隔開",
+"床邊小桌和檯燈",
+"便宜厚棉被的壓痕",
+"值夜班頭痛",
+"跑去客戶端餐廳睡"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"presence",
+"sound_only",
+"retro_reveal"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "女生被分到平時不開放的宿舍樓層，一個人住的第一晚就聽到腳步聲，接著被壓床",
+"anchors": [
+"十一點熄大燈",
+"書桌上方是床鋪",
+"四床中間的公共區",
+"拖鞋走動聲",
+"等六點管理員上班",
+"手機裡存好的小說"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"retro_reveal",
+"identity_swap",
+"presence"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "在日本誤闖女廁，撞見下半身穿過隔板縫躺著的女子，事後得知她說腳被老人借走",
+"anchors": [
+"京都郊區自由行",
+"洗手台男女廁共用",
+"門邊擺著粉紅色球鞋",
+"救護員拎著鞋子出來",
+"士林夜市百元牛排",
+"吐司邊泡濃湯"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"dead_contact",
+"dream",
+"benign"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "母親腦膜炎昏迷時，從未聽說過的夭折姐姐入夢示警並守護她",
+"anchors": [
+"細菌性腦膜炎",
+"GCS指數剩3",
+"加護病房探視時間",
+"父親是乩童",
+"家中供奉王爺",
+"病後完全失聰"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"presence",
+"escalation",
+"sound_only"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "國中生深夜騎車回朋友家，路燈下見吊死女鬼，之後她整夜在窗外哭喊想進屋",
+"anchors": [
+"網咖包台打天堂",
+"整晚打不到武卷",
+"凌晨十二點多騎車",
+"三合院巷口廢工廠",
+"家犬狂吠轉成哀鳴",
+"雞啼天亮聲音才停"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"taboo",
+"presence",
+"repetition"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "女友轉述男友兒時老家的多段怪事：陽台老人影、自開電視、護人的女鬼與浮在陽台的人頭",
+"anchors": [
+"百葉窗拉不到底透路燈",
+"兄弟睡上下舖有護欄",
+"按鈕式九頻道電視",
+"凌晨老三台收播嗶聲",
+"拖鞋隔天分散兩處",
+"共用隨身聽一人一耳"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"escalation",
+"taboo",
+"repetition"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "男生們沖完澡排隊經過封住的更衣間，每走過一人門內就拍一下，有人回拍惹怒了它",
+"anchors": [
+"下午的游泳課",
+"池畔淋浴間要排隊",
+"鐵鍊加大鎖封住隔間",
+"學姐溺死的傳聞",
+"牆上方的毛玻璃氣窗",
+"十年前就讀時"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"proxy_sighting",
+"witness_mismatch",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "山上超商店長聽夜班店員說，上班途中超車遇到一對機車情侶，其實是鬼",
+"anchors": [
+"超商交接班清點高價物",
+"夜校生下課接大夜",
+"西屯路騎上山",
+"自動門凌晨三點自開",
+"東大路常有死亡車禍",
+"陸軍儀隊退伍店長"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"dead_contact",
+"dream",
+"retro_reveal"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "愛犬臨終前，主人在回鄉客運上夢見牠叼來心愛玩具道別，醒來得知牠已死在門口",
+"anchors": [
+"收容所領養中年犬",
+"處方飼料要先跟醫院訂",
+"假單理由被老師取笑",
+"用針筒慢慢灌水",
+"搭客運回台南",
+"咬了會啾啾叫的玩具"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"dream",
+"dead_contact",
+"escalation"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "車禍害死同伴的騎士夜夜夢見死者，靠近後才聽清是詛咒，師公說是死者母親的生靈",
+"anchors": [
+"澎湖租機車撞石墩",
+"肝臟切到剩三分之一",
+"安全帽沒扣好",
+"雙方家庭打官司",
+"觀落陰擲杯不得見",
+"入伍前的畢業旅行"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"possession",
+"taboo",
+"escalation"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "留美時天才同學的姊姊疑似中邪，作者旁觀教會長達數小時的驅魔儀式",
+"anchors": [
+"家裡堆著台灣八卦雜誌",
+"二樓主臥旁的專用浴室",
+"門下通氣孔飄出熱氣",
+"精神科診斷精神分裂",
+"台南來的華人牧師",
+"帶輪子的椅子"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"dead_contact",
+"presence",
+"escalation"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "作者回憶童年老街的怪事，其中溺死少女夜夜回家敲門哭喊的事最駭人",
+"anchors": [
+"酒家女清晨在路邊刷牙",
+"外公的百年陳厝",
+"龍眼樹下挖出人頭",
+"學校發的除蟲藥",
+"半夜一兩點街上起霧",
+"隔天整條街濕透"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"presence",
+"proxy_sighting",
+"escalation"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "留學生合租海邊老屋，被住在衣櫃裡的屋主之靈纏上，最後在友人拉扯下連夜逃離",
+"anchors": [
+"地下室燃油暖氣桶",
+"牆上拆線的轉盤電話",
+"床擺在門後死角",
+"空運大悲咒水灑淨",
+"房東索賠清潔費",
+"售屋網上的標價"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"dream",
+"retro_reveal",
+"proxy_sighting"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "婚前連續惡夢被壓，家中神明出遠門，到大甲問米卦才知是螢幕映影與沖喪",
+"anchors": [
+"家中供奉送子觀音",
+"大甲鎮瀾宮地下室",
+"米盤上蓋自己衣服",
+"等香燒過半再擲筊",
+"螢幕出廠保護膜",
+"艾草與符水淨身"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"retro_reveal",
+"presence",
+"escalation"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "公司半夜疑遭闖入，眾人看監視器卻見無人辦公室燈亮椅轉，報信電話竟來自空公司",
+"anchors": [
+"同層兩公司共用廁所",
+"一樓大廳樓層公司名牌",
+"門禁刷卡進出紀錄",
+"保全室小螢幕快轉監視器",
+"去7-11領錢包紅包",
+"來電顯示公司總機號碼"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"dream",
+"object",
+"escalation"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "在泰國帶團的導遊夜遊桂河後被小鬼跟上又中降頭，最後找山中老僧把孩子留下",
+"anchors": [
+"桂河竹筏漂流屋卡拉OK",
+"陸客團人頭業績扣款",
+"隔天六點morning call",
+"雙排椅計程車聳條",
+"貔貅項鍊繩結斷裂",
+"船長拿四面佛套花環"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"witness_mismatch",
+"retro_reveal",
+"dream"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "領隊獨住泰國飯店連夜被敲門、做怪夢，後來才知那層樓死過一個變性人",
+"anchors": [
+"進房前敲門三下默念打擾",
+"司領房排給工作人員",
+"浴室霧面毛玻璃隔間",
+"衣櫃上一碟避邪鹽",
+"飯店morning call",
+"機場一樓餐卷麵攤"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"presence",
+"witness_mismatch",
+"escalation"
+],
+"ending": "fade",
+"ghost": 2,
+"premise": "招待旅遊到蘇美島，先是被不存在的導遊騙走好幾公里，接著團員的飯店房間接連出怪事",
+"anchors": [
+"導遊約在麥當勞集合",
+"補償每人600泰銖",
+"雙開木門的浴室",
+"床前分離式冷氣",
+"飯店名片和地圖",
+"旅行社退三千元"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"benign",
+"repetition",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "幼時摔傷昏迷被醫院拒收，父親擲筊得神明允諾後找到醫師，孩子奇蹟康復",
+"anchors": [
+"媽祖遶境發的紙畫像",
+"兩枚銅板代替筊杯",
+"連跑三家醫院被拒收",
+"診所醫師只肯半夜醫治",
+"後腦勺橫向凸起疤痕",
+"父親擔任廟宇轎班"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"dead_contact",
+"dream",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "大學生連續夢到十年前遇害女孩託夢指點警官，配合辦案卻終未破案",
+"anchors": [
+"期末考前週六凌晨三點才睡",
+"刑事警察局約談",
+"祖先牌位前擲出三聖筊",
+"測謊連過三關",
+"檢察官八月底調職",
+"霞海城隍廟擲筊一小時"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"object",
+"retro_reveal",
+"proxy_sighting"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "國中時同學家出遊拍到厲鬼照片，被拍的小女孩重病，加洗分送仍不治",
+"anchors": [
+"住宿生週日返校晚自修",
+"深藍色中華得利卡貨車",
+"九彎十八拐中午休息",
+"照片加洗400張分送",
+"縣青年日報頭版彩色",
+"玫瑰之夜攝影專家解說"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"time_slip",
+"object",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "兩個大學生半夜喝酒時，從一台舊收音機提前兩天聽到空難播報，主播最後還笑了一聲",
+"anchors": [
+"民國87年華航空難",
+"大台電玩雷電",
+"朋友父親拼裝的收音機",
+"電視跑馬燈沒有快報",
+"旋鈕轉過刻度還能空轉",
+"被帶去收驚"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"dead_contact",
+"retro_reveal",
+"dream"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "從小帶大自己的奶爸過世當晚來夢裡道別，後來才知道他因此沒跟上回家的車",
+"anchors": [
+"從小被送回東港帶大",
+"奶爸帶去吃豆花",
+"台大醫院猛暴性肝炎",
+"週日早上電話報喪",
+"灰西裝配深紅領帶",
+"請道士來確認"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"presence",
+"escalation"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "深夜躺床時臉上一直有腥味呼氣，睜眼見陌生老人貼近，靠家貓整夜護主才擋住",
+"anchors": [
+"看影片到凌晨三點",
+"關燈瞬間角落白影",
+"對外窗戶封死",
+"五公斤的貓跳上胸口",
+"貓炸毛發出嘶嘶聲",
+"下午要去廟裡拜拜"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"identity_swap",
+"time_slip",
+"witness_mismatch"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "國中生傍晚爬山時掉了隊，被奇怪的聲音和大霧困住，回到車上才知道車上一直有另一個他",
+"anchors": [
+"地陪行程延誤",
+"四點半才到登山口",
+"清點上山人數",
+"遊覽車電子鐘17:15",
+"地陪手捏佛珠",
+"唸六字真言"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"escalation",
+"presence",
+"proxy_sighting"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "兩人合租透天的地下室，先輪流聽見女聲唱歌，接著廚房鍋子夜夜被砸到房門前",
+"anchors": [
+"地下室隔成兩間房",
+"樓梯木門裝喇叭鎖",
+"一樓鐵捲門開關很吵",
+"廚房鐵鍋和小鍋子",
+"二樓另有小鐵門進出"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"presence",
+"proxy_sighting",
+"benign"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "父子掃墓時發現被活活關死在桶裡的狗，回頭把牠埋了，過程中屍臭離奇消失",
+"anchors": [
+"墓旁空地被丟棄舊家具",
+"橘色大儲水桶",
+"雙人沙發壓在木板上",
+"桶內半滿屍水與排泄物",
+"吃完飯帶鏟子再上山",
+"親戚晚上打電話來問"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"dead_contact",
+"retro_reveal",
+"witness_mismatch"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "表姊遇害那晚，幼小的我說在跟她玩球，阿姨也看見她回家洗澡",
+"anchors": [
+"民國七十幾年",
+"就讀台中女中",
+"放學後路邊麵攤",
+"寄住姑姑家",
+"浴室地板是濕的",
+"靈異節目曾播出"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"presence",
+"retro_reveal",
+"benign"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "少年夜騎山路，在後照鏡看見老婦鬼臉，師父說她是在警告前方有鬼抓交替",
+"anchors": [
+"高中凌晨騎車去淡水等日出",
+"山路俯瞰台北燈海",
+"路燈一段亮一段暗",
+"靠路面反光石辨路",
+"照後鏡被車燈照到",
+"家裡熟識的師父"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"dead_contact",
+"benign",
+"object"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "老宅拆除前，已故阿公出聲指引父子取出藏在樑上的金飾木盒",
+"anchors": [
+"神桌上寫名的牌位",
+"大伯小叔私下轉賣祖產",
+"鐵工廠與成衣廠工作",
+"屋後小溪抓蝦蟹",
+"稻埕雜草用鐮刀清",
+"屋樑上藏的木盒"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"dream",
+"escalation",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "男宿學生聽聞頂樓命案傳聞後，夢見女鬼從走廊一路追到頂樓纏上他",
+"anchors": [
+"校內BBS鬼板推文",
+"宿舍頂樓儲藏小屋",
+"三樓走廊玻璃牆",
+"交誼廳電視轉播亞運",
+"上鋪鐵梯",
+"傍晚系上英聽課"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"possession",
+"benign"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "虔誠的父親罹癌住院，睡夢中雙手自己比畫，像神明在為他治病",
+"anchors": [
+"初一十五燒香燒金紙",
+"媽祖由爐主請回家",
+"化療放療後住院",
+"右肺感染與胃出血",
+"手機錄下三十秒影片",
+"擲筊得三個聖筊"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"dead_contact",
+"dream",
+"benign"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "過世四年的父親託夢給母親，點出女兒沒跟任何人講過的機車故障",
+"anchors": [
+"機車車頭燈不亮",
+"下火車後騎車回家",
+"家裡的佛堂",
+"父親用台語交代",
+"晚上八點多下班",
+"母親平常早睡"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"retro_reveal",
+"taboo",
+"object"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "深夜對直上頂樓的電梯比中指，管理員警告別搭，事後發現頂樓根本去不了",
+"anchors": [
+"凌晨三點半下樓買宵夜",
+"兩部電梯的大樓",
+"電梯直下地下四樓",
+"管理員台語叫住人",
+"躲在超商待到天亮",
+"搬家後連燒好幾天"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"retro_reveal",
+"object",
+"presence"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "兩人到日本樹海旁步道散步，當下沒有異樣，回飯店後才發現照片拍進了怪東西",
+"anchors": [
+"富岳風穴與鳴澤冰穴",
+"自駕遊河口湖",
+"淡季步道只遇兩個外國人",
+"林中聽不到蟲鳴鳥叫",
+"回飯店洗完澡才看照片",
+"只有那張中心霧霧的"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"benign",
+"dead_contact",
+"dream"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "替毒販兒子頂罪死在看守所的麵攤阿婆，死後夜夜守在攤前等兒子回來",
+"anchors": [
+"小碗切仔麵二十元",
+"白沙屯媽祖駐駕",
+"台語對話附翻譯",
+"煮麵台車留在騎樓",
+"鄰居湊錢進鄉立納骨塔",
+"烤肉後騎腳踏車回家"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"benign",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "洗澡時瞥見毛玻璃外有黑影，竟是滾動的人頭，慌亂中問要不要幫它洗頭",
+"anchors": [
+"洗澡時浴室門留縫",
+"毛玻璃透出黑影",
+"家裡養的白貓",
+"洗衣機後方的死角",
+"剛蓋好的新房子"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"taboo",
+"escalation",
+"sound_only"
+],
+"ending": "fade",
+"ghost": 2,
+"premise": "少年只供了一份生肉給村中禁忌之神，另一份忘在公車站，災厄隨之進村",
+"anchors": [
+"盂蘭盆節回祖父家",
+"村長發的兩袋生肉",
+"公車站一天只一班車",
+"神社石階與大石頭",
+"石上黑黏的殘留物",
+"蛙鳴蟲聲全消失"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"presence",
+"object"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "資深護理師分享多則醫院內外怪事，其中一則是在迴轉壽司店被對桌的女鬼盯上",
+"anchors": [
+"一個人坐吧台配啤酒",
+"上下兩層點餐軌道縫隙",
+"送達提醒叮咚音效",
+"點餐紀錄查無此項",
+"最討厭的納豆卷"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"possession",
+"dead_contact",
+"retro_reveal"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "童年某夜眼睛閉不上、頭不停後仰，事後師父說是剛過世的外公回來摸他",
+"anchors": [
+"媽媽要小孩練習獨睡",
+"盯著床邊的小窗戶",
+"媽媽開燈要我看她",
+"半夜去拜祖先",
+"掛急診查不出原因",
+"後來腦膜炎住院"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"identity_swap",
+"escalation",
+"proxy_sighting"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "靠生吞活魚討賞的男子吐出上百條魚後失蹤，他家出現魚臉怪物",
+"anchors": [
+"祭典上表演賺打賞",
+"生吞活魚的特技",
+"全村出動找人",
+"村民目擊進出住家"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"presence",
+"escalation",
+"sound_only"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "農曆七月一到，租屋頂樓養的雞夜夜驚啼，屋裡燈和門鎖也開始被看不見的東西動過",
+"anchors": [
+"頂樓鐵皮加蓋堆雜物",
+"墊料加菌種分解雞糞",
+"房門外的廁所燈開關",
+"房門喇叭鎖被轉動",
+"三層樓窗戶都有鐵窗",
+"隔壁空屋陽台可攀爬"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"retro_reveal",
+"taboo",
+"presence"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "幼童夜裡在遊樂場女廁被鎖住，頭頂滴血有聲音叫她抬頭，事後大人才發現上面吊著遇害女屍",
+"anchors": [
+"魚肉拌菠菜淋滷汁",
+"店面鐵門只拉一半",
+"家外廁所爬滿蟑螂",
+"隔壁男廁醉漢嘔吐",
+"七月初一普渡辦桌",
+"熟識警察常來打麻將"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"witness_mismatch",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "等電梯時從監視器看到裡面有兩個低頭的人，門開了卻只有畫面裡看得到他們。",
+"anchors": [
+"刷卡進一樓大門",
+"管理員座位後的監視牆",
+"電梯原停七樓",
+"住四樓套房",
+"晚上七點下班"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"presence",
+"benign",
+"proxy_sighting"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "母親意外墜海過世後，家人與業者接連遇到她似乎回來關照的徵兆",
+"anchors": [
+"澎湖吉貝拖曳傘",
+"殯儀館冰櫃拉出淨身",
+"法醫檢察官夜間驗屍",
+"高雄下船遇記者",
+"釣客拍到墜海照片",
+"頭七與五七"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"dead_contact",
+"presence",
+"dream"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "母親過世後，親人夢見她，上香時香會搖，遺體流淚，火化後還找到疑似舍利子",
+"anchors": [
+"遺體最後穿紫色衣服",
+"一貫道點傳師",
+"香爐裡只有一根香搖",
+"守靈夜野狗聚在門口",
+"火化約五小時",
+"頭蓋骨上的珠狀物"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"proxy_sighting",
+"object",
+"escalation"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "外地讀書的學生一學期內六個護身符接連消失，每次都對上一段撞邪經歷",
+"anchors": [
+"九二一震垮男宿只能外租",
+"聯誼抽機車鑰匙配對",
+"護身符放機車風衣口袋",
+"車速壓在三四十公里",
+"新社圓環小吃攤炸菇",
+"路邊狗對人吹狗螺"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"identity_swap",
+"retro_reveal",
+"benign"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "母親昏迷不醒的學生在地下街遇到神準的算命師爺，事後才知道對方早已過世",
+"anchors": [
+"重修國文課講鬼故事加分",
+"地下街電玩模型區取貨",
+"姓名測字150打一折",
+"刀具壁櫃後藏舊牌位",
+"凌晨三點醫院來電",
+"照片背面寫生卒年"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"proxy_sighting",
+"presence",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "急診護理師搶救病童失敗後，一位臨終阿嬤說看見那孩子跟在醫師身後",
+"anchors": [
+"先天疾病的急診常客",
+"急救後喝咖啡提神",
+"喘到坐直吸氧的阿嬤",
+"踢開病床固定輪",
+"台語對話附翻譯",
+"太平間在地下二樓"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"taboo",
+"escalation",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "女學生聽電台入睡遭鬼壓床，死守不睜眼的禁忌三小時，最後一刻還是被騙看見",
+"anchors": [
+"飛碟電台夜光家族",
+"光禹深夜道晚安",
+"電台整點報時四點",
+"收音機訊號斷續",
+"兩腿出現不痛瘀青"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"dead_contact",
+"retro_reveal",
+"dream"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "父親病逝前後，親友與家人接連夢見他來道別、找公司印章，還帶著已故舊友出現",
+"anchors": [
+"搭高鐵南下探病",
+"幫忙換冰枕的冰塊",
+"插管後臉上少了鼻子",
+"越野機車騎士服",
+"做草皮的叔叔撞電線桿",
+"法事擲筊求聖筊"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"object",
+"benign",
+"possession"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "敘事者借住武術好友家，處理帶陰氣的古玩，卻遇上一位想收好友為徒的山中老僧靈",
+"anchors": [
+"練武用的整面連身鏡",
+"全開紅紙內紅外白包裹",
+"網購四五百元銅觀音",
+"壓克力骷髏念珠",
+"土地公廟善書架",
+"柳枝榕枝沾咒水灑淨"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"witness_mismatch",
+"proxy_sighting",
+"presence"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "女店員夜送飲料到榮民醫院，事後客人來電追問跟在她身邊的人是誰。",
+"anchors": [
+"飲料店晚班只有兩人",
+"騎店裡的勁戰外送",
+"國道旁便道少紅綠燈",
+"一次提二十杯飲料",
+"客人打回店裡市話",
+"回程買雞排壓驚"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"witness_mismatch",
+"retro_reveal",
+"identity_swap"
+],
+"ending": "twist",
+"ghost": 2,
+"premise": "國中時與妹妹同房，月光下牆上出現一隻不屬於任何人的招手手影",
+"anchors": [
+"兩張雙人床併成通舖",
+"手繪房間格局圖",
+"頭頂150公分見方的窗",
+"月光投在書桌那面牆",
+"熄燈後玩水果接龍",
+"窗外是空地再過去是樹林"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"witness_mismatch",
+"proxy_sighting",
+"escalation"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "大學時在學長便宜租屋打麻將，學長先瞥見陽台黑影，後來更目睹有女子從八樓陽台跳下",
+"anchors": [
+"每人月租兩千五",
+"ㄇ字形三棟中庭",
+"對面七樓整排燈不亮",
+"打麻將抓風排座位",
+"房裡玩NBA 2K11",
+"押金被房東沒收"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"dead_contact",
+"identity_swap",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "父親在家門前清水溝，以為撿到一個洋娃娃，拉起來才發現是一具從下游逆流上來的孩童屍體",
+"anchors": [
+"父親騎機車接放學",
+"水溝溢出白色泡沫",
+"竹葉樹枝堵住排水口",
+"竹林裡沒有路燈",
+"警察說這裡好恐怖",
+"家屬給紅包壓驚"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"escalation",
+"witness_mismatch",
+"repetition"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "國中生夜裡一再被假地震搖醒，最後發現是小孩鬼在惡作劇，旁邊還站著女鬼",
+"anchors": [
+"上下鋪睡上層",
+"國二那年夏天",
+"九二一地震經驗",
+"心經壓在枕頭下",
+"伸腳去關燈",
+"手貼牆確認搖晃"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"proxy_sighting",
+"presence",
+"benign"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "情侶租下低矮樓中樓後睡覺常被抓頭髮抓腳，請人來看才知道衣櫃裡住著一位女鬼",
+"anchors": [
+"二樓高度不夠得用爬的",
+"柱子後塞行李箱",
+"牆內挖的衣櫃",
+"二樓沒有窗戶",
+"美髮業賣產品抽成",
+"只鋪一張薄床墊"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"proxy_sighting",
+"retro_reveal",
+"escalation"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "少年右眉一週內莫名掉光且找不到落眉，收驚才知被女鬼夜夜拔眉",
+"anchors": [
+"高雄碼頭餐廳打工",
+"凌晨十二點下班",
+"麻豆鄉下收驚阿婆",
+"紅布包米碗收驚",
+"米面斜掉一半",
+"衣服拿去廟裡燒"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"presence",
+"escalation",
+"proxy_sighting"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "全家低價買下凶宅後，紅衣女鬼糾纏母女、掐父親，最後由路過的天師點破",
+"anchors": [
+"低價買下前屋主留下的大宅",
+"填平池塘時挖出神明牌",
+"爸媽持有孩子房門鑰匙",
+"喇叭鎖被轉開的喀聲",
+"紅色斷水斷電催繳單",
+"掰斷成兩截的玉鐲"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"escalation",
+"retro_reveal",
+"presence"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "大學生夜唱遲到，改走手扶梯上樓，卻闖進大樓荒廢的中間樓層，上不去也搭不到電梯",
+"anchors": [
+"中友百貨旁的技術學院",
+"大樓C棟電梯上KTV",
+"之字形手扶梯",
+"緊急照明的綠光",
+"一樓旁掛紅燈籠的廟",
+"消防役學長說法"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"taboo",
+"escalation",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "國中生夜遊蘭潭偷拉開路邊屍袋，之後得了治不好的皮蛇，收驚才知冒犯了亡者",
+"anchors": [
+"蘭潭環潭公路好漢坡",
+"消防隊麵包車停路邊",
+"聖馬爾定醫院急診",
+"抹面速力打母止癢",
+"竹崎方向城隍廟收驚",
+"符水洗手"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"dream",
+"retro_reveal",
+"escalation"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "國中生隨母親上山兜風，夢見女鬼破壞車子，下山時煞車果然失靈，最後被土地公救下",
+"anchors": [
+"半夜三點起床讀書",
+"國三大考前散心",
+"夏天車內開冷氣",
+"車子前天才保養",
+"路邊下車尿尿",
+"樹後的福德正神小廟"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"repetition",
+"retro_reveal",
+"presence"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "大學生和同學換了房間，半年後也撞見室友描述過的倒吊女鬼",
+"anchors": [
+"包下整層樓有水電折扣",
+"打麻將串門子",
+"寒假整層只剩兩人",
+"打LOL時突然跳電",
+"戴全罩安全帽衝進房",
+"躲到豆漿店坐到天亮"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"dead_contact",
+"proxy_sighting",
+"witness_mismatch"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "舅舅上山採藥後離奇坐著死在溪邊，守靈夜靈堂裡湧進一群黑蝴蝶",
+"anchors": [
+"地方新聞看到舅舅名字",
+"家屬進出地檢署",
+"解剖冷凍後才領回",
+"燒紙錢的小火盆",
+"一月凌晨三點守靈",
+"原民朋友帶酒問山靈"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"sound_only",
+"escalation",
+"taboo"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "深夜在自家旅社大聲講電話，房門與廁所門接連被猛敲，監視器卻拍不到任何人",
+"anchors": [
+"祖母傳下的小旅社",
+"凌晨靠床頭講電話",
+"開監視器回放查人",
+"電話那頭也聽到聲響",
+"房內附設廁所",
+"跑去隔壁和媽媽擠床"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"retro_reveal",
+"witness_mismatch",
+"presence"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "清晨趕高鐵叫的無名計程車，前座坐著怪小孩，下車後才想到司機把錢放在空座位上",
+"anchors": [
+"趕雲林客戶早上的課",
+"台中高鐵站轉車",
+"文山區靠山常下雨",
+"車頂沒有車隊名稱",
+"邊搭車邊改簡報",
+"司機找零二十元"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"dream",
+"repetition",
+"benign"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "痔瘡手術後在家休養，每晚夢到屁股受傷，原來是有個鬼在跟他開玩笑。",
+"anchors": [
+"入伍前先開痔瘡手術",
+"傳統手術切成四瓣",
+"術後無法正躺睡覺",
+"母親去行天宮拜拜",
+"睡一下就驚醒看時間"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"sound_only",
+"escalation",
+"possession"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "大學生貪便宜租下透天分租房，獨睡首夜聽見走廊奔跑聲，之後同住者接連出事",
+"anchors": [
+"月租一千五的隔間套房",
+"巷口那間已消失的7-11",
+"五角形的房間",
+"椰子墊和掃把",
+"唱片行買的佛經CD",
+"大門鎖了兩道"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"repetition",
+"escalation",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "文化大學學生整理身邊朋友在陽明山校園周邊碰上的幾件怪事",
+"anchors": [
+"國安局大彎",
+"華興中學上方彎道",
+"仇人坡下的7-11",
+"停用電梯突然叮一聲",
+"校狗小花圍成圈",
+"凌晨趕檔評到四點"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"retro_reveal",
+"repetition",
+"presence"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "同事回憶故鄉山腳水潭每三年必有人在夢中被帶走、坐著溺死，最後靠道士埋犁止住",
+"anchors": [
+"開公司車出去洽公",
+"七歲跟大哥打零工",
+"果園主人送的一袋水果",
+"賣西瓜的夫妻",
+"水潭後來改成水庫",
+"埋下一組老鐵犁"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"possession",
+"taboo"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "小女孩誤闖靈堂後被死者惡意纏身，懂巫術的長輩用手環在浴缸裡分割驅散。",
+"anchors": [
+"魔獸三自製地圖對戰",
+"刻蟲紋的手環法器",
+"外公家對門辦喪事",
+"放一缸熱水泡孩子",
+"升小一的暑假",
+"文革時蠱師被批鬥"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"identity_swap",
+"sound_only",
+"object"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "大學生第一次夜唱，獨留包廂時應答的服務生其實是從廁所裡敲門的",
+"anchors": [
+"LINE群組揪夜唱",
+"KTV自助吧拿炸物",
+"點王傑老歌",
+"服務台換包廂",
+"國王遊戲特調",
+"南部夏天沒人穿外套"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"escalation",
+"object",
+"repetition"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "看得見陰差預告死亡的設計師，在隧道車禍中目睹紅衣女鬼搶奪同學魂魄",
+"anchors": [
+"颱風天店裡沒客人",
+"後門抽菸聊天",
+"出生時臍帶繞頸",
+"隧道內收不到訊號",
+"脛骨以下骨折打石膏",
+"腿上的縫合疤痕"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"object",
+"possession",
+"witness_mismatch"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "男大生夜夜聽到隔壁空房傳來女聲，後來被牆中女鬼附身飆車，禍源是前房客留下的娃娃",
+"anchors": [
+"半夜開喇叭打CS",
+"看魔獸世界劇情影片",
+"隔壁是大夜班網咖員工",
+"沒抽到學校宿舍",
+"羅盤指針指向衣櫃",
+"紅布包娃娃帶走"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"presence",
+"repetition",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "有陰陽眼的新進護士被半透明少女纏上一個月，只因她一直在找某個男孩",
+"anchors": [
+"平交道噹噹警示聲",
+"阿伯的橫條紋POLO衫",
+"打檔車壓在卡車下",
+"急診護理站找學姊",
+"北部轉院回鄉的病人",
+"監視器畫面裡的男子"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"dead_contact",
+"benign",
+"presence"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "自盡的父親化身守護靈，幫女兒爬單槓、夢中安慰，還示警渣男友",
+"anchors": [
+"父親賣蘭花外銷日本",
+"九二一後債務爆發",
+"國小攀爬單槓設施",
+"睡前習慣鎖房門",
+"花襯衫配卡其短褲",
+"牽著一群臘腸狗"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"proxy_sighting",
+"benign",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "做動物實驗的學生曾埋葬三隻路死的貓，後來被尼姑看見貓在背後守護他",
+"anchors": [
+"超商買免洗筷毛巾垃圾袋",
+"機車停路邊開閃光燈",
+"柏油路曬到屍體黏住",
+"校園停車場旁花圃",
+"實驗室犧牲大白鼠",
+"過年帶親戚小孩挖坑"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"object",
+"escalation",
+"witness_mismatch"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "退伍青年騎車後疑似冒犯了什麼，關燈就聽到笑聲，騷擾一路升級，最後到廟裡處理才平息",
+"anchors": [
+"剛退伍一個月內",
+"關檯燈就出現笑聲",
+"傳統四腳木床當置物",
+"公路車把手放床底",
+"乩身噴酒水",
+"大眾廟燒狀書撒米"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"presence",
+"identity_swap",
+"object"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "國中生假日獨自在家醒來，發現客廳有個不是爸爸的男人在看電視",
+"anchors": [
+"假日睡到下午一點多",
+"家人都已出門上班",
+"爸爸是禿頭",
+"陌生人坐沙發看電視",
+"梳洗後電視仍開著"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"presence",
+"retro_reveal",
+"taboo"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "抓漏師傅進無人空屋查漏水，察覺有看不見的住客，低聲勸走後漏水竟停了",
+"anchors": [
+"總幹事保管屋主備鑰",
+"家具全蓋白布",
+"磁磚縫完全乾燥",
+"樓下天花板漏水",
+"太原路地下道附近",
+"念經迴向給無形眾生"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"proxy_sighting",
+"possession",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "作者多次上台中科大後山，朋友疑似被附身、狗狂吠，又有女伴預見情侶差點摔車",
+"anchors": [
+"大甲廟裡拈米卦",
+"解煞擲茭花三千多",
+"觀景台抽菸喝酒",
+"工廠外養的六七隻狗",
+"借戴護身符換人累",
+"六米寬的Ω形彎道"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"proxy_sighting",
+"presence",
+"escalation"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "鐵齒父親半夜遇到空電梯自己上樓，請看不見的訪客抽菸吃罐頭，供品轉眼腐壞。",
+"anchors": [
+"只能上不能下的電梯",
+"排骨雞麵配海底雞",
+"愛之味嫩筍罐頭",
+"塑膠菸灰缸三個凹口",
+"凌晨三點肚子餓",
+"老闆的廢棄透天當宿舍"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"object",
+"repetition",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "撿骨師之子記錄開甕見清水的工序，另補父親在上海賓館遇到沒插電的電視自己反覆開機",
+"anchors": [
+"卯時辰時破土",
+"金斗甕水泥圓蓋",
+"骨頭攤在墳前曬乾",
+"紅線綁骨硃砂畫過",
+"空隙塞滿木炭",
+"電視雪花雜訊聲"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"retro_reveal",
+"benign",
+"identity_swap"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "母親載迷路老人去車站時隨口許願丈夫心臟好轉，多年後真的應驗，才覺得對方不是凡人",
+"anchors": [
+"飯後散步數十年",
+"路邊九層塔開小花",
+"台語對話附翻譯",
+"機車後座抓把手",
+"漁港晚上沒車可搭",
+"傳訊給環島中的姊姊"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"identity_swap",
+"witness_mismatch",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "撿骨師之子分享蔭屍經歷，另附高中時有個分身替他升旗、跟好友互動的怪事",
+"anchors": [
+"早餐配冰奶茶拉肚子",
+"借口烙賽逃升旗",
+"點名板顯示有升旗",
+"科館在校園角落被樹圍",
+"書包帶到科館沒放教室",
+"撿骨前先拜拜通知"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"object",
+"witness_mismatch",
+"retro_reveal"
+],
+"ending": "twist",
+"ghost": 2,
+"premise": "新生們在校園深夜打缺牌的麻將，消失的牌竟悄悄換成了別張",
+"anchors": [
+"搭BRT去量販店買麻將",
+"棟長沒收兩張牌",
+"用花牌冬菊代替缺牌",
+"凌晨三點校園廣場",
+"狗對遠處吠叫",
+"宿舍會客室坐到天亮"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"proxy_sighting",
+"dead_contact",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "能聽見神明聲音的母親替大齡女兒辦消因果，才發現前世私奔害死整村人",
+"anchors": [
+"台南大天后宮拜月老",
+"臨水夫人保佑家運",
+"三聖杯定讞",
+"寫疏文燒紙錢蓮花",
+"吃素七天",
+"查到灌縣是古地名"
+]
+},
+{
+"setting": "home",
+"mechanisms": [
+"dream",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "大學生熬夜後遇上鬼壓床，用荒唐的方式掙脫，朦朧中看見半透明的長髮女人",
+"anchors": [
+"趕小組報告熬夜",
+"凌晨一點多上床",
+"默念電視學的佛經",
+"醒後到陽台抽菸",
+"文末手機發文簽名"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"sound_only",
+"dead_contact",
+"repetition"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "養老院大夜班照服員接連聽見幾週前過世的阿嬤在跟她們說話",
+"anchors": [
+"印尼籍照服員國語慌亂",
+"大夜班兩照服員一護士",
+"鼻胃管每兩小時灌水",
+"值班時開電視看韓劇",
+"主任找理由調班",
+"護理站交班時回報"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"retro_reveal",
+"sound_only",
+"dead_contact"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "葬儀社員工轉述兩件事：病童供品糖果少了，以及告別式上出現沒人放過的歌",
+"anchors": [
+"禮堂通常播放佛經",
+"瞻仰遺容時段",
+"家屬事後來道謝",
+"翻電腦硬碟播放紀錄",
+"靈前擺糖果餅乾供品",
+"供桌角落的糖果紙"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"taboo",
+"object",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "跟著風水老師去看墳，後代男女特徵錯亂，開棺果然發現屍身不化。",
+"anchors": [
+"重考那年跟著蓋墳",
+"羅盤轉盤面",
+"撬開棺材釘接縫",
+"戴厚手套抬遺體",
+"木柴文火燒四小時",
+"檜木棺開棺啵一聲"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"retro_reveal",
+"dream",
+"escalation"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "董事長兄長接連病倒，家中米飯夜裡被挖，開祖先棺才發現是不腐的蔭屍作祟",
+"anchors": [
+"土葬好地三十坪數千萬",
+"禮儀社角頭把持墓地",
+"開棺四十年的老手",
+"檜木棺材",
+"米飯不再留過夜",
+"二哥住加護病房"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"dead_contact",
+"benign"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "母親重病開刀後，敘事者在病房看見已故外公前來探望，母親隨即好轉",
+"anchors": [
+"肝指數異常照CT",
+"抽出五百多CC膿",
+"加護病房住四天",
+"引流管尿管鼻胃管",
+"靠止痛針才睡得著",
+"默念觀世音菩薩"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"witness_mismatch",
+"possession",
+"retro_reveal"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "母親在醫院安撫一個被附身的女孩，事後舅舅描述的病床女孩長相卻完全不同",
+"anchors": [
+"爸爸帶女兒看精神科",
+"皮包裡的帝爺護身符",
+"護士打鎮定劑",
+"外公剛好要出院",
+"綠色隧道旁的大廟",
+"母子喝老爸泡的咖啡"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"escalation",
+"dream",
+"taboo"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "旅居墨西哥的夫妻家中客房住進女鬼，主人撒符想請走她反而惹怒對方，夜夜被驚醒",
+"anchors": [
+"空房循環播佛經",
+"妻子透過FB回報",
+"三太子降乩拍背",
+"護身符壓枕頭下",
+"員工要求附衛浴套房",
+"淨化符燒化撒房內"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"witness_mismatch",
+"time_slip"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "大學生在超商前等校車，身邊空無一人，事後卻證實大家都在、車也來過",
+"anchors": [
+"發票印著結帳時間",
+"清晨六點五十五唯一班次",
+"打給校車營運方查詢",
+"行車記錄器畫面",
+"司機旁坐著隨車老師",
+"颱風天立旗被收起"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"retro_reveal",
+"benign",
+"sound_only"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "地震夜被陌生女聲叫醒、眼前視野變成綠色夜視，事後發現房內什麼都沒碎",
+"anchors": [
+"1999年9月21日深夜",
+"地震造成全屋停電",
+"床邊書櫃擺玻璃瓶罐",
+"家中供奉媽祖",
+"扶著母親叫醒兄弟",
+"天亮後回房查看"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"proxy_sighting",
+"possession",
+"dead_contact"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "嚴厲的女老師三年來總覺得背後有人在偷看，問米後才知道是墜樓身亡的兒子",
+"anchors": [
+"幼兒園下班後同事閒聊",
+"推薦收驚的宮廟",
+"問米婆婆點一大束香",
+"駝背婆婆突然挺直",
+"小學體育服、赤腳",
+"家裡暱稱叫弟弟"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"benign",
+"dead_contact",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "海巡班長夜班誦經，引來已故士官長與漁民家供奉的古代秀才神明相伴護持",
+"anchors": [
+"凌晨兩點到六點哨",
+"出船要穿救生衣登船安檢",
+"通聯雷達與登記簿冊",
+"偷帶智慧型手機會禁假",
+"督導突襲查所",
+"舊式海巡短袖運動服"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"taboo",
+"object",
+"identity_swap"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "攝影助理在隧道紀念碑前抱怨菸給人浪費，結果器材出包、畫面出現白點又狂拉肚子",
+"anchors": [
+"電視台攝影助理出外景",
+"拿香菸代替線香祭拜",
+"開拍前檢查器材的慣例",
+"攝影機小螢幕不亮改外接",
+"晚上回放檢查帶子",
+"隧道內不能撐傘"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"benign",
+"retro_reveal",
+"dead_contact"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "海巡班長送廢哨女靈去媽祖廟，後來救他的竟是常拿剩菜婆婆的亡子",
+"anchors": [
+"研發替代役綁三年",
+"軍訓折抵一個月役期",
+"補給車每天送食材",
+"請用溫開水飲水機聲",
+"麵筋罐包紅壁報紙",
+"鵝卵石路騎時速七十"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"dead_contact",
+"dream",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "留學生夢見過世多年的奶奶抱怨左眼看不清，家人開棺才發現眼窩被砂土掩蓋",
+"anchors": [
+"棺木停在大伯家客廳",
+"電子鐘顯示凌晨三點多",
+"美台時差打越洋電話",
+"風水老師挑時辰開棺",
+"白蟻蛀穿棺木落砂土",
+"撿骨入罈頭骨最後放"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"dream",
+"taboo",
+"escalation"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "小孩在車禍現場對死者頭顱大喊，之後昏睡，在夢中被亡魂追著要抓替身",
+"anchors": [
+"四台車從泰山出發",
+"暈車抱著嘔吐袋",
+"機車切進貨車左側",
+"補習班九點下課",
+"家門鋁門映出人影",
+"親戚開的宮廟"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"possession",
+"retro_reveal",
+"proxy_sighting"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "婦人久治不癒的頭痛，原來是宿舍底下被強占的小鬼窩，靈們藉她的身體抗議",
+"anchors": [
+"紫微斗數換大限",
+"神壇說是老鼠討債",
+"老式扶手木椅震地板",
+"鄰居老伯敲門關切",
+"新北北邊公家宿舍",
+"點三十六炷清香"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"possession",
+"presence",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "升學壓力大的國中女生常聽到叫她跳樓的聲音，敘事者看出是祖上欠下的女鬼纏身",
+"anchors": [
+"國中應屆考基測",
+"夜裡跨坐陽台牆",
+"睡前吃安眠藥",
+"紫微斗數命盤筆電起盤",
+"大廟擲筊問三聖杯",
+"嗑瓜子台語對話"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"dream",
+"object",
+"escalation"
+],
+"ending": "fade",
+"ghost": 2,
+"premise": "獨自遊香港住進破舊旅館，電視屢次自行播黑白老戲，櫃台留下怪話，當晚夢到吊死的女人",
+"anchors": [
+"長榮特價來回機票",
+"老舊手動電梯",
+"映像管電視自己開",
+"黑白粵劇節目",
+"拔掉電視插頭",
+"櫃台阿伯不流利中文"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"escalation",
+"presence",
+"witness_mismatch"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "小三隨班去探望久病同學，只有他看見屋裡浮著一個全紅的人",
+"anchors": [
+"星期三下午班會",
+"ㄤ仔鏢當禮物",
+"樓梯扶手包紅皮",
+"老師逐戶打電話問家長",
+"鐵路後來變捷運",
+"姑姑在PUB駐唱"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"presence",
+"retro_reveal",
+"proxy_sighting"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "海軍士官身上的親戚護身符其實是向鬼借命的借據，害他在風平浪靜時落海被拖住",
+"anchors": [
+"艦尾甲板釣魚",
+"人員落水廣播程序",
+"瞭望通報漂流浮標",
+"65K2步槍手戒護",
+"主砲搖向需兵器長同意",
+"射擊報告寫擊殺鯊魚"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"retro_reveal",
+"proxy_sighting",
+"presence"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "幫朋友在頂樓辦公室加班聽見天花板腳步，後來風水師說那裡有人倒吊著走",
+"anchors": [
+"晚上十點後獨自擬文件",
+"樓下連鎖KTV門口水池",
+"中庭有人跳樓辦法事",
+"員工做幾天就離職",
+"下班後播放佛經",
+"中部請來的風水先生"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"dream",
+"repetition",
+"retro_reveal"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "颱風夜夢到接起亂碼來電只聽到女孩哭笑，醒來電話真的響了，傳來父親的死訊",
+"anchors": [
+"颱風夜整層只剩自己",
+"房東算便宜房租",
+"來電顯示一串亂碼",
+"枕頭掉到床下",
+"薄被只蓋住肚子",
+"爸媽在國外"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"proxy_sighting",
+"retro_reveal",
+"presence"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "山上哨所曾有班長在廁所上吊，門會自己打開，退伍後學弟才說出當時看見的東西",
+"anchors": [
+"防彈背心整季沒乾過",
+"置物櫃擋住廁所門",
+"班長睡休假弟兄床位",
+"莫拉克風災南下救災",
+"營區晚間操課",
+"電扇馬達受潮燒掉"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"proxy_sighting",
+"possession",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "外派女子接手前輩套房，每晚恍神站在吊扇下，左臉漸漸變黑",
+"anchors": [
+"百貨周年慶加班",
+"晚上十一點才下班",
+"公司給租屋津貼",
+"接手前輩的房間",
+"提著冷掉的宵夜",
+"護貝的符紙壓枕下"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"dream",
+"benign",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "大一生夢見車禍過世的學長回來重修微積分，還答應帶他去逛台南古蹟",
+"anchors": [
+"微積分助教課",
+"教室最角落的座位",
+"出示學號給人看",
+"學生證免費參觀古蹟",
+"系館中庭約集合",
+"超商買的傘"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"witness_mismatch",
+"object",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "保險業務請客戶傳死胎手術理賠文件，收到的卻是兩張客戶也沒見過的空地照片",
+"anchors": [
+"診斷證明書加收據",
+"先傳照片確認文件",
+"胚胎萎縮刮除手術",
+"懷孕第七週無心跳",
+"雙方互傳聊天截圖",
+"附上imgur圖片連結"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"taboo",
+"escalation",
+"sound_only"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "鄰居在空地加蓋後接連死人，長輩說地下的東西要帶走三人，只能做草人替喪化解",
+"anchors": [
+"同村多為吳姓親戚",
+"鄰居當過六合彩組頭",
+"空地蓋魚池養鴿子",
+"道士發符貼牆",
+"即時通同學問功課",
+"聯絡本忘在客廳"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"witness_mismatch",
+"sound_only",
+"escalation"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "新手凌晨送羊奶到山上民宅，背後傳來陌生男女的問話，同行前輩也聽到假冒他的聲音",
+"anchors": [
+"凌晨兩點半到分所報到",
+"按配送點分裝羊奶上車",
+"門口的羊乳小箱收空瓶",
+"樓梯間只吊一盞黃燈",
+"二樓牆面貼滿符紙",
+"打電話才找到前輩"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"identity_swap",
+"repetition",
+"dream"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "在東京遊學的女生住進宿舍後，喇叭自己亂放歌、廁所門被撞，最後夢到假室友上床",
+"anchors": [
+"遊學代辦安排宿舍",
+"插iPhone的喇叭音響",
+"哈林情非得已",
+"騎腳踏車上學",
+"Skype跨國聊天",
+"自掏腰包住飯店"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"retro_reveal",
+"sound_only",
+"benign"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "外島孕婦午睡時聽見有人要買麵包，丈夫因此沒赴約，當晚那間店大火奪走同袍性命",
+"anchors": [
+"1986年東引開放探親",
+"颱風天渡黑水溝",
+"丈夫是特戰隊職業軍人",
+"弟兄約去卡拉OK",
+"午睡時全身動不了"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"possession",
+"taboo",
+"proxy_sighting"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "海軍學弟在日本山屋玩降靈遊戲被大頭小孩附身，回船後日漸暴怒，直到士官長一吼才脫離",
+"anchors": [
+"艦內電話沒人接",
+"碼頭集合派工",
+"報當值躲集合",
+"喝王八蛋的飲料",
+"禁閉三十天評議會",
+"水密門艙間"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"retro_reveal",
+"witness_mismatch",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "童年在殯儀館附近兩度撞見怪人：大頭乾瘦的身影逼近小吃店，半臉黝黑的男子混在送葬隊伍裡",
+"anchors": [
+"夜市入口的雞排攤",
+"放學後跟媽媽吃麵",
+"全家買冰可樂",
+"家屬清一色黑衣",
+"法師搖鈴領隊",
+"暑假午後大太陽"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"taboo",
+"repetition",
+"sound_only"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "學長在隧道裡唱了一首歌詞提到「明天」的歌，結果困在原地騎不出去，從此禁止別人在隧道唱歌",
+"anchors": [
+"聚餐喝酒請學長載",
+"當兵時的學長",
+"辛亥隧道",
+"隔天一早跑廟裡問",
+"特定流行歌曲名"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"sound_only",
+"presence"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "大一新生午夜三度折返空無一人的合租公寓拿東西，在暗處聽見陌生男人的笑聲",
+"anchors": [
+"五人合租五房一廳",
+"學長騎機車樓下等",
+"忘了安全帽手機錢包",
+"釣蝦場過午夜要證件",
+"管理員看他來回搭電梯",
+"房間在樓中樓上層"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"witness_mismatch",
+"escalation",
+"object"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "學生為避鬼搬進便宜透天厝，卻接連碰上假腳步聲、灰塵手印和自己打開的鐵捲門",
+"anchors": [
+"地震後凌晨三點",
+"一樓車庫鐵捲門",
+"女友帶來的全身鏡",
+"灰塵構成的小手印",
+"半夜玩三國語音嗆聲",
+"離畢業剩一星期"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"presence",
+"escalation"
+],
+"ending": "fade",
+"ghost": 2,
+"premise": "午夜場散場後和女友搭電梯下樓，電梯自己停靠每層無人的漆黑樓層",
+"anchors": [
+"23:10午夜場電影票",
+"影廳位在八樓",
+"散場後樓層熄燈",
+"服務員引導到電梯口",
+"六五四樓按鈕自己亮",
+"跑去停車場取車"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"presence",
+"escalation"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "大學生凌晨練迎新舞時在廁所外抽菸，五人同時目睹無身的雙腳走過走廊觸發警鈴",
+"anchors": [
+"迎新露營通宵練舞",
+"躲到最遠學院中庭練",
+"凌晨三點菸蟲放風",
+"八字四兩六",
+"警鈴一層層遠去",
+"苗栗夜教收驚"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"sound_only",
+"escalation"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "電梯故障的午後，少年爬樓回家，一路被看不見的腳步聲緊追到頂樓",
+"anchors": [
+"唯一電梯故障待修",
+"管理員台語回話",
+"一層樓算過22階",
+"前後交叉式樓梯",
+"頂樓門常開供曬衣",
+"改水冷的Dio機車"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"proxy_sighting",
+"retro_reveal",
+"dream"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "女大學生每晚做連續夢、白天昏睡，師父說愛慕她的男鬼一直住在她房裡",
+"anchors": [
+"夜市打工半夜才回家",
+"系上活動請公假練習",
+"停好機車不想脫安全帽",
+"師父撥開瀏海看額頭",
+"香爐上最粗的一炷香",
+"回家清掉香灰"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"possession",
+"retro_reveal",
+"escalation"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "樂團店員在店外老樹下小便後被附身，持刀揚言殺人，怪事接連纏上周遭的人",
+"anchors": [
+"派出所做筆錄",
+"移送地檢署後交保",
+"急診約束衣綁床",
+"回埔里收驚",
+"水楠收驚師姐",
+"憲兵隊旁的橋上摔車"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"identity_swap",
+"retro_reveal",
+"escalation"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "小學生隨家人登高山夜宿工寮，門口出現顫抖黑影，隔天走散後被一家四口引進樹林",
+"anchors": [
+"台電舊員工休息小屋",
+"山泉水洗澡煮媽媽麵",
+"牛肉罐頭火鍋",
+"大人打撲克牌到睡著",
+"入山檢查站登記",
+"爬西巒山撿到的土狗"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"proxy_sighting",
+"retro_reveal",
+"dream"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "爺爺說老屋有紅衣女害他，作者夢見同一女人，才知父親早在走廊見過祂",
+"anchors": [
+"走廊垂著舊珠簾",
+"外籍看護帶呼叫鈴",
+"客廳舖涼床睡",
+"爺爺小腿瘀青",
+"收驚後喝符水",
+"祭拜地基主"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"presence",
+"dream",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "阿姨的便宜租屋莫名遭竊，作者巡屋時在封死的廁所前發寒，之後才知道那棟樓常有人自殺",
+"anchors": [
+"門裝了三道鎖",
+"存款藏在床底下",
+"鎖沒壞卻遭翻箱",
+"附近沒裝監視器",
+"廁所門用膠帶封死",
+"鄰居多半白天睡覺"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"retro_reveal",
+"dead_contact",
+"witness_mismatch"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "男孩溺水獲救後，跟消失一年的玩伴重逢，事後才知道她早就死了，最後一次見面時她還保護了他",
+"anchors": [
+"蘭嶼落水被送醫",
+"綁辮子常咳嗽的女孩",
+"雜貨店的快打旋風",
+"美少女戰士塑膠娃娃",
+"嬸嬸拿出的舊報紙",
+"滿屋塑膠假人模特兒"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"repetition",
+"presence"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "休學擺攤的年輕人被一個小女孩亡魂跟回租屋處，他選擇每晚坐門口陪她",
+"anchors": [
+"凌晨四點收攤倒廚餘",
+"藍色大廚餘桶旁斜坡",
+"Nokia手機放音樂",
+"半夜的家樂福",
+"小7買大罐海尼根",
+"木門加玻璃的老房"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"witness_mismatch",
+"time_slip",
+"presence"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "午睡醒來找不到全班的學妹，回教室時才發現大家以為她一直都在座位上",
+"anchors": [
+"美術班學長姐制",
+"直屬學妹傳承",
+"素描課被罰作業",
+"上課先點名",
+"水墨用具沒擺出",
+"國畫西畫教室同層"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"identity_swap",
+"escalation",
+"proxy_sighting"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "國中時被機車撞飛，有隻手把他推開救了一命，之後就開始越來越常看見鬼",
+"anchors": [
+"補習班溜出打公共電話",
+"檳榔攤阿伯搭話",
+"越南媽媽的小孩指花盆",
+"衣櫥上方八格收納",
+"國中國小校園相連",
+"第一包菸藍色Dunhill"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"object",
+"retro_reveal",
+"witness_mismatch"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "義務役士兵從士官長筆記追出一段往事：二手軍艦艙房地板下藏著讓住客昏迷的詛咒",
+"anchors": [
+"航行時各部位值更",
+"砲械控制室的手寫筆記",
+"向美方接艦受訓",
+"翹起會響的鐵板地板",
+"用電刷除鏽磨掉圖案",
+"買六人份手搖杯賠罪"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"sound_only",
+"dead_contact",
+"retro_reveal"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "殯葬業家庭的女兒轉述：太平間看守人半夜聽見有人敲門找剛過世的阿嬤，喊她媽媽",
+"anchors": [
+"太平間冰箱拿出的飲料",
+"看守阿伯過年包紅包",
+"遺體待驗先冰太平間",
+"睡前拉下鐵捲門",
+"家族各開殯葬公司",
+"殯儀館旁的新海橋"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"escalation",
+"witness_mismatch",
+"presence"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "殯葬業家的小女兒半夜坐在接屍車後廂返北，從後窗看見跟隨的惡意存在",
+"anchors": [
+"接屍車兼全家代步車",
+"小孩擠在後面停屍空間",
+"過年回鄉下再北返",
+"路燈殘影劃過車窗",
+"公司三台分機互通",
+"收驚阿婆讓她插隊"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"presence",
+"proxy_sighting",
+"benign"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "懷孕的母親住在殯葬公司裡，簾子後面有個蒼白女人，連來驅邪的道士都被打飛",
+"anchors": [
+"骨灰罈展示櫥窗",
+"金童玉女當玩具",
+"簾子隔開辦公區",
+"道士講台語",
+"解剖室外機車上等",
+"隔天去醫院查腦震盪"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"dream",
+"benign",
+"identity_swap"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "夜夜哭鬧的乾兒子，父母夢見神明約他周歲到廟裡相認，原來他前世是神將",
+"anchors": [
+"夜哭求遍中西醫與宮廟",
+"夫妻同晚做同一個夢",
+"櫃底舊報紙露出廟名",
+"托夢日期正逢滿周歲",
+"大年初一全家吃素",
+"捐香油錢後回程"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"retro_reveal",
+"repetition",
+"dead_contact"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "學生夜遊山路遇見白衣女子找右手，警方舊檔顯示當年分屍案的右臂一直沒找到",
+"anchors": [
+"夜校下課吸菸區閒聊",
+"汽車展示中心旁台13線",
+"扶輪社涼亭",
+"附上蘋果日報連結",
+"警察父親調舊刑案卷宗",
+"驗屍報告缺右臂"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"identity_swap",
+"escalation",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "七個死黨夜上鬧鬼山頂，發現圈裡多了一人，逃跑時又騎到早已封閉的舊涼亭前",
+"anchors": [
+"七人騎四台機車",
+"山頂三角測量點石頭",
+"打火機點菸的火光",
+"木涼亭拉警用封鎖線",
+"樹枝上掛著符",
+"半夜到玉清宮香爐拜"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"retro_reveal",
+"object"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "畢旅時在無人處拍的雙人合照，回宿舍後才發現背景多了一個不認識的人",
+"anchors": [
+"兩個住宿生室友",
+"畢旅回來沒幾天",
+"附上三張放大照片",
+"刻意挑沒人的取景點",
+"半夜被搖醒"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"sound_only",
+"retro_reveal",
+"witness_mismatch"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "對講機傳來三個女生求救說受困電梯，點名沒人缺，撬開電梯是空的，線路早就斷了",
+"anchors": [
+"電梯時常無故超重警示",
+"專業教室在五樓",
+"學長點名三次確認人數",
+"對講機斷續沙沙聲",
+"即時通MSN年代",
+"被老師約談刪論壇文"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"escalation",
+"repetition",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "被村人批鬥逼死的地主孫女化為厲鬼，循著鈴聲把欺負過她的村民一個個吊死",
+"anchors": [
+"除夕全家守歲",
+"舅舅剛留學回國",
+"華人街餐館老闆",
+"地主後代遭批鬥",
+"會堂講台後方",
+"官方說是傳染病"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"possession",
+"proxy_sighting",
+"taboo"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "隔壁寢室的同學偷玩請神遊戲後變得怪異，事後才得知竹林上有紅衣女子一直盯著她們",
+"anchors": [
+"兩寢室共用的通廁",
+"廁所門可單邊上鎖",
+"晚點名後熄燈",
+"陽台外竹林高及四樓",
+"打寢室市內電話",
+"樓梯旁茶水間"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"retro_reveal",
+"dream",
+"taboo"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "車禍昏迷的朋友多年後想起，自己曾在黑暗虛空中拿身體部位跟陌生力量換光，才得以醒來",
+"anchors": [
+"十二月週五濕冷夜",
+"路面看不出的黑冰",
+"救護車上CPR和電擊",
+"腦壓降了才能開刀",
+"手電筒照瞳孔時驚醒",
+"左耳只聽得到90分貝"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"identity_swap",
+"taboo",
+"benign"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "男子深夜獨自開北宜，一路陪著他的機車原來不是活人，後來靠卡車司機灑冥紙平安回家",
+"anchors": [
+"週末開車回宜蘭",
+"固定七點前出發",
+"應酬拖到晚上九點",
+"打電話請媽媽拜神明",
+"後照鏡裡的機車燈",
+"雨刷刮掉冥紙"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"dead_contact",
+"proxy_sighting",
+"benign"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "送亡故男友晉塔回程時，體質敏感的男友母親在隧道中與兒子短暫相見",
+"anchors": [
+"從二殯接骨灰罈",
+"罈上貼著遺照",
+"放進塔位小格子",
+"離開時不可回頭",
+"長輩反對海葬改火葬",
+"頭七前黑影走向廚房"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"possession",
+"taboo",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "小五時沒跟去溪邊划船而逃過溺水，卻在同學出殯時被不明力量逼得當眾大笑",
+"anchors": [
+"新竹頭前溪河道",
+"漁民的竹筏",
+"漂流木當船槳",
+"香雞排隔壁那戶",
+"畢業沙龍照當遺照",
+"南寮某宮問事"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"presence",
+"escalation",
+"taboo"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "大學生夜探廢棄樂園，鬼屋裡摸到會縮走的鞋，又在燒毀建築前看到人影",
+"anchors": [
+"看網路節目的廢園探險集",
+"售票亭旁的廟或民宅",
+"牆上噴漆塗鴉",
+"樂園對面的超商店員",
+"路邊賣芋圓的店",
+"兩把手電筒四個人"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"repetition",
+"retro_reveal",
+"time_slip"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "年輕時夜騎山路撞見三個復古打扮的人燒紙錢，十年後重遊又遇見，親戚說那裡曾火燒車死三人",
+"anchors": [
+"超商時薪65元",
+"二手NSR150仿賽",
+"沒手機靠地圖集找路",
+"陽金公路半夜看人過彎",
+"颱風剛過的雨後夜晚",
+"七匹狼式九零年代打扮"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"object",
+"repetition",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "海軍夜更兵以為纜繩滴鏽水，竟是血，原來是當年被斷纜打死的學長回艦",
+"anchors": [
+"夜更巡查纜繩吃力",
+"值更官日誌寫正常",
+"雨天撐傘穿海軍大衣",
+"絞纜機硬絞的啪啪聲",
+"砲頭醫頭後甲板釣魚",
+"學長借的汽車雜誌"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"witness_mismatch",
+"escalation",
+"taboo"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "大學生夜騎台中136山路，看見只有自己看得到的怨恨男子，隔天就出了車禍。",
+"anchors": [
+"騎士耳掛MIC回報路況",
+"從太平出發上山",
+"大頭車頭裝HID大燈",
+"白色CUXI撞成頭對頭",
+"龍頭上的關公護身符",
+"廟婆用生米蓋符收驚"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"retro_reveal",
+"witness_mismatch",
+"taboo"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "大一男生帶同學夜遊後山，彎道上撞見撐黃傘的背影，事後才知它曾貼近身旁",
+"anchors": [
+"大一強迫住宿",
+"HID車燈特別亮",
+"車行說下雨才發得動",
+"警察來勸別放煙火",
+"窄坡只容兩車交會",
+"陽台抽菸聊天"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"possession",
+"proxy_sighting",
+"escalation"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "海軍新訓時，有乩童體質的新兵被惡靈附身，靠會柔道的士官長一摔才把它摔出來",
+"anchors": [
+"新兵只能穿白內衣",
+"班長穿兵科排汗衫",
+"印著海軍柔道的衣服",
+"救火課程操場",
+"醫護所全休寢室",
+"午休寢室聊天"
+]
+},
+{
+"setting": "rental",
+"mechanisms": [
+"retro_reveal",
+"witness_mismatch",
+"proxy_sighting"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "分租屋房東欠債失聯，房客聞到怪味數週，最後發現他早已在一樓自縊",
+"anchors": [
+"一樓門口貼法院封條",
+"台電停電通知單",
+"住戶湊錢繳電費",
+"外加鐵樓梯進出",
+"五樓後半是佛廳",
+"安南區觀音媽開天眼"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"possession",
+"identity_swap",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "女友探視加護病房裡的前乩童男友，發現醒來的他像被別的東西暫時佔用",
+"anchors": [
+"肝硬化合併肝昏迷",
+"插呼吸器貼彈性繃帶",
+"全身黃疸",
+"加護病房探病時段",
+"護士說食物消化不了",
+"電梯每層樓都被按亮"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"presence",
+"witness_mismatch",
+"escalation"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "開車在土地公廟附近看到只有下半身的東西過馬路，隔天午睡被它壓著頭攻擊",
+"anchors": [
+"土地公廟旁的路段",
+"下半身走上安全島",
+"辦公室隔玻璃門午睡",
+"同事座位就在門邊",
+"鎮瀾宮求的平安符",
+"大姐念經多年的佛珠"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"presence",
+"dead_contact",
+"benign"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "疏遠的酗酒父親孤獨離世，女兒去辦頭七途中一直感覺他也坐在車上",
+"anchors": [
+"凌晨收到LINE訊息",
+"姊姊去警局做筆錄",
+"房東聞到味道破門",
+"擲筊第一筊被拒",
+"遺物和印章放在一起",
+"無法瞻仰儀容直接火化"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"retro_reveal",
+"taboo",
+"object"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "父親幼時夜行竹林捷徑遇彎竹攔路，阿公機警折返，次日才知別人因此喪命",
+"anchors": [
+"阿公騎腳踏車載人",
+"民國五十幾年",
+"離家五公里的阿祖家",
+"連抽三根菸",
+"台語對話",
+"找村長耆老報信"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"presence",
+"witness_mismatch",
+"escalation"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "高三生偷藏球拍在地下室倉庫，某晚摸黑開燈被陌生的手碰到，同學伸手取拍被拉住",
+"anchors": [
+"高三晚自習偷溜出去",
+"巡堂教官會沒收球拍",
+"球拍藏在倉庫柵欄縫",
+"猜拳輸的去開燈",
+"四月指考前的夜自習",
+"警衛用台語叮嚀"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"object",
+"presence",
+"sound_only"
+],
+"ending": "fade",
+"ghost": 2,
+"premise": "為了避開擁擠的廁所，女職員改去空樓層如廁，卻遇上一塊會自己轉身的人形立牌",
+"anchors": [
+"整層只有三間女廁隔間",
+"公司位在十四樓",
+"十三樓出租率為零",
+"走廊沒開燈只靠樓梯間光",
+"老闆是基督徒不拜拜",
+"農曆七月普渡期間"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"time_slip",
+"identity_swap",
+"witness_mismatch"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "搭貨梯到工地樓層，被像父親的聲音引進一片陌生暗廳，父親卻說自己一直在原處",
+"anchors": [
+"家裡做窗簾裝潢",
+"寒假被抓去工地幫忙",
+"員工專用的後方貨梯",
+"緊急避難燈微亮",
+"手上搬著重貨",
+"趕在過年前完工"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"presence",
+"escalation",
+"repetition"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "母女投宿台東便宜老旅社，房裡窗戶是假的，半夜浴室怪聲不斷，最後有老人從牆裡現身",
+"anchors": [
+"四人房一晚三百元",
+"白髮婆婆提鑰匙串",
+"窗戶後面是水泥牆",
+"馬桶緊貼浴缸邊",
+"台語問有無房間",
+"看電影卡門"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"proxy_sighting",
+"dead_contact",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "外婆託夢說要投胎到親戚家，不久嫁給雲林人的表姊懷孕，眾人拼出她就是外婆轉世",
+"anchors": [
+"外婆的麵攤土地",
+"黑輪攤老闆娘不收錢",
+"外婆娘家在雲林",
+"表姊夫是雲林人",
+"搭火車離開的夢",
+"表弟是家中繼承人"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"repetition",
+"sound_only"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "兩人開車時廣播與手機恰好放同一首歌，目睹機車騎士被砂石車捲入，歌詞正好對上那一刻",
+"anchors": [
+"車上廣播與手機同一首歌",
+"機車鑽車陣",
+"大型砂石車緩慢前進",
+"車停路肩休息",
+"路過騎士攔下砂石車",
+"事後去廟裡收驚"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"presence",
+"taboo"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "大學生夜遊後騎車下山，眾人看見帶頭那台車後座多了個白衣女鬼",
+"anchors": [
+"半夜上東海敲鐘",
+"鐘樓旁玩鬼抓人",
+"七台機車並排騎",
+"新車剛牽想試騎",
+"彎道兩三盞路燈壞",
+"下山後才見便利商店"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"retro_reveal",
+"proxy_sighting",
+"dead_contact"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "阿公猝逝後守靈的四十九天，家人接連在夢中和靈堂外撞見他留下的訊號",
+"anchors": [
+"守喪七七四十九天",
+"靈堂設在公媽廳",
+"奶粉罐藏金飾",
+"枕頭套裡的金錶",
+"出殯後請團弄樓",
+"認養的德國狼犬"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"possession",
+"escalation",
+"taboo"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "破產一家借住遠親老宅，自殺姨婆的亡魂逐一附上家人，全家差點吃草發瘋",
+"anchors": [
+"家道中落房子遭法拍",
+"一樓客廳全家打地鋪",
+"父親改開計程車晚歸",
+"學校發的麵包餅乾",
+"老師推開老屋窗戶",
+"醒來躺在衛生所病床"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"proxy_sighting",
+"retro_reveal",
+"object"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "岳家祖厝被人偷放下咒之物，境主廟神明不待告知便連夜破除，並在端午遶境時衝進家中示警。",
+"anchors": [
+"78快速道路交流道旁",
+"擲出七個聖筊選爐主",
+"置香案接駕的告示",
+"去超商ATM查端午獎金",
+"院子裡燒過的灰燼",
+"中壇元帥四駕衝上二樓"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"taboo",
+"repetition",
+"witness_mismatch"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "母親警告別跟帶魚腥怪味的人說話，那股味道卻在他人生中反覆出現",
+"anchors": [
+"偷玩LF2怕主機發燙",
+"鋁柵門加黑鐵門兩道",
+"珠算班作業沒寫完",
+"延長線卡住房門用啞鈴擋",
+"納莉颱風淹到二樓",
+"紅媽軟包"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"identity_swap",
+"retro_reveal",
+"presence"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "女孩小時候在自家竹林兩度撞見古裝母女鬼，最後母親說出那鬼的穿著細節，原來母親多年前也遇過",
+"anchors": [
+"新竹田間防風竹排",
+"夏天進竹林挖竹筍",
+"八十歲阿嬤",
+"客家人隔山喊話",
+"竹林後就是河谷",
+"母鬼腰間繫帶碎花衫"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"identity_swap",
+"witness_mismatch",
+"benign"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "陣頭少年被鎖在廟裡修音響，跟自稱顧廟的黑臉阿伯閒聊，事後才知那人不存在",
+"anchors": [
+"擲筊問哪尊王爺出巡",
+"神轎音響發電機忘了帶",
+"躺轎底檢查喇叭線路",
+"大陸製轎桿常斷要備用",
+"繞境後吃平安宴",
+"廟前加錢放新片"
+]
+},
+{
+"setting": "road",
+"mechanisms": [
+"presence",
+"time_slip",
+"taboo"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "中元節夜裡騎車停紅燈，看見計程車司機的手穿過副駕女孩的身體",
+"anchors": [
+"農曆七月十五加班",
+"第一殯儀館旁繞路",
+"紅燈倒數九十幾秒",
+"停紅燈掏菸點火",
+"計程車掛滿佛珠護身符",
+"香菸燒到手指"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"escalation",
+"presence"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "深夜獨自扛行李爬坡回宿舍，經過的路燈一盞盞熄滅，前方路人也憑空消失",
+"anchors": [
+"錯過自強號改搭莒光號",
+"沒登記被警衛擋在校門",
+"校門到女宿要走半小時",
+"一邊球場一邊山壁路燈",
+"山區收訊通話斷斷續續",
+"手機走到坡頂沒電關機"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"taboo",
+"escalation",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "鬼門剛開，夫妻夜跑北宜時沒帶護身物，敏感體質的妻子看見女鬼後被一路跟到超商",
+"anchors": [
+"家住北投兩大醫院旁",
+"廣澤尊王求來的法器",
+"鬼門開第二天",
+"晚上十一點車隊集合",
+"避震調硬害人暈車",
+"時速120走高速回台北"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"taboo",
+"benign",
+"escalation"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "重男輕女的父親為延命把女兒靈魂賣給撒旦，衣櫥裡的惡魔反而成了她唯一的依靠",
+"anchors": [
+"睡不下的舊床",
+"兄弟的名字含義",
+"床邊放的聖水瓶",
+"學校情人節舞會",
+"朗讀梅岡城故事作業",
+"樓下電影之夜"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"retro_reveal",
+"dead_contact",
+"witness_mismatch"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "男孩溺水獲救後與父母共度一夏，直到警方發現兩人早已死在河岸",
+"anchors": [
+"農場後方的河流小徑",
+"前兩晚大雨河水暴漲",
+"媽媽六點整擺好餐桌",
+"警察敲門問失蹤女孩",
+"多年創傷治療團體",
+"每年八月七日獻花"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"proxy_sighting",
+"escalation",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "資深護理師看見探病男子背上趴著嬰靈，查知是墮胎案，半年後嬰靈變成兩個。",
+"anchors": [
+"櫃台詢問後走向病房",
+"沒用揹巾的小孩",
+"同事閒聊病人病況",
+"半年後再次來探病",
+"護理師口頭禪自稱沒體質",
+"紙盒裝的販賣機飲料"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"object",
+"retro_reveal",
+"taboo"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "工廠街怪店賣好吃得上癮的巧克力，抽中月亮卡的同學隔天慘死且失去頭顱",
+"anchors": [
+"假面騎士零食附贈卡",
+"工業區廢水染色的海",
+"雜貨店抽籤中獎再一支",
+"焊接用金屬面罩",
+"父親在郵局上班",
+"肇逃卡車始終沒找到"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"dead_contact",
+"object",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "亡母用母女專屬的求救暗號傳訊，引女兒挖開墳墓，揭發棺下埋屍的連續殺人犯",
+"anchors": [
+"句尾雙標點代表求救",
+"訊息附地址代表緊急",
+"派對前先複製地址",
+"醫院打點滴排藥物",
+"手機放進棺內隨身包",
+"打字中的提示"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"possession",
+"retro_reveal",
+"taboo"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "女孩從小一害怕就會肚子餓，後來才發現自己會吃掉別人看不見的靈體",
+"anchors": [
+"窗戶與衣櫥間的角落",
+"看恐怖片時肚子叫",
+"朋友各自的怪癖",
+"十六歲睡衣派對",
+"生日禮物是占卜板",
+"在Reddit搜尋同類"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"identity_swap",
+"retro_reveal",
+"time_slip"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "夫妻夜裡為找廁所下陌生交流道，進了一間其實三十年前就燒光的餐館",
+"anchors": [
+"聖伯納犬留在後座",
+"兩支手機同時開不了機",
+"粉餅盒鏡子照背後",
+"開支票付咖啡錢",
+"加油站櫃台問店員",
+"卡車司機搭話"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"time_slip",
+"object",
+"taboo"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "大學生三人開車闖進封鎖廢道，穿過隱藏鳥居後抵達沒有太陽的異界巨屋",
+"anchors": [
+"朋友開的Jimny越野車",
+"用鉗子剪開鐵絲網",
+"磚造水道橋式隧道",
+"柏油路突然變泥土路",
+"下午兩點臨時出發",
+"開回國道看見夕陽"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"escalation",
+"taboo",
+"retro_reveal"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "上班族對鏡照做同事傳授的禁忌動作，招來穿壽衣的女鬼，糾纏他兩年多",
+"anchors": [
+"主管未走新人不能下班",
+"全身鏡擺在走廊盡頭",
+"脖子浮出繩狀紅疹",
+"膠囊旅館過夜",
+"長崎路面電車",
+"四十九日後轉交遺信"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"retro_reveal",
+"proxy_sighting",
+"presence"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "大學生試膽遇上井中怪物，才知道救下眾人的是寄居在愛講怪談女同學體內的東西",
+"anchors": [
+"同學在獨居朋友家喝酒",
+"六人擠一台休旅車",
+"開車三十分鐘的試膽點",
+"枯井裡的小型人偶屋",
+"說打工太累想睡",
+"畢業後接到B婚後來電"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"taboo",
+"presence",
+"witness_mismatch"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "居酒屋打烊收暖簾時，門外站著繫紅白串珠的赤腳，看見上半身就會被帶走",
+"anchors": [
+"發薪日前的週五夜",
+"收暖簾代表打烊",
+"雨夾雪的寒冷天",
+"店外只有一條窄巷臨河",
+"一升酒和鹽巴驅邪",
+"洗頭時閉眼的瞬間"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"object",
+"taboo",
+"escalation"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "朋友惡整同伴獨闖鬧鬼女宿，他在房裡遇見甩繩狂笑的女人，之後腦血管破裂",
+"anchors": [
+"瓦斯爆炸致死的女宿",
+"綜藝節目專題引來試膽",
+"左右入口不互通的挑高",
+"超商買食鹽和打火機",
+"頭部血管破裂送醫",
+"醫院外設置的祠堂"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"identity_swap",
+"witness_mismatch",
+"escalation"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "小學生帶對講機闖廢棄保齡球館，無線電另一頭的同伴聲音早已被別的東西頂替",
+"anchors": [
+"小學流行玩對講機",
+"一人把風兩人潛入",
+"通話結尾說完畢",
+"一樓電玩二三樓球道",
+"窗貼破損透進光線",
+"門只是虛鎖踹開"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"retro_reveal",
+"escalation",
+"object"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "大一女生住在傳聞中的自殺房隔壁，怪事一再升級，最後才發現真正的凶房就是自己那間",
+"anchors": [
+"男生只能待到晚上11點",
+"門外掛鎖的儲物間",
+"從門縫看進房內",
+"宿舍櫃台的換房申請",
+"兄弟會的入會夜",
+"語音信箱裡的留言"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"retro_reveal",
+"presence",
+"repetition"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "兒時在朋友農舍過夜常聞到鬼的酒味，多年後才明白根本沒有鬼",
+"anchors": [
+"週末到同學家過夜",
+"睡覺堅持開燈鎖門",
+"朋友一家搬去猶他州",
+"大學化學實驗課",
+"藥瓶標籤寫著乙醚",
+"醒來嘴裡殘留甜味"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"time_slip",
+"witness_mismatch",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "兩個青年在日本搭便車橫越各地，深夜搭上怪異一家的露營車，被載進山裡後狼狽逃亡",
+"anchors": [
+"送長途貨車司機香菸當謝禮",
+"兩天睡一次網咖省錢",
+"便利商店輪班招車納涼",
+"露營車車頭畫著十字架",
+"荒廢停車場旁的舊公廁",
+"卡車司機在得來速買麵包"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"retro_reveal",
+"possession",
+"taboo"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "朋友夜騎在坡邊拋錨後被女人招手引入田中，隔日暴斃，原來那裡曾有訂製棺材的女工匠",
+"anchors": [
+"駕照集訓合宿",
+"LINE約兜風行程",
+"凌晨一點打手機",
+"刑警攤開死狀照片",
+"拒絕解剖以心肌梗塞結案",
+"四十九天法事後才問"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"retro_reveal",
+"witness_mismatch",
+"dream"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "網友們在論壇拼湊童年一部詭異人偶節目，最後才知道那節目根本沒播過",
+"anchors": [
+"懷舊論壇回文串",
+"地方台58頻道",
+"下午四點的怪時段",
+"新聞播完才轉台",
+"安養中心探望母親",
+"陶瓷娃娃頭的廉價木偶"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"retro_reveal",
+"repetition",
+"witness_mismatch"
+],
+"ending": "twist",
+"ghost": 2,
+"premise": "超市收銀員常遇到說妻子懷孕的客人，事後才知他妻子早已過世",
+"anchors": [
+"收銀台刷卡看到客人姓名",
+"產前維他命買一送一",
+"週五晚班整理收據零錢",
+"警察調閱超市監視器",
+"驗屍官搭清晨班機回來",
+"來電顯示跳出哥哥名字"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"retro_reveal",
+"dead_contact",
+"proxy_sighting"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "好友遇害後，亡魂夜夜呼喚少女，最後逼她想起凶手正是自己父親",
+"anchors": [
+"凌晨一點玄關敲門",
+"木門與金屬門聲音不同",
+"屋後上鎖的小倉庫",
+"發薪日的蝦仁奶油燉飯",
+"都市裡不會放養的狗",
+"警察包圍倉庫"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"escalation",
+"presence",
+"sound_only"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "謝師宴時獨自蹲廁所，敲門聲一間間朝他逼近，門外卻始終沒有人",
+"anchors": [
+"研究所謝師宴",
+"吃完甜點跑廁所",
+"門縫看地板倒影",
+"倒影映出小便斗",
+"隔間上方相通",
+"同學回來逐間搜"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"presence",
+"benign",
+"time_slip"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "加班女子深夜繞路誤入陌生公園，陪八個寂寞的孩子玩耍，隔天公園竟成空地",
+"anchors": [
+"月租停車場步行五分鐘",
+"超商買500ml罐裝啤酒",
+"加班到凌晨十二點",
+"廣告公司企劃員",
+"鞦韆翹翹板單槓沙坑",
+"從小避開的街角"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"object",
+"escalation",
+"witness_mismatch"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "影像修復師替老人修復拍到前女友的舊錄影帶，畫面中女子動作越來越不像活人",
+"anchors": [
+"VHS磁頭與tracking旋鈕",
+"左右聲道波形分開",
+"商務旅館單調床鋪",
+"碎花襯衫配牛仔褲",
+"成功修復才收費",
+"老客戶是七零年代電腦宅"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"escalation",
+"witness_mismatch",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "日本男子從國中起看見遠處一名假笑女子，每次出現都更近，最後蒙眼輕生",
+"anchors": [
+"居酒屋送女兒紅紹興酒",
+"同期生LINE群組傳死訊",
+"人事部收到病例書",
+"新宿站山手線月台",
+"精神科開睡前處方",
+"平交道對面的身影"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"dream",
+"possession",
+"proxy_sighting"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "女大生遊京都後常夢到白蛇，之後精神失常、夢中講日語，最後才知被祂跟回台灣",
+"anchors": [
+"伏見稻荷後山樹蔭",
+"颱風毀了關西機場",
+"搭荒川電車到早稻田",
+"在全家買了壽司",
+"居酒屋祭拜日本神明",
+"N2檢定一年考過"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"benign",
+"proxy_sighting",
+"dream"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "朋友養多年的兔子屢次托夢討東西，死後安塔位，師姐說牠繞著主人道謝",
+"anchors": [
+"垂耳獅子兔",
+"食盤被移到椅子下",
+"雜貨店的淡味米餅",
+"月初拜福德宮",
+"供桌右邊第一盤水果",
+"擲出三個聖杯"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"repetition",
+"presence",
+"dream"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "離島彈藥庫的女鬼天天凌晨在廁所嚇安官，直到一個怪學弟自願來站哨。",
+"anchors": [
+"半夜獨自站安官",
+"哨站離安官桌上百步",
+"安官抽屜塞滿經文",
+"接哨學長見怪不怪",
+"值星官排安官時段",
+"營部排長退伍前閒聊"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"retro_reveal",
+"witness_mismatch",
+"benign"
+],
+"ending": "twist",
+"ghost": 2,
+"premise": "兩則來源不同的女宿怪談並排一看，原來雙方把對方當成了鬼",
+"anchors": [
+"晚點名後關大燈",
+"門上小窗位置偏高",
+"海報紙遮門縫裝熄燈",
+"教官夜間巡邏",
+"只准開書桌燈",
+"四個新生同一寢"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"possession",
+"taboo",
+"proxy_sighting"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "旅客在新加坡疑遭降頭波及而高燒失神，找驅魔師化解後又因自行淋野花水再度中招",
+"anchors": [
+"甘榜格南街邊飲料店",
+"七色花加柚子葉",
+"拍照傳給泰國友人看",
+"金屬小管護身符",
+"福建話討論病情",
+"繞水桶唸經九圈"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"retro_reveal",
+"witness_mismatch",
+"taboo"
+],
+"ending": "open",
+"ghost": 0,
+"premise": "被下咒的前上司車禍身亡，告別式上才知他的女友竟是當年下咒的女同事",
+"anchors": [
+"颱風假前夕的捷運車廂",
+"LINE傳來掃描訃文",
+"熊大問號貼圖秒已讀",
+"搭Uber到二殯",
+"家屬胸前別麻布",
+"弟弟搬一箱水出來"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"proxy_sighting",
+"dead_contact",
+"repetition"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "癌末父親的名字接連被陌生人斷言將死，改名後多活幾年，死後還透過乩身傳話",
+"anchors": [
+"三總病房骨轉移",
+"檢驗所開業賀匾",
+"軍警名片當護身",
+"城隍廟五點關門",
+"潤金三千塊",
+"書法寫家長聯絡簿"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"retro_reveal",
+"benign"
+],
+"ending": "twist",
+"ghost": 0,
+"premise": "女友臨時改搭男友機車而遇小車禍，原本要搭的伯伯車卻出了死亡車禍",
+"anchors": [
+"嘉義服替代役",
+"火車到民雄轉騎機車",
+"田間雙線道十字路口",
+"沒報警由肇事者載去醫院",
+"包包裡好幾通未接來電",
+"擲筊連出笑杯"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"presence",
+"escalation"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "工程師深夜加班，空無一人的節能走廊感應燈卻像有人走過般逐盞亮起",
+"anchors": [
+"換無塵服的更衣區",
+"風淋室通往產線",
+"每盞燈獨立感應器",
+"燈亮時噠一聲輕響",
+"門上玻璃窗",
+"地下室停車場騎機車"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"time_slip",
+"object",
+"taboo"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "同事說小時候在山上脫隊，四周突然安靜下來，有個怪異小孩一直要他喝樹葉做的果汁",
+"anchors": [
+"公司自強一日遊",
+"依體能分小隊走步道",
+"來回兩小時的緩坡路線",
+"登山杖敲地聲",
+"手腕上的木質佛珠",
+"佛珠掛在鑰匙圈上"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"retro_reveal",
+"taboo",
+"sound_only"
+],
+"ending": "twist",
+"ghost": 2,
+"premise": "友人跟世界遺產調查隊進屋久島，嚮導立下守規矩、叫全名否則會死的鐵則",
+"anchors": [
+"UNESCO世界遺產定期調查",
+"嚮導用紅筆在地圖標屍體",
+"三名嚮導加樹醫共六人",
+"兩人一頂帳篷分配",
+"屋久島只有屋久鹿",
+"安全地帶才能紮營"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"object",
+"retro_reveal",
+"possession"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "菜鳥軍官奉命搬運廢營區的舊軍用葬具，弟兄接連發病，庫房起霧，原來那批東西可能裝過空難遺體",
+"anchors": [
+"抽籤分發外島支指部",
+"十噸半卡車押車官",
+"忠靈袋與忠靈罐",
+"安官報告熄燈就寢",
+"營門口土地公廟",
+"電動鐵捲門開關盒"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"escalation",
+"object",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "店員在由加盟改直營的超商上班，怪事一路升級，最後在收銀機夾層翻出大量符咒",
+"anchors": [
+"早班與大夜班交接",
+"加盟店收回改直營",
+"防竊廣角鏡",
+"冰庫防反鎖裝置",
+"收銀機硬幣盒下夾層",
+"交班點錢投保險箱"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"taboo",
+"escalation",
+"dream"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "加油站同事半夜去荒廢廟宇探險，之後參加的人接連出車禍，兩人喪命",
+"anchors": [
+"加油站ABC班輪班",
+"偷跑的罰加機車一個月",
+"改裝機車雙載上山",
+"倒下的廟宇指示牌",
+"工作證留作紀念",
+"醫院病床不足放走廊"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"escalation",
+"repetition",
+"taboo"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "女大生獨自在宿舍喊無聊，每逢凌晨三點便有東西爬上床梯，終於現身說要陪她",
+"anchors": [
+"上鋪床下是書桌衣櫃",
+"床尾木梯踩了會響",
+"凌晨兩點講電話給男友",
+"宿舍隔音差聽得到機車",
+"睡前把椅子靠攏"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"sound_only",
+"retro_reveal",
+"dead_contact"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "值班醫師深夜被叫到護理站，得知已封鎖的上吊病房按了呼叫鈴",
+"anchors": [
+"公務手機整夜被護士叫",
+"晨會簡報前一晚趕工",
+"大夜走廊熄燈節能",
+"一個護理站只排兩人",
+"全院急救廣播",
+"病房蒐證後封鎖空著"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"possession",
+"escalation",
+"witness_mismatch"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "小學暑假寄住阿姨家，平日溫和的表哥連續幾夜起身怨恨地盯著我，白天卻全無記憶",
+"anchors": [
+"搬家時小孩寄住親戚家",
+"兩張床同一間房",
+"月光把影子投在地上",
+"隔天臉腫身上有瘀青",
+"表弟跟阿姨夫妻同睡",
+"阿姨家附近少有鄰居"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"proxy_sighting",
+"benign",
+"presence"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "年前被醫生恐嚇後虛弱不起，找老人家收驚，米粒竟讀出驚嚇來源",
+"anchors": [
+"除夕前醫院檢驗停擺",
+"專科醫生說要住院半年",
+"棉質內衣裹米碗",
+"台語唸修驚經",
+"米碗邊緣出現深溝",
+"老家草屯收驚人"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"presence",
+"escalation",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "在山上檳榔園工寮喝酒到深夜，濃霧中來了個拄杖阿婆，一直喊他出去",
+"anchors": [
+"數位電視十三台",
+"土豆配啤酒到半夜",
+"朋友的貨車上山",
+"木框紗窗",
+"撿回來的德國狼犬",
+"客廳供媽祖關公三太子"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"witness_mismatch",
+"retro_reveal",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "兩名哨兵遠遠看到白衣胖女人緊跟著來接哨的同梯，他卻一路只覺得背後發涼、回頭什麼也沒有",
+"anchors": [
+"晚上九點晚點名",
+"上哨前坐台階綁鞋帶",
+"接哨時交換子彈清點",
+"站哨禁聊天抽菸",
+"營區內有農戶居住",
+"查農戶大頭照資料"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"benign",
+"retro_reveal",
+"possession"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "弟弟幼時把電池塞進哥哥鼻孔，哥哥久燒不退，靠家中神明降駕指點才找出病因",
+"anchors": [
+"玩具手機的鈕扣電池",
+"高燒三十八到三十九度",
+"抬轎子寫字問神",
+"家中供奉上百尊神明",
+"X光照出鼻樑圓點",
+"醫生說等二十歲再重建"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"witness_mismatch",
+"presence",
+"taboo"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "愛欺負宮廟孩子的同學在後山失蹤，大家照宮廟孩子說的敲鍋破魔神仔，才把人找回來",
+"anchors": [
+"寄養在阿公阿嬤家",
+"雨天下課留在教室",
+"大人拿炒菜鍋臉盆敲打",
+"邊敲邊喊失蹤孩子名字",
+"失蹤幾小時警察不受理",
+"迎回虎爺公隔天早上"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"escalation",
+"taboo",
+"sound_only"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "外公鐵齒不理蓋在墳上的祖宅鬧鬼，鬼一路升級害死家人，直到神明鎮壓後才和解",
+"anchors": [
+"九二一後借住親戚家",
+"擲筊問觀音",
+"角落灑鹽米",
+"三太子廟入夜才開",
+"長年持誦地藏經",
+"外婆咳嗽示意上樓"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"presence",
+"taboo",
+"proxy_sighting"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "退伍前夜哨時軍械室鐵門無故開啟，幹部卻淡定說又到開門季節，要大家保密",
+"anchors": [
+"站22-24安官",
+"軍械室開門警鈴",
+"監視器散佈內外",
+"下哨在寢室吃泡麵",
+"退伍前不到一週",
+"自願接00-02哨"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"presence",
+"retro_reveal",
+"witness_mismatch"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "新人住進公司配的舊宿舍，半夜在廁所門口撞見濕髮白衣女孩，事後才知那是凶宅",
+"anchors": [
+"三間套房共用客廳",
+"開關在廁所對面牆上",
+"怕浪費電想關燈",
+"凌晨三點多的時鐘",
+"謊稱房裡有老鼠",
+"老闆買到凶宅脫手不掉"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"retro_reveal",
+"dead_contact",
+"witness_mismatch"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "高中生清晨照常跟掃地的麵攤老闆問好，放學才知道老闆前一晚送醫、早上就過世了",
+"anchors": [
+"一碗麵十五元",
+"砂石車司機上交流道前歇腳",
+"早上六點搭校車",
+"小學路隊在廟旁集合",
+"老闆偷塞滷蛋",
+"麵攤前搭起靈堂"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"presence",
+"object",
+"escalation"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "夜裡偷釣的人收線時被不明力量拉扯，勾上一件衣服，接著身後無人處有男人喊他",
+"anchors": [
+"竿尾掛螢光棒",
+"坐冰桶上玩手遊",
+"挑半夜滿潮時出釣",
+"沙灘不易卡底",
+"揚竿卻毫無重量",
+"收線勾回一件衣服"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"presence",
+"dream",
+"escalation"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "在警察營區服替代役的人夜夜被壓，夢到紙紮人後真有東西來掀他蚊帳",
+"anchors": [
+"替代役體重過輕判定",
+"站夜哨穿土黃色制服",
+"床上掛蚊帳",
+"警帽放床頭避邪",
+"怕被禁假的玩笑",
+"幹部廁所常客滿"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"witness_mismatch",
+"escalation",
+"presence"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "大樓夜班管理員從監視器看到大廳有人，肉眼卻看不見，那東西接著來拍窗轉門把",
+"anchors": [
+"暑假學生返家空樓",
+"值班時用筆電趕報告",
+"監控室暗色玻璃窗",
+"磁卡感應門禁",
+"抽屜裡備著平安符",
+"事後調閱監視器"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"presence",
+"object"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "空姐在國外旅館親子房獨住，洗澡哼歌後發現鏡上被寫了字",
+"anchors": [
+"空服員外站配一人一房",
+"房號801與816",
+"兩間相通的親子房",
+"微波爐裡的留言紙條",
+"進房先敲門的習慣",
+"洗澡時手機放迪士尼歌"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"object",
+"repetition",
+"escalation"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "在印尼獨居的出差宿舍，睡前戴上的護身符一再被解開死結，放到枕頭旁",
+"anchors": [
+"工廠外幹宿舍小木屋",
+"三間套房共用小廚房",
+"台灣求的紅線護身符",
+"半夜兩點驚醒",
+"戴眼鏡開房間燈",
+"打兩個、三個死結"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"benign",
+"proxy_sighting",
+"presence"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "常被家人偏心打罵的孩子在扶轎問事時哭訴，家神透過神轎替他斥責長輩",
+"anchors": [
+"清晨五點木魚加鐘聲",
+"每天敬二十六杯茶",
+"偷喝虎爺的茶",
+"電視台六點前只有蝸牛畫面",
+"轎子在桌上寫字",
+"轎手在旁解字"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"time_slip",
+"identity_swap",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "下課到地下停車場取車，出口變成牆、困在昏暗迴圈，行車紀錄卻顯示車從沒動過",
+"anchors": [
+"晚間程式課下課約十點",
+"跨台灣大道去取車",
+"渦輪車先熱車",
+"手機架播YouTube隨機歌單",
+"行車記錄器回放",
+"副駕座椅需拉U型鐵桿"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"dream",
+"escalation",
+"identity_swap"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "童年在山路瞥見長得像自己的男孩冷笑，之後連夜在夢裡被自己的分身糾纏",
+"anchors": [
+"嘉義蘭潭水舞秀",
+"改裝車族在小路甩尾",
+"堂哥開的86",
+"護校門口才放鬆",
+"只帶衣服去收驚",
+"請假在家打CSO"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"retro_reveal",
+"dead_contact",
+"identity_swap"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "留學生在洗衣房被老奶奶追問是否台灣人並道謝，後來才知她在等救過她的人",
+"anchors": [
+"住戶多半是退休老人",
+"老人在洗衣房邊看書邊等",
+"期末熬夜後清晨洗衣",
+"洗衣機完成的嗶嗶聲",
+"老學姐回芝加哥出差聚餐",
+"陪送醫院錯過期末考"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"escalation",
+"witness_mismatch",
+"presence"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "汽旅打工生半夜被派去查投訴房，撞見紅衣女上吊，逃跑時前後都被怪東西包夾",
+"anchors": [
+"凌晨四點房客打櫃台投訴",
+"高價汽旅隔音很好",
+"櫃台只剩前輩學姊",
+"耳機裡櫃台催促",
+"監視器拍到尖叫逃出",
+"跟老警察在警車旁抽菸"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"retro_reveal",
+"witness_mismatch"
+],
+"ending": "twist",
+"ghost": 2,
+"premise": "雨夜搭公車，路人接連衝出來攔車，下車後才看見車頂攀著一個怪東西",
+"anchors": [
+"雨天不騎車改搭公車",
+"藍7公車路線",
+"松信路接永吉路口",
+"路邊違停的計程車",
+"司機低聲咒罵",
+"晚上十一點十四分"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"retro_reveal",
+"presence",
+"witness_mismatch"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "民間救護車員載運遺體時，同事事後才說那具遺體一路都在抗拒上車",
+"anchors": [
+"救護車兩人一組出車",
+"太平間填交接表格",
+"冰櫃移出蓋金被",
+"套屍袋抬上擔架",
+"中控鎖自己開關",
+"殯儀館地下冰櫃"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"presence",
+"proxy_sighting",
+"escalation"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "獨自顧火鍋店大夜班的店員接連撞見人影、聽到人聲，後來有客人說店裡有三個鬼",
+"anchors": [
+"一人顧店包辦出鍋結帳",
+"長吧台兩側坐客人",
+"低頭夾單子",
+"營業到清晨五點",
+"假日忙到七點才洗碗",
+"早班同事來交接"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"repetition",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "四個孩子溜到漁港海邊，目睹一個白衣人立在海面反覆浸燈籠後沉沒",
+"anchors": [
+"露天流水席喜酒",
+"載貨卡車後斗鐵欄杆",
+"後斗鋪棉被看星星",
+"枋寮漁港",
+"崇拜魔術師大衛考柏菲",
+"怕偷溜被大人處罰"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"witness_mismatch",
+"retro_reveal",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "九二一前小鎮出現陌生白衣老人與紅色夜空，震後避難時孩子看見只有自己看得到的身影",
+"anchors": [
+"精確到秒的地震時刻",
+"睡在臨時鋪的紙箱上",
+"車頭燈打在牆上照明",
+"抱著從家裡帶出的毯子",
+"飯後全家牽手散步",
+"小鎮人人互相認識"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"sound_only",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "朋友獨自在公園湖邊拍烏龜，回家才發現影片裡錄到陌生男子說日語",
+"anchors": [
+"傍晚六點半遛狗",
+"拍湖邊的烏龜",
+"回家看片才發現",
+"請懂日文的朋友聽",
+"附上YouTube連結",
+"網傳日治刑場"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"proxy_sighting",
+"retro_reveal",
+"presence"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "廢墟攝影師拍廢棄校舍時一路發冷、肩頸發麻，回家才發現每張照片都往同一邊歪",
+"anchors": [
+"水湳洞十三層選煉廠",
+"霧從屋頂破洞飄進廠房",
+"照片整批往同側歪",
+"頸到小指的冰麻感",
+"澎湖廢棄地下指揮所坑道",
+"記憶卡事後連原檔失蹤"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"dead_contact",
+"retro_reveal",
+"repetition"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "部落老婦在廚房窗邊被三個熟識青年討食物，事後才知三人都已陸續過世",
+"anchors": [
+"魯凱語稱呼媽媽輩ina",
+"拿桌上的阿拜給他們吃",
+"廚房窗戶對著小巷",
+"寒流夜在工寮打赤膊醉睡",
+"晚上幾位ina圍坐聊天"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"object",
+"retro_reveal",
+"escalation"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "颱風救災前夕護身紅繩接連斷裂，事後發現斷繩的人正好都在救災中受了傷",
+"anchors": [
+"W36管休命令",
+"沒門的部隊大浴室",
+"颱風前上山勸撤",
+"水淹到胸口涉水救人",
+"醫務所剪褲管縫合",
+"嘉義榮總急診轉診"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"dream",
+"dead_contact",
+"object"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "風災救災時撿起路邊斷頭的士官，當晚夢見死者堅持要他歸還梳子",
+"anchors": [
+"中型戰術輪車回程",
+"居民打電話投訴",
+"背包藏保力達",
+"檢察官隔天才到",
+"安官凌晨叫醒",
+"值星晚點名禱告"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"escalation",
+"presence",
+"witness_mismatch"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "國三夜讀時摸黑去遠處廁所，回程在漆黑走廊被看不見的東西連拍肩膀，力道一次比一次重",
+"anchors": [
+"前120名留校夜考",
+"1830到2230四節課",
+"只開男女廁各一間",
+"附校舍平面圖",
+"騎腳踏車回家吃飯",
+"基測模擬考前一週"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"proxy_sighting",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "部隊搜山三天找不到逃逸移工，對方卻說是看到魔鬼才嚇得現身",
+"anchors": [
+"戰情廣播全營管制休假",
+"輔導長發白色假單",
+"T91配刺刀和掃刀",
+"1750搭卡車出發",
+"芒草割傷手掌",
+"長官叫人擋住攝影機"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"witness_mismatch",
+"identity_swap",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "基地夜哨時有位徒步查哨官來關心，轉身就不見，隨後真正的查哨官才開車抵達",
+"anchors": [
+"凌晨三點半叫醒車長",
+"持T91卻沒發子彈",
+"坐戰車枕木當板凳",
+"37C無線電呼叫鄰哨",
+"悍馬車燈來查哨簽簿",
+"復興號坐了十八小時"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"proxy_sighting",
+"presence"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "禮儀社員工的朋友轉述工作見聞，布置靈堂時被家屬小孩指出亡者就在身邊",
+"anchors": [
+"禮儀社24小時待命",
+"管區員警拜託接運",
+"無名屍代為處理",
+"靈堂放大的遺照",
+"法醫相驗判定自殺",
+"燒炭房裡的烤肉架"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"escalation",
+"taboo",
+"presence"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "新任老師夏日黃昏在頂樓等電梯，向走廊盡頭的怪影揮手，結果引來它追趕",
+"anchors": [
+"新手藝能科老師",
+"頂樓專用教室",
+"消防栓紅光",
+"電梯語音報樓層",
+"警衛放學後拉下鐵捲門",
+"教師甄試"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"benign",
+"presence",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "新訓首夜熄燈後廁所傳出慘叫，原來隔板上的笑臉人頭是身高190的班長。",
+"anchors": [
+"台北車站集合搭火車南下",
+"公共電話卡餘額遞減",
+"安官桌登記如廁",
+"夜間燈火管制全營熄燈",
+"腋下夾一包五月花",
+"S腰帶上吊的傳聞"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"sound_only",
+"witness_mismatch"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "代購女生在京都熟悉的民宿與友人同住，半夜友人聽到女孩哼童謠，隨後榻榻米響起跳步聲",
+"anchors": [
+"日本連線代購上架商品",
+"晴明神社請安",
+"吹風機一關聲音就停",
+"半個房間鋪榻榻米",
+"兩張床在木頭地板上",
+"已預約半年的民宿"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"presence",
+"escalation"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "弟弟在超商上大夜補冰櫃時手被往前扯，接著又看見廁所裡有個小女孩的頭飄高對他笑",
+"anchors": [
+"晚上11點到早上7點班",
+"冰櫃後方就是倉庫",
+"從倉庫直接補飲料上架",
+"進門叮咚聲沒響",
+"擦收銀台旁微波爐",
+"熱銷啤酒架上剩兩瓶"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"presence",
+"retro_reveal",
+"sound_only"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "深夜獨自加班常聽見樓上搬桌拖椅，某晚才發現樓上根本整層沒人。",
+"anchors": [
+"凌晨三點才打卡下班",
+"逃生口綠色指示燈",
+"電梯停在一樓",
+"感應扣忘在廁所",
+"財會室旁的影印機",
+"一樓租給餐廳店面"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"sound_only",
+"witness_mismatch",
+"taboo"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "營區阿兵哥觸電身亡當晚，值勤兵在廁所聽到口哨聲喊自己名字，隔天伙房接著失火",
+"anchors": [
+"夜間進出記錄簿",
+"安官桌登記時間",
+"核生化教室屋頂電線",
+"炸香腸倒滿餿桶",
+"晚點名改床點",
+"祭營旗沙包固定旗架"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"presence",
+"taboo",
+"sound_only"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "台中山區居民口耳相傳的幾種怪霧，會讓人迷路、失蹤，甚至看見吊著的人影",
+"anchors": [
+"凌晨三點上山挖筍",
+"機車抽缸無法發動",
+"導航誤導到產業道路",
+"榕樹下蓋土地公廟",
+"大坑遊樂園摩天輪",
+"背九九乘法表等霧散"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"sound_only",
+"taboo"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "替代役男在傳聞是舊刑場的哨所打瞌睡，被看不見的「學長」叫醒",
+"anchors": [
+"夜哨做三休三輪班",
+"頭班二班之分",
+"長官巡哨開燈問好關燈",
+"靠報時偷睡",
+"艾草泡水擦身",
+"役男暴增加開新哨"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"benign",
+"dead_contact",
+"proxy_sighting"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "第一次去宮廟觀靈，蒙眼後見到年輕的亡故奶奶，還走進自己的元辰宮",
+"anchors": [
+"預約週日下午一點半",
+"紅布蒙眼墊衛生紙",
+"分三輪每輪三十分鐘",
+"師兄敲木魚唸咒",
+"舉手叫師姐過來",
+"給花公花婆燒紙錢"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"sound_only",
+"repetition",
+"escalation"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "站車場雙哨的阿兵哥夜夜聽到拖鏟聲，某晚鋼琴聲竟從空悍馬車裡傳出",
+"anchors": [
+"雙哨單點雙點輪班",
+"防毒面具包裝零食",
+"查哨官考衛兵守則",
+"營長沒收平安符蒜頭",
+"下哨兵答沒有異狀",
+"造謠會軍法處置"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"witness_mismatch",
+"sound_only",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "收假當晚交了假單的士兵其實已車禍身亡，之後夜夜在營區大門外敲門找假單",
+"anchors": [
+"收假交假單給安官",
+"花蓮車站揪計程車",
+"晚點名後收心操",
+"鐵門下有輪子向右拉",
+"感應探照燈",
+"連長室裱框假單"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"escalation",
+"witness_mismatch",
+"proxy_sighting"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "我站哨只聽到母子吵罵聲沒在意，接班學長卻被那對母子繞圈嘲笑到崩潰",
+"anchors": [
+"00-02車場夜哨",
+"查哨官對口令",
+"安官桌旁抽菸",
+"軍線電話回報",
+"輔導長打給休假營長",
+"改成雙哨"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"object",
+"presence"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "作者多次在荒郊野地撞見嶄新卻擺錯地方的家具，每次都感到強烈違和而轉身逃走",
+"anchors": [
+"廢墟外牆的窄陡樓梯",
+"鐵窗後直立的新床",
+"走廊盡頭開著的廁所門",
+"手機手電筒照涼亭",
+"手機只剩5%電量",
+"大霧中路中央的馬桶"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"identity_swap",
+"object",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "原住民協作員夜裡在高山砍草，電池全沒電，想追路過的登山客借，卻發現對方不是人",
+"anchors": [
+"國家公園要求拍前後照",
+"備用電池出門前充飽",
+"背大背包的登山客",
+"獵人查看小徑足跡",
+"一天當兩天用趕工",
+"回部落問老人家"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"witness_mismatch",
+"identity_swap",
+"escalation"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "日本女上班族屢被親友目擊在別處出現，最後與分身搭話的前輩竟從此人間蒸發",
+"anchors": [
+"加班打卡紀錄",
+"客戶往來信件時間",
+"辦公室手機忘了靜音",
+"車站廣播報站名",
+"拍大頭貼留時間證據",
+"前輩租屋已人去樓空"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"retro_reveal",
+"sound_only",
+"taboo"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "臨時換點的「無聊」廢墟夜遊，眾人找到藏起來的樓梯，二樓竟有一具遺體",
+"anchors": [
+"PTT地方板揪團訊息",
+"火車站集合出發",
+"找到樓梯有懸賞",
+"抽屜裡整捆金紙和打火機",
+"空谷裡亮著白燈管路燈",
+"回頭比對白天場勘照片"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"identity_swap",
+"witness_mismatch",
+"escalation"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "悶熱夏夜，小學女生聽見好友班長在樓下輕聲叫她，隔天背上卻滿是血痕。",
+"anchors": [
+"家裡沒冷氣全家睡通鋪",
+"木板床一動就嘎吱響",
+"睡最裡面靠牆要跨過爸媽",
+"用氣音像貓叫般喊名字",
+"打電話向導師求證",
+"醫生說抓痕是自己抓的"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"identity_swap",
+"taboo",
+"escalation"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "返鄉上班族酒後闖廢屋，被會模仿人聲的毛怪跟回東京家中假扮家人",
+"anchors": [
+"緣側與濕緣的格局",
+"穿鞋踏上發霉榻榻米",
+"電車轉乘兩次回東京",
+"手機手電筒照玄關",
+"玄關鞋櫃裡的外出鞋",
+"父親同事家開神社"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"escalation",
+"presence"
+],
+"ending": "twist",
+"ghost": 2,
+"premise": "密室逃脫店員深夜獨自收場，遮長廊的黑布一再無聲脫落，原來布後一直站著人",
+"anchors": [
+"魔鬼氈黏黑布遮長廊",
+"長尾夾加強固定",
+"球池燈與總電源分開",
+"玩家塞車延後半小時",
+"一人當班收場復原",
+"老闆住十分鐘路程外"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"possession",
+"escalation",
+"proxy_sighting"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "阿姨術後昏迷又出血失控，外婆四處求神，才知道是前世的冤魂來討命",
+"anchors": [
+"SARS時被居家隔離五天",
+"毛細孔一點點滲血",
+"雙手被綁著布套",
+"凌晨四點城隍廟後殿",
+"兩個筊杯直立插地",
+"請戲班在廟口唱七天"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"object",
+"sound_only",
+"dead_contact"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "設計師獨自去丈量準備承租的舊樓，在二樓聽見低語，又在櫃中發現詭異睡袋",
+"anchors": [
+"建築師事務所找新址",
+"丈量門窗跟櫃子尺寸",
+"裝潢全拆的舊辦公樓",
+"牆面做成之字形的嵌櫃",
+"還沒簽租約",
+"Google街景查房子"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"sound_only",
+"repetition",
+"dream"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "國中女生被鬼壓床，聽見女聲不斷誘她去玩，躲進被裡後掀開竟見一張臉",
+"anchors": [
+"冬夜穿襪子睡覺太熱",
+"像蚊子的嗡嗡聲",
+"想喊卻只發出氣音",
+"起身先開檯燈",
+"爸媽說只是做惡夢",
+"縮進棉被悶到受不了"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"proxy_sighting",
+"witness_mismatch",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "阿姨載三歲姪子去動物園，只有孩子看得到一個小女孩一路跟著，想把阿姨帶回她家",
+"anchors": [
+"辛亥隧道口的測速照相",
+"腳差點踢到機車中柱",
+"悠遊卡刷動物園入口",
+"兒童餐青蔬烤雞堡",
+"昆蟲館二樓蝴蝶區",
+"機車留在木柵改搭捷運"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"dead_contact",
+"repetition",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "爸媽出國期間，男孩每晚三點十五分都接到電話，話筒裡重演著日軍操練和處決的聲音",
+"anchors": [
+"紅白機月風魔傳",
+"抄下超長接關密碼",
+"傳統轉盤式電話",
+"國小週六上半天課",
+"隔壁外省老伯伯",
+"牆角供著七星劍"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"proxy_sighting",
+"retro_reveal",
+"sound_only"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "女大生獨自在淡水租屋，越來越累，回高雄推拿時被師傅看出身上黏著東西",
+"anchors": [
+"儲藏室改成的小雅房",
+"BBS上找到的出租文",
+"電視重播綜藝節目",
+"粉餅蓋不住黑眼圈",
+"推拿師傅把脈",
+"怕被扣押金不敢退租"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"possession",
+"taboo",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "除夕回山上婆家，家神被請走、乩身出國，她夜裡被東西附身，被引著要走出家門",
+"anchors": [
+"路口的萬善爺小廟",
+"廟的水電由老家繳",
+"廁所蓋在屋外",
+"過年整夜打麻將",
+"借用叔公家網路",
+"玄天上帝印章蓋額頭"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"taboo",
+"escalation",
+"retro_reveal"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "溺死的孩子唱著兒歌回來找玩伴，還想拉人下水，當年差點被拉走的人就是今天的喪家",
+"anchors": [
+"三合院停靈辦喪事",
+"靈安人員三班輪值",
+"頭七流水席圓桌",
+"神轎在地上寫字",
+"下游水門閘找到人",
+"孩子間的敲窗暗號"
+]
+},
+{
+"setting": "military",
+"mechanisms": [
+"witness_mismatch",
+"escalation",
+"sound_only"
+],
+"ending": "twist",
+"ghost": 2,
+"premise": "替代役男聽老警察講寢室怪事，閒聊中才發現自己深夜接到的電話不是他打的",
+"anchors": [
+"寢室收訊差到傳不出訊息",
+"穿制服睡覺避邪",
+"撤走的警犬隊舊址",
+"長官簽的假條",
+"內務櫃沒上鎖",
+"點一支菸請好兄弟"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"escalation",
+"retro_reveal",
+"dream"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "國三生夢到撕臉女人後房裡的魚接連暴斃，某夜抬腿時被反折脖子的東西爬上身",
+"anchors": [
+"國三大考前壓力",
+"爸爸迷上養魚",
+"只有自己房裡的魚翻肚",
+"靠牆抬腿的姿勢",
+"懂一點的叔叔來看",
+"弟弟做家務經過房門"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"escalation",
+"presence",
+"object"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "住戶在社區電梯裡自拍，從螢幕上看到一隻手按了樓層，接著電梯突然下墜，停在那一層",
+"anchors": [
+"電梯鏡子前自拍新衣",
+"電梯常停錯樓層",
+"附上網友抱怨截圖",
+"黑鐵圓座書桌椅",
+"社區中庭種滿樹",
+"狂按電梯關門鍵"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"escalation",
+"retro_reveal",
+"dream"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "國中生在山中民宿半夜看見一張會笑的猴臉，從窗外一路逼近到床邊，隔天母親說夢到同一個東西",
+"anchors": [
+"只能扣一道鎖的紗門",
+"床邊整片玻璃窗",
+"手繪房間配置圖",
+"車上睡過又認床",
+"爸爸起身開燈叫人",
+"門鎖完好沒被動過"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"witness_mismatch",
+"retro_reveal",
+"escalation"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "導遊朋友帶團回國後突然昏迷不醒，原因可能是泰國旅館裡只有她看見的血色髒水",
+"anchors": [
+"導遊入住先開水龍頭試水",
+"與女領隊同住一間",
+"主治醫師門診中倒下",
+"插管接呼吸器住加護病房",
+"多家宮廟都說無解",
+"晚上打電話跟媽媽說笑"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"sound_only",
+"possession",
+"benign"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "多哥籍主管轉述堂哥疑遭下咒失魂，遠赴貝南找巫師，靠樹葉通話治好",
+"anchors": [
+"法國同事新年問決心",
+"多哥與貝南鄰國關係",
+"世襲酋長家族懸案",
+"村莊沒有電力",
+"演唱會請巫師擋雨"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"sound_only",
+"taboo"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "農曆七月留在醫院實驗室熬夜的研究生，半夜聽見有東西想推開二樓的窗進來",
+"anchors": [
+"碩士生被老闆留下補data",
+"半夜等儀器跑完",
+"實驗室為恆溫長年關窗",
+"窗外直接是室外二樓",
+"白天自己試推窗戶要出力",
+"學長告誡別晚上留院"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"witness_mismatch",
+"taboo",
+"escalation"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "實習護理師反覆練習外籍病人教的「幸運」一詞，被告知是向魔鬼臣服，之後被無形之物尾隨",
+"anchors": [
+"實習護理師輪班休息",
+"病房外名字掛牌",
+"打賭請喝飲料",
+"值完夜班回住處",
+"無電梯公寓五樓",
+"調閱樓梯間監視器"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"retro_reveal",
+"proxy_sighting",
+"escalation"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "從小見怪被母親斥為亂講，多年後妹妹說出一樣的見聞，證明都不是錯覺",
+"anchors": [
+"巷子末端的房子",
+"院子裡的大水池",
+"搬家紙箱裡的玩偶",
+"大樓八樓新家",
+"半夜三點讀書",
+"台語男聲問話"
+]
+},
+{
+"setting": "childhood_home",
+"mechanisms": [
+"dead_contact",
+"sound_only",
+"repetition"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "阿婆過世半年後，週三提早放學的孫子在空屋裡聽見她熟悉的問候",
+"anchors": [
+"中風阿婆的專屬高椅",
+"週三只上半天課",
+"進門喊阿婆我回來了",
+"阿婆拿糖果餅乾當點心",
+"從後門進屋直上二樓",
+"阿公出門接弟弟"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"presence",
+"retro_reveal",
+"taboo"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "大一新生打賭獨自在民雄鬼屋過夜，隔天卻在門外田埂醒來",
+"anchors": [
+"火車站旁的鴨肉羹",
+"NOKIA3310被收走",
+"GAMEBOY玩格鬥天王",
+"帳篷防寒布魔鬼氈",
+"穿吊嘎的阿伯報警",
+"借來的夾腳拖"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"object",
+"retro_reveal",
+"witness_mismatch"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "病人深夜莫名心慌後突然喘不過氣，急照的X光竟拍出一雙勒住他的黑手",
+"anchors": [
+"實習醫師半夜被叫醒",
+"心電圖抽血血氧全做",
+"給一顆安神藥",
+"放射科遲遲不上傳片子",
+"X光只有空氣呈黑色",
+"同事翻拍片子給看"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"taboo",
+"proxy_sighting",
+"presence"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "天生陰陽眼的冷淡女同學，逼溪邊撿石的男孩把石頭丟回水裡，傍晚岸邊竟出現黑影",
+"anchors": [
+"暑假國中同學溪邊烤肉",
+"五男六女出遊",
+"口袋裡的漂亮鵝卵石",
+"連接溪邊的石造階梯",
+"事後去廟裡收驚",
+"訊息被已讀三小時"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"object",
+"escalation",
+"dream"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "在泰國夜店拒絕一名女子的男子昏倒中邪，回國後他遺失的手機帳號傳出詭異語音",
+"anchors": [
+"宿舍對面的7-11",
+"校內淑女坡傳說",
+"泰國包棟泳池別墅",
+"落地關飛航模式開網路",
+"Messenger語音訊息",
+"大頭貼換成陌生女子"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"repetition",
+"benign",
+"taboo"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "兄弟夜騎山路迷途繞不出去，山中古宅主人要他們照路標反方向走才脫困",
+"anchors": [
+"PHS手機在山裡沒訊號",
+"銘傳圖書館念書後載弟弟",
+"看著高速公路騎車回林口",
+"最後門牌寫著蘆竹",
+"柏油路變產業道路再變碎石",
+"白牆白磚古宅與吠叫的狗"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"possession",
+"taboo",
+"repetition"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "外婆小時候看見被羞辱的原住民婦人點了七色火柴，三天後那位鄰居就瘋了",
+"anchors": [
+"小販挑擔來村裡賣貨",
+"用野味旱芋換鐮刀針線",
+"帶禮品上部落去謝罪",
+"港邊辦桌剩菜做菜尾",
+"外公是船長，出海好幾週",
+"父母在山上種佛手柑"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"presence",
+"dream",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "常去日本自助旅行的體質特殊者，在河邊、湖畔旅館、函館飯店遇到幾樁怪事",
+"anchors": [
+"榻榻米上直接鋪被睡",
+"四萬十川無護欄的橋",
+"租腳踏車沿河騎",
+"隔天要走奧入瀨",
+"客房附露天小浴池",
+"電視被拍照留念"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"object",
+"retro_reveal",
+"repetition"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "高職生在宿舍被一個回撥就關機的號碼狂打，最後發現那是室友的號碼",
+"anchors": [
+"Nokia開機音效",
+"未接來電快九十通",
+"回撥聽到未開機語音",
+"建教合作公司宿舍",
+"單人雙層床頭對頭睡",
+"台語喊肚子餓"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"retro_reveal",
+"witness_mismatch",
+"dead_contact"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "合租室友搬家前多次在電梯遇見常來喝酒的老友，事後才知對方早已病逝",
+"anchors": [
+"三人合租六樓老公寓",
+"鹽酥雞配啤酒看球賽",
+"退休軍官領終身俸",
+"客廳睡袋與備用鑰匙",
+"東西寄放給管理員",
+"兒子寄來泡棉包掛號"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"retro_reveal",
+"escalation",
+"presence"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "大學生合租老公寓四樓一年，怪事接連不斷，樓梯間常遇見的老人竟是隔壁剛過世的住戶",
+"anchors": [
+"SARS那年和平醫院封院",
+"月租一萬六千五三房",
+"半透明玻璃對著鄰居走道",
+"沙士瓶塞滿菸蒂",
+"排水孔撈出黑長髮",
+"派出所做筆錄的警察"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"dead_contact",
+"dream",
+"retro_reveal"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "搜救員在水庫找失蹤情侶接連撈到別人屍體，當晚女死者託夢指路",
+"anchors": [
+"阿姆坪碼頭的簡陋斜坡",
+"上游攔水壩關閉止流",
+"分四組各走三百公尺",
+"溪底散落被丟的車牌",
+"防寒衣配防滑鞋",
+"用礦泉水沖淨死者臉"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"presence",
+"object",
+"sound_only"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "敏感體質者在夜市買下天珠，男友在KTV遇敲門怪事後，祂一路跟到巷口",
+"anchors": [
+"夜市天珠攤附功效說明書",
+"約在速食店晚上十一點",
+"便宜KTV藏在破舊大樓",
+"暗巷燈管接觸不良閃爍",
+"老鼠擦過小腿",
+"拇指握進拳心才進巷"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"object",
+"taboo",
+"proxy_sighting"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "台灣藝術家在印度洋小島駐村，聽聞奴隸亡靈傳說，又在廢墟撞見不明祭壇",
+"anchors": [
+"藝術村駐村兩個多月",
+"海拔千公尺山上冷清",
+"黃昏草坪喝朗姆酒",
+"步道旁聖母小祭壇",
+"紀念館地圖標出廢墟",
+"錢包裡的稻草結"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"escalation",
+"presence",
+"sound_only"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "法國同事在留尼旺自建的家鬧鬼，請來聖母像後靈動反而變本加厲，全家只得賣屋",
+"anchors": [
+"零度寒風中等公車",
+"工人借住施工中房屋",
+"客人送的聖母像",
+"房子隔成studio出租",
+"周日被逼上教堂",
+"無人島搭帳篷夜巡"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"sound_only",
+"presence",
+"taboo"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "在留尼旺駐村的藝術家傍晚獨闖雲霧林，聽見密林中有東西跟著他的步伐走",
+"anchors": [
+"租來的機車隔天要還",
+"停車場只剩兩台車",
+"背著錄音器材收音",
+"指向性麥克風配監聽耳機",
+"公車上拍手兩下示意下車",
+"蛾撞門廊燈罩"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"object",
+"presence",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "新進住院醫師獨自值夜時總覺得背後有東西，撬開牆角封死的櫃子後找到被遺忘的人腦標本。",
+"anchors": [
+"第一年住院醫師報到",
+"舊神經內科病房改成宿舍",
+"泡三合一讀內科聖經",
+"一字螺絲起子扳斷",
+"打院內電話問夜班護士",
+"被釘死的管道間木櫃"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"taboo",
+"time_slip",
+"witness_mismatch"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "校慶布置鬼屋時發現被封的房間門自己開了，當晚就被長髮女鬼壓床",
+"anchors": [
+"校慶鬼屋活動",
+"禮堂下方舊琴房",
+"地下室比外面涼五度",
+"封住的兩間房貼封條",
+"忘了帶護身符",
+"半夜兩點到清晨五點"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"witness_mismatch",
+"benign",
+"retro_reveal"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "養了十六年的老狗過世下葬兩天後，鄰居卻說牠剛剛跑到自家廚房來",
+"anchors": [
+"寺廟師父替狗取名",
+"鄉下狗放養串門子",
+"老狗重聽又失明",
+"埋在院子角落",
+"鄰居送菜分享",
+"帶豬骨頭要給狗啃"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"identity_swap",
+"retro_reveal",
+"escalation"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "一群孩子夜裡在檳榔園找走失的男孩，回應呼喊的聲音卻根本不是他",
+"anchors": [
+"凌晨三點撿蝸牛",
+"撿蛤仔拿去市場賣",
+"台語呼喊互相確認",
+"最大孩子負責點人數",
+"四十年前屏東東港"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"object",
+"escalation",
+"presence"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "晚班下班時發現空辦公室紙袋提繩無風自轉，錄影後手機竟多出一支不存在的影片",
+"anchors": [
+"晚班下班等同事收尾",
+"隔兩道玻璃的空辦公室",
+"紙袋提繩自己轉圈",
+"忘帶識別證無法打卡",
+"B4只有往上的按鈕",
+"相簿多出0:00白縮圖影片"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"dead_contact",
+"dream",
+"benign"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "在德國陷入低潮的畫者夢見啟蒙她的已故鄰居爺爺來打氣，還託她轉達心事",
+"anchors": [
+"老榮民國畫家的工作間",
+"白色唐裝與濃重外省腔",
+"德國上午十點對台灣下午",
+"臉書私訊問阿姨",
+"靈骨塔不讓小孩去",
+"復興美工專攻國畫"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"presence",
+"taboo",
+"escalation"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "在澳洲雞舍打工集二簽，管線被移動、風扇裡有黑影，雞群像在替看不見的人讓路",
+"anchors": [
+"打工度假集二簽天數",
+"農場給假ABN",
+"組飲水管線像玩樂高",
+"巡雞舍扭斷病雞脖子",
+"百葉窗式大風扇",
+"鋼線轉輪調吊扇角度"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"taboo",
+"possession",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "姨丈當兵冒犯墳墓後瘋癲，謝紙後沒守七天禁日，從此一輩子對空氣說話",
+"anchors": [
+"初二回外婆家",
+"九芎的鞋廠",
+"錶廠上班養三子",
+"剝花生貼補家用",
+"公媽牌位擺在廚房",
+"鄰居會遞菸給他"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"retro_reveal",
+"dream",
+"object"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "男孩看見草堆上的黑衣少女後，大人挖開草堆，發現底下封著一名日治時期餓死在地窖裡的女孩",
+"anchors": [
+"村長召集村民搜田",
+"街上中醫出診把脈",
+"黃曆挑日子剷草堆",
+"去大廟收驚求平安",
+"石頭綁紅布條鎮壓",
+"非過節難得吃雞腿"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"proxy_sighting",
+"possession",
+"taboo"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "阿嬤下田路過後山無人祭拜的陰廟，回家後整天說自己要死，靠神明指示加倍祭拜才好。",
+"anchors": [
+"廟只有幼童高、僅一香爐",
+"新莊夜市攤子收碗盤",
+"填八字姓名住址問事",
+"神轎扣桌良久不動",
+"扁擔挑兩籃飯菜銀紙",
+"過年與鬼門開關祭拜"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"retro_reveal",
+"dream",
+"proxy_sighting"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "廟方三人同夢主神被惡靈趕走，靠孩子神境主出轎砸廟，挖出地下白骨",
+"anchors": [
+"農曆七月返鄉抓寶",
+"地方黑白紅派系",
+"省道旁的朱紅境門",
+"擲出兩聖一陰",
+"鑾轎撞倒廟門柵欄",
+"神像包紅布沙灘燒"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"possession",
+"escalation",
+"repetition"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "妹妹每晚十點準時夢遊、越來越嚴重，最後神明說她被想娶親的亡魂迷了魂",
+"anchors": [
+"三樓透天厝一樓大通舖",
+"大門把手綁尼龍繩",
+"爸媽晚上兼擺夜市",
+"米尺量六百公尺找樹",
+"手轎沾紅墨水寫符",
+"塑膠袋在房內解手"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"taboo",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "十一個孩子去海邊戲水只有一人生還，問神才知那天是海龍王子女的婚期",
+"anchors": [
+"基隆海邊小村莊",
+"鄰居小孩結伴玩水",
+"傍晚五點多上岸",
+"晚上八九點才挨家找人",
+"外婆帶去廟裡問事"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"dead_contact",
+"retro_reveal",
+"benign"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "老狗猝死當晚，遠在新加坡的表妹夢見牠來道別，還說中了牠臨終的穿著",
+"anchors": [
+"新加坡國宅不能養狗",
+"每年暑假回台灣",
+"獸醫打強心針做CPR",
+"急性心臟衰竭",
+"隔天送寵物墓園",
+"狗走時穿紅色裙子"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"possession",
+"taboo",
+"escalation"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "村中清秀女孩沖到溪邊水流屍而變得癡笑暴食，家人兩度破了禁足，神明從此不再管",
+"anchors": [
+"乩身扶鸞出字",
+"三牲菜飯銀紙",
+"母親在工廠煮飯",
+"全村冰箱都被翻過",
+"南海古佛誕辰再遇",
+"正乩有權不給問事"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"taboo",
+"possession",
+"presence"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "新進員工被警告別理茶水間的東西，加班夜卻被腦中聲音催著去開一個舊鐵櫃",
+"anchors": [
+"三間公司合租同一層樓",
+"各公司分開的零食抽屜",
+"掉漆的舊黃色小鐵櫃",
+"加班趕禮品訂單到深夜",
+"前輩的淺藍素色套裝"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"presence",
+"escalation"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "學長國中露營時獨睡帳篷，被看不見、帶狗味的冰冷手指反覆堵住鼻孔玩弄",
+"anchors": [
+"凌晨兩點父母去溪邊釣魚",
+"沒聽見帳篷拉鍊聲",
+"久沒洗澡的狗毛臭味",
+"冰冷有指甲的手指",
+"鼻孔被戳到流血",
+"行李堆在帳篷門口擋路"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"presence",
+"taboo"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "三歲去東京旅行，睡在大人中間，半夜卻被困進進不去也出不來的床架裡",
+"anchors": [
+"白天先去迪士尼玩",
+"睡在媽媽和外婆中間",
+"木板拼成的空心床架",
+"頭比床縫還大",
+"記得鬼屋和太空船遊具",
+"附上床架示意圖"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"retro_reveal",
+"proxy_sighting",
+"taboo"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "村中中年男子屢次婚事告吹，問神才知是年少車禍害死的少女亡魂在討丈夫",
+"anchors": [
+"手轎敲桌良久才出字",
+"南海古佛誕辰的廟會",
+"提親途中車子拋錨",
+"聘金下了又被退回",
+"正乩與阿公協助問事",
+"迎娶牌位回家供奉"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"witness_mismatch",
+"object",
+"dream"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "女生視訊陪朋友下山時看到路旁有白衣人，朋友說沒人，之後還被夢魘抓住手",
+"anchors": [
+"FaceTime視訊看人砍草",
+"芒草比人還高",
+"跨水溝去牽機車",
+"大石頭後的大樹遮光",
+"大甲媽祖求來的紅線",
+"綁死結的紅繩斷掉"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"benign",
+"retro_reveal",
+"possession"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "小學時被玩伴推落湍急溪水，沉底五分鐘卻沒被沖走，感覺被一雙老婦的手托著",
+"anchors": [
+"幾個家庭結伴烤肉戲水",
+"大石懸空約兩公尺高",
+"堂妹跑去叫大人",
+"落水至少過了五分鐘",
+"護理師當場做CPR"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"proxy_sighting",
+"witness_mismatch",
+"repetition"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "派出所的阿婆和外籍被拘留者先後看見，有個女子面壁站在廁所外",
+"anchors": [
+"附腳鐐手銬的鐵椅",
+"深夜勤只剩三名員警",
+"檢察官責付外勞給派出所",
+"調監視器查仲介車牌",
+"請翻譯並通知仲介",
+"備勤室吹電風扇"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"proxy_sighting",
+"benign",
+"presence"
+],
+"ending": "twist",
+"ghost": 2,
+"premise": "喪禮後擲筊一直笑杯，孫子說阿公正陪他看電視，喊他出來後才連得聖杯",
+"anchors": [
+"騎樓下擺亡者愛吃的菜",
+"擲筊問能否收桌",
+"連續笑杯",
+"一樓後方孝親房",
+"靈堂布簾往外飄",
+"空地辦喪事的透天厝"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"benign",
+"possession",
+"retro_reveal"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "岳父捐肝手術後多次垂危，每回都像在回應家人呼喚，過世後似乎還在幫女婿成婚",
+"anchors": [
+"親屬活體捐肝配對",
+"術中心搏停止CPR",
+"引流管流出綠色膽汁",
+"進加護病房套隔離衣",
+"牌位前上香求助",
+"媽媽手冊上的預產期"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"dead_contact",
+"proxy_sighting",
+"repetition"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "家族為喪禮該用哪種宗教儀式爭執不休，靈前擲筊後由已故爺爺拍板定案",
+"anchors": [
+"葬儀社人員提議擲筊",
+"家族各信不同宗教",
+"單一宗教全擲出無杯",
+"全辦方案連三聖杯",
+"靈堂並排多種經書",
+"曾祖母裹小腳"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"possession",
+"object",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "當副乩的阿公在病房對著護身符向神明求情，讓突然失控的女兒安靜下來",
+"anchors": [
+"柳丁田施肥灌溉",
+"搭火車去台南化療",
+"副乩服務四十幾年",
+"護士叫醫生打鎮定劑",
+"叫救護車送醫",
+"爐丹熬煮服用"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"retro_reveal",
+"dead_contact",
+"presence"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "車禍昏迷醒來後看得見亡靈，住院期間遇到病友亡夫每晚來陪伴等幾則經歷",
+"anchors": [
+"髖關節骨折只能臥床",
+"隔壁床女兒每天買小吃",
+"病床間的隔簾",
+"看護去簽牌",
+"保溫箱裡的早產兒照片",
+"附上手術疤痕照"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"presence",
+"repetition",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "探險隊垂降進入封閉碉堡地底，每次靠近某個出口，手電筒就莫名熄滅",
+"anchors": [
+"日據時期機槍堡",
+"通道被水泥封死",
+"二十公尺繩不夠長",
+"接前人留下的舊繩",
+"千流明軍用手電筒",
+"攀山壁折斷指甲"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"dream",
+"retro_reveal",
+"benign"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "老家供奉的三太子愛吃跳跳糖，還在作者摔傷前託夢給母親示警",
+"anchors": [
+"日治時期神像藏樹洞",
+"三合院神明壇",
+"擲出三個聖筊",
+"供奉跳跳糖",
+"排隊買甜甜圈帶回南投",
+"大腿傷口縫幾針"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"benign",
+"dream",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "乩童記錄自家宮壇的虎爺為自己湊錢買頭花，以及池王爺從令旗將軍升任千歲的經過",
+"anchors": [
+"一尺三神尊尺寸",
+"訂做頭花加價兩千",
+"手轎一筆一畫寫字",
+"釘棍黏著厚壽金",
+"後壁鄉分靈南鯤鯓",
+"外營黑令旗換新"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"possession",
+"proxy_sighting",
+"taboo"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "鐵齒村民的女兒每到午後就痴呆失神，醫院查不出病因，最後只能靠宮廟神明與吊死的亡魂談判",
+"anchors": [
+"嘉義慈濟醫院掛急診",
+"一次掛兩科做腦部檢查",
+"兒子臉書貼文又撤下",
+"備用手轎點香重請",
+"謝紙供品吃完全丟",
+"阿公吃藥控制血糖"
+]
+},
+{
+"setting": "other",
+"mechanisms": [
+"taboo",
+"escalation",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "意外身亡的親戚在鬼月被運回村，引來亡魂害死村民，只好由神明領著全村人趕鬼",
+"anchors": [
+"大體停放在老家大廳",
+"車禍方向盤撞到腹部",
+"每戶出一人拿新竹掃把",
+"前臂粗的綠竹插符令",
+"母親從門縫偷看",
+"阿嬤輕微失智仍記得"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"possession",
+"proxy_sighting",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "長年失眠的男子經問事得知，前世有婚約的女魂跟了他十二年，趕走他身邊每個女友",
+"anchors": [
+"安眠藥吃完斷片沒記憶",
+"包兩百元紅包問事",
+"符紙燒灰加粗鹽榕樹葉",
+"西澳網路一小時三澳幣",
+"商旅休息三小時",
+"合八字送喜餅到宮廟"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"proxy_sighting",
+"retro_reveal",
+"taboo"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "不信神的男友打球後腿莫名癱軟，求醫無效，最後由村廟神明點出是沖犯車禍亡魂",
+"anchors": [
+"青年公園打羽球",
+"逢九歲運勢低",
+"生辰八字與住址報給阿公",
+"機車實測八百公尺",
+"骨科診斷椎間盤突出",
+"七種草淨身三天"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"possession",
+"dream",
+"benign"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "排斥當虎爺乩的青年連做三次虎爺夢，被舅舅帶到夢中大廟後身體不由自主爬上樓",
+"anchors": [
+"虎爺旁的零錢換發財金",
+"四角小神轎選小孩扛",
+"連擲七個聖筊",
+"廟方人員開殿協助",
+"親戚送整箱雞蛋",
+"牆面挖框擺滿虎爺"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"retro_reveal",
+"dead_contact",
+"presence"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "女兒上山尋找失聯的父親，夜宿祖厝時聽見他在門外，找到時他早已上吊身亡。",
+"anchors": [
+"行李箱裡寫著媽媽電話的紙",
+"土地公廟擲筊問行蹤",
+"老木板椅上半躺過夜",
+"父親特有的咳嗽聲",
+"村長和菜鳥警察陪同找人",
+"表哥打電話問護士老婆屍臭"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"escalation",
+"presence"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "新案場晚班保全巡到地下室健身房，啞鈴接連掉落、跳電、門打不開",
+"anchors": [
+"業主交代巡邏健身房",
+"凌晨一點多巡邏",
+"啞鈴掉在厚地毯上",
+"健身房突然跳電",
+"撞門留下眼角淤青",
+"副理被迫代晚班"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"taboo",
+"escalation",
+"witness_mismatch"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "補習班搬進老公寓，陰陽眼朋友叮囑別去七樓，同學卻在電梯裡按下了那一層",
+"anchors": [
+"補習班整修暫借別棟",
+"一樓停車場和警衛室",
+"老舊電梯擠滿學生",
+"晚自習前在樓梯閒聊",
+"鋼鍊OP手機鈴聲",
+"廟裡加持的翠玉吊飾"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"witness_mismatch",
+"presence",
+"dream"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "女生夜裡走貓空山路下山，看見紅鞋女人起身跟隨，只有她聽得見腳步聲",
+"anchors": [
+"貓纜九點停駛",
+"棕15公車隨招隨停",
+"山壁邊停著機車",
+"沾泥的紅色高跟鞋",
+"公車擠滿乘客",
+"套房公寓有警衛櫃檯"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"identity_swap",
+"time_slip",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "雨夜大學生爬上走不完的校外坡道，與借傘的女孩同行，翻過圍網後她憑空消失",
+"anchors": [
+"母親節國光號補位票",
+"九點四十的末班車",
+"手機當手電筒照路",
+"操場鐵網門已上鎖",
+"先把行李丟過網子",
+"隔天找師父收驚"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"dream",
+"retro_reveal",
+"dead_contact"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "大學生午睡夢到陌生同學一再邀他同行，醒後才知對方是室友早已車禍身亡的朋友",
+"anchors": [
+"大一早上七點半掃地",
+"零學分必修課",
+"爬上舖補眠",
+"下舖室友在打電腦",
+"手機收到多媒體簡訊",
+"整寢打電動到天亮"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"escalation",
+"presence",
+"sound_only"
+],
+"ending": "fade",
+"ghost": 2,
+"premise": "獨自住台北飯店三晚，每晚被女聲叫醒、被拍腿，異狀一夜比一夜逼近",
+"anchors": [
+"手繪房間格局示意圖",
+"進房前先敲門借過",
+"床頭燈開了又關",
+"凌晨兩點十五分查經文",
+"網頁還在讀取中",
+"職業是屠宰場獸醫"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"possession",
+"presence",
+"escalation"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "體質特殊的大學同學常被亡魂附身，某晚重演被綁架分屍的死狀，還差點被拖向窗邊",
+"anchors": [
+"上鋪床下面是書桌",
+"同學輪流留寢室照顧",
+"電腦課上吃棒棒糖",
+"在空地燒糖果包裝紙",
+"對飄罵三字經",
+"隔壁室友以為在玩"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"taboo",
+"escalation",
+"witness_mismatch"
+],
+"ending": "twist",
+"ghost": 2,
+"premise": "留學生沒敲門就闖進隔壁擺著沙發的廁所，此後夜夜被看不見的住客逼著滾出房間",
+"anchors": [
+"宿舍抽籤分房",
+"斜坡建築的地下三樓",
+"冷氣從23度降到18度",
+"房中央乾掉的腳印水漬",
+"視訊打回台灣給媽媽",
+"媽媽騎小綿羊去佛壇"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"retro_reveal",
+"witness_mismatch",
+"benign"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "幼時在市場逗弄機車菜籃裡的小白狗，車主聽完描述才說那是她剛過世的愛犬",
+"anchors": [
+"市場早餐店門口停滿機車",
+"小孩視線剛好到菜籃高度",
+"粉紅蝴蝶結配紅項圈",
+"早餐掛在機車龍頭下",
+"鑽機車縫隙的頑皮小孩"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"taboo",
+"escalation",
+"retro_reveal"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "考生半夜用公共電話惡作劇，撥到一支通往陰間的號碼，碰過的人接連被纏上、送命",
+"anchors": [
+"電話亭裡的黃色電話簿",
+"公共電話不顯示號碼",
+"末班電車後的深夜",
+"巡邏警察騎腳踏車盤問",
+"腳踏車禁止雙載",
+"門外熱感應燈亮起"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"escalation",
+"retro_reveal",
+"object"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "牙醫診所裝修期間怪事不斷，後來房東太太坦承那裡被騙去養了小鬼",
+"anchors": [
+"壁磚壁紙反覆脫落",
+"牆內夾著碎黃紙",
+"櫃子改用釘牆系統櫃",
+"電動門遙控器有電卻不開",
+"擲筊二十多次無杯",
+"鞭炮只能用香點燃"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"retro_reveal",
+"sound_only",
+"taboo"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "農夫夜裡老看見有人坐在橫死黑道的墳上，後來神明出巡開棺，挖出一具殭屍",
+"anchors": [
+"凌晨兩三點下田放水",
+"媽祖發爐指示收妖",
+"軟轎在墳上指點",
+"土公仔開棺挖墳",
+"堆乾柴當場火化",
+"鄉民臉書社團也有人PO"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"identity_swap",
+"benign",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "過年夜在漁港陪海巡聊天，一位急著回家的阿伯駕破船問路，事後才知道不是人",
+"anchors": [
+"過年回鄉幫朋友慶生",
+"港口海巡小哨亭",
+"從叔叔家拿龍蝦蟹螯",
+"送阿兵哥一罐蠻牛",
+"阿伯用台語問路",
+"外地海巡過年不能回家"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"object",
+"retro_reveal",
+"identity_swap"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "看完午夜場後搭上一班公車，事後才知道台南凌晨根本沒有公車。",
+"anchors": [
+"二十世紀少年上映午夜場",
+"台南某百貨影城",
+"下車投零錢",
+"圓形冷氣出風口",
+"某科大前兩站",
+"拉鈴式下車鈴"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"presence",
+"escalation",
+"dream"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "國中生撿紙飛機撞見怪物並被跟回家，夢裡被虎爺咬一口後才擺脫",
+"anchors": [
+"準備基測的國中生",
+"補習班射紙飛機",
+"比人高的書架",
+"床邊可掀開的收納格",
+"帶豬肉蛋魚去拜",
+"土地公座下的虎爺"
+]
+},
+{
+"setting": "mountain",
+"mechanisms": [
+"taboo",
+"retro_reveal",
+"object"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "泰雅部落長輩講述曬過人頭的大樹、預告死亡的鬼火與烏鴉凶兆應驗",
+"anchors": [
+"每年聖誕節回部落",
+"鄰居在市區做電梯工程",
+"假日才回山上喝酒",
+"供妹妹在臺北讀書",
+"村口吊橋斷掉",
+"警察下班必經大樹"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"dream",
+"witness_mismatch",
+"sound_only"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "情侶住進老闆娘急著租出的日租套房，整夜聽見小孩尖叫邀玩，隔壁房客也做了同一個夢",
+"anchors": [
+"用App找日租樓中樓",
+"巷子裡有小宮廟",
+"電梯停在四樓",
+"鞋櫃上沒有童鞋",
+"半夜三點多玩部落衝突",
+"管理員用無線電問監視器"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"identity_swap",
+"retro_reveal",
+"taboo"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "海巡役男徹夜搜尋落海學生，清晨遇見穿水母衣的老人預言今天會找到",
+"anchors": [
+"台華輪旅客名單活頁夾",
+"深綠偵防車",
+"三公斤電瓶探照燈",
+"22-08夜勤",
+"家屬燒紙錢招魂",
+"漂流木篝火過夜"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"retro_reveal",
+"object",
+"sound_only"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "在淺水公溝夜釣，某物怪力拉竿後憑空消失，只在鉤上留下一片怪鱗。",
+"anchors": [
+"野狗偷咬整袋秋刀魚",
+"筏竿上掛的鈴鐺",
+"子線天平鉛錘都完好",
+"水深只到膝蓋",
+"騎台17線回學校",
+"萬用鍋煮紅蟳火鍋"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"witness_mismatch",
+"benign",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "陪朋友到廟裡求斷爛桃花，事後才知道當初拜的月老根本不存在",
+"anchors": [
+"前男友電話簡訊騷擾",
+"阿嬤帶來過的廟",
+"神像前的名牌",
+"買水果和花還願",
+"廟公台語碎念",
+"打電話問朋友媽媽"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"dead_contact",
+"presence",
+"benign"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "瀕死後能感應靈體的女兒，在亡父頭七那晚，於他常站的樓梯轉角感受到他回家",
+"anchors": [
+"老公寓五樓爬樓梯",
+"邊走樓梯邊滑LINE",
+"超商裡談後事",
+"十元硬幣擲筊",
+"請人拉出遺體半身",
+"心電圖24小時監測"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"proxy_sighting",
+"retro_reveal"
+],
+"ending": "twist",
+"ghost": 2,
+"premise": "高中情侶翹課去開便宜旅舍，女友突然尖叫逃出房間，原來她從鏡子裡看到了什麼",
+"anchors": [
+"坐火車通勤的高中生",
+"翹掉補習班",
+"三小時三百元休息",
+"天花板裝鏡子",
+"裝潢老舊的小旅舍"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"proxy_sighting",
+"retro_reveal",
+"witness_mismatch"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "護理師剛把車禍身亡的少女送回家，當晚加護病房的病人卻看到她跟在護理師身後",
+"anchors": [
+"醫院登記兼差隨車護理師",
+"密碼鎖進出加護病房",
+"前後班Leader逐床大交班",
+"深夜過了家屬會客時間",
+"清晨七點白班交接",
+"昏迷指數與電腦斷層"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"proxy_sighting",
+"repetition",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "有陰陽眼的同學從不碰海水，有一天她突然催大家快離開海邊",
+"anchors": [
+"放學後結伴去海邊",
+"海灘攤販買小吃",
+"赤腳踩浪花",
+"一週去一次",
+"離學校車程不遠",
+"坐沙灘等夕陽"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"witness_mismatch",
+"benign"
+],
+"ending": "open",
+"ghost": 0,
+"premise": "一路打嗝停不下來的學生上網問錶，陌生賣家的回覆卻點破她正在打嗝",
+"anchors": [
+"空堂去東區買錶",
+"低價CASIO手錶",
+"購物APP私訊賣家",
+"地下街椅子休息",
+"截圖亂塗遮資訊"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"witness_mismatch",
+"benign",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "只肯讓女性哄的早產兒忽然安靜，醫師卻看見床邊有個不存在的女人在照顧他",
+"anchors": [
+"早產兒哭到血氧下降",
+"保溫箱床號編排",
+"醫師下樓補病歷",
+"小夜班交接",
+"值班室端咖啡",
+"病房改建前是成人加護"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"presence",
+"taboo"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "大學生大夜班下班途經墓園後，在洗衣店看見洗衣機裡藏著發光人形",
+"anchors": [
+"大夜班下班凌晨三四點",
+"騎車經過整片墓園",
+"自助洗衣店滾筒機門朝外",
+"打工減輕學貸",
+"下班直接去上課"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"repetition",
+"proxy_sighting",
+"taboo"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "被收養的弟弟受兄長虐打到殘廢、溺死，冤魂回來討命，神明出面調解後報應延續三代",
+"anchors": [
+"高祖父親眼圍觀降乩",
+"逼弟弟吞一把沙土",
+"單手推石磨",
+"討粥上那層米湯",
+"林投樹下的乾溝",
+"爐主輪值供奉神像"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"presence",
+"escalation",
+"benign"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "女大生深夜幫學長買宵夜回堤防，在木橋上被一個浮腫腐臭的人形擋住去路，最後被野狗救下",
+"anchors": [
+"釣具行買海蟲和活蝦",
+"海巡安檢所後方繞路",
+"橘衣海巡人員站崗",
+"半夜騎車買關東煮",
+"咬著手電筒爬消波石",
+"用烤肉餵橋口野狗"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"time_slip",
+"retro_reveal",
+"benign"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "小一男孩被急流沖走，在不存在的沙地遇見紅衣女孩，她趕走青蛙後把他推回人間",
+"anchors": [
+"大人在旁準備野餐",
+"河中石上泥灰色青蛙",
+"戲水區有人做人工呼吸",
+"醒來後被披上毛巾",
+"警察與管理員協尋父母",
+"落水到獲救約十分鐘"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"witness_mismatch",
+"retro_reveal",
+"identity_swap"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "救護員只載走受傷女童，保全卻說孩子的媽媽一路跟下車進了急診室",
+"anchors": [
+"竹山消防專訓",
+"砂石車常飆的無紅綠燈路段",
+"現場判定OHCA",
+"無線電請勤指加派救護車",
+"紙本救護紀錄的身分欄",
+"入口櫃子拿新床單"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"presence",
+"escalation"
+],
+"ending": "fade",
+"ghost": 2,
+"premise": "男子跟遠在英國的女友視訊時，接連在她房間的畫面背景裡看到異狀",
+"anchors": [
+"交友軟體認識的女友",
+"台英時差凌晨視訊",
+"床後是更衣間和浴室",
+"鏡頭照得到整個房間",
+"背景像起霧般模糊"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"presence",
+"retro_reveal",
+"taboo"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "鬼月夜班空蕩產科病房，兩名護士各自撞見紅眼女人，卻都瞞著對方不說",
+"anchors": [
+"農曆七月產房空床",
+"兩人輪大夜班",
+"病床間的隔簾被拉上",
+"空病房護士鈴燈亮著",
+"包包裡媽媽給的護身符",
+"躲在茶水間唸經"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"identity_swap",
+"retro_reveal",
+"dead_contact"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "學長獨自夜釣時跟身旁怪釣客搭話，對方說在釣自己，後來在消波塊裡找到浮屍。",
+"anchors": [
+"颱風後魚塭石斑逃進海",
+"五十多公分金目鱸",
+"遠投竿卻沒冰箱矮凳",
+"台語遞菸搭話",
+"消波塊卡著浮屍",
+"屍體上爬滿海蟑螂"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"benign",
+"taboo",
+"presence"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "畢旅同學犯禁講鬼故事後喊房裡有人，主角只在窗戶倒影看見一位安靜讀書的女子",
+"anchors": [
+"小學畢旅必去墾丁",
+"床頭上方的大鏡子",
+"映像管電視",
+"電視播藍色水玲瓏",
+"老師打來叫醒電話",
+"附上房間手繪簡圖"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"identity_swap",
+"escalation",
+"dead_contact"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "少女在超商值晚班，幫一位喊背痛的阿嬤查看傷勢，卻發現她是找不到子女的亡者",
+"anchors": [
+"大夜班遲到沒來接班",
+"正在補貨時門鈴響",
+"客家話叫阿咩",
+"紅咖啡色針織毛衣",
+"背上長兩拳大膿包",
+"洗艾草水擦藥兩個月"
+]
+},
+{
+"setting": "hospital",
+"mechanisms": [
+"dead_contact",
+"retro_reveal",
+"presence"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "獸醫助理在安樂死的病犬離世當晚，於空籠旁看見牠的影子徘徊不去",
+"anchors": [
+"獸醫助理晚班一點到十點",
+"紙棺材蓋往生被",
+"頭頂放唱佛機放整夜",
+"唱佛機快沒電斷斷續續",
+"下班逐間巡房關燈",
+"腎衰竭洗腎三個多月"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"escalation",
+"dead_contact",
+"witness_mismatch"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "外婆應驗命中劫數病危返泰，連續三夜過世老鄰居來電、守候，終於現身要帶她走",
+"anchors": [
+"算命說七十二歲有劫",
+"膝蓋髕骨脫落打石膏",
+"緬甸籍看護睡客廳",
+"天花板輕鋼架掉落",
+"來電顯示舅舅家號碼",
+"半夜叫賣糯米飯"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"dead_contact",
+"possession",
+"escalation"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "喪禮上撿到響個不停的手機，接聽後妹妹變得怕電話、夢遊打無聲電話，最後自殺",
+"anchors": [
+"按鍵式手機",
+"殯儀館廁所隔間",
+"摔壞手機交給櫃檯",
+"留聯絡方式談賠償",
+"總機轉接說妹妹找",
+"罕見姓氏"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"proxy_sighting",
+"retro_reveal",
+"presence"
+],
+"ending": "twist",
+"ghost": 2,
+"premise": "員警處理橋上死亡車禍，一年後經廟方點破：死者怪他沒救她，一路跟著他",
+"anchors": [
+"凌晨路檢勤務三點收班",
+"酒駕攔查告示牌",
+"撥119後通知交通隊採證",
+"救護員上胸外按壓器",
+"家暴案帶回所內通報",
+"交通隊分隊長調任所長"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"benign",
+"possession",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "主管丈夫起乩當濟公，指名要她來，給符預告父親的心臟劫，還指點該找哪位醫師",
+"anchors": [
+"餐飲業一月排班表",
+"杭州腔國語的乩身",
+"村莊大廟主祀玄天上帝",
+"符紙上寫醫師名字",
+"心導管從手腕開小洞",
+"鼠蹊傷口壓沙包止血"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"retro_reveal",
+"presence",
+"taboo"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "尾牙上見同事妹妹臉色異常發黑，勸她去拜拜卻遭寒意警告，兩週後她車禍身亡",
+"anchors": [
+"連鎖飲料店三間分店",
+"農曆年前員工尾牙",
+"工讀生姊妹同店",
+"吃火鍋穿外套仍發抖",
+"除夕夜騎車下班",
+"當地知名肇事路段"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"proxy_sighting",
+"possession",
+"escalation"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "卡到陰的室友日漸怪異，拜拜後眼神變了，當晚宿舍床上竟多出陌生人影",
+"anchors": [
+"寢室號碼3306",
+"上膠漆的白色木地板",
+"照相手機拍到地板",
+"安平古堡旁大廟",
+"上下鋪床位配置圖",
+"轉診義大醫院吃類固醇"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"benign",
+"proxy_sighting"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "妹妹考差不敢去還願，陪阿嬤問事時文昌帝君主動寫出她分數並教讀書法",
+"anchors": [
+"綜高生七月才填志願",
+"每週五固定問事",
+"兩人搖晃的小神轎",
+"旁人翻譯桌上草字",
+"大考前必定拉肚子",
+"打算彈揚琴還願"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"retro_reveal",
+"time_slip",
+"witness_mismatch"
+],
+"ending": "twist",
+"ghost": 2,
+"premise": "想家的大一生在宿舍鏡中看見妹妹一瞬，回家才知妹妹同一刻也在鏡裡看見她",
+"anchors": [
+"離家四小時車程",
+"週末留下來顧寢",
+"邊洗澡邊偷哭",
+"頭髮濕的臉紅眼眶",
+"回家後追問日期時刻"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"presence",
+"benign"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "父親幼時目睹村中乩童讓魔神仔現形，逐一抓起丟進油鍋炸掉",
+"anchors": [
+"民國45年出生",
+"醫院陪阿嬤聊天",
+"兩人抬著油鍋挨家走",
+"家就在小廟後面",
+"踮腳看鍋裡冒白煙",
+"小廟後來改建成大廟"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"presence",
+"escalation",
+"sound_only"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "跟團住法國飯店，獨自睡著時浴室水龍頭自開，接著遭鬼壓床又被跳床",
+"anchors": [
+"房間對面是逃生安全門",
+"乾濕分離浴室",
+"法語配音辛普森家庭",
+"室友跟團員去酒吧",
+"白天參觀古堡行程",
+"兩張單人床格局"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"dead_contact",
+"retro_reveal",
+"time_slip"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "體弱的小學同學在國中樓梯間向我道別，後來才知道他已在體育課猝逝",
+"anchors": [
+"四季都穿厚夾克",
+"爸爸每天送肉湯到窗外",
+"營養午餐時間",
+"下課去福利社",
+"健康教育課上的轉述",
+"1994年六年級才分班"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"retro_reveal",
+"taboo",
+"presence"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "新老師到補習班報到，被帶上樓拜見供滿神像的金主，回家後一直覺得被人盯著看",
+"anchors": [
+"補習班在大樓九或十樓",
+"逃生出口燈的綠光",
+"門口桌上的紙碗和瓶裝水",
+"神像鬍子長過底座",
+"師父用台語問話",
+"第一份工作就辭職"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"witness_mismatch",
+"proxy_sighting",
+"retro_reveal"
+],
+"ending": "twist",
+"ghost": 2,
+"premise": "台資廠主管從監視器抓到員工上班趴睡，派人去問，同事卻說那是過世的人",
+"anchors": [
+"主管辦公室監視器十二分割",
+"可放大縮小監控畫面",
+"打分機叫部門主管管人",
+"越籍員工清點樣品",
+"助理急促腳步回報"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"proxy_sighting",
+"possession",
+"retro_reveal"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "表妹莫名答應復合，妹妹經濟公指點發現她中了符，破符後真相指向男友",
+"anchors": [
+"池府王爺聖誕慶典",
+"乩身母親在宮廟服務",
+"討生辰說要安平安燈",
+"生日海邊放煙火",
+"交往七年的高中同學"
+]
+},
+{
+"setting": "temple",
+"mechanisms": [
+"object",
+"taboo",
+"escalation"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "離職女同事在經理桌上留下貓神咒，化解後她在臉書宣告要再下咒",
+"anchors": [
+"疫情居家辦公後回辦公室",
+"夾鏈袋寫國曆生日姓名",
+"白米混指甲屑和貓鬍鬚",
+"主委帽子沒戴口罩",
+"捐一千元香油錢",
+"警局做筆錄備案"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"identity_swap",
+"witness_mismatch",
+"taboo"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "男孩半夜在飯店鏡中看見笑臉女人，衝出房門後被假冒母親的聲音引誘回去",
+"anchors": [
+"沒房卡門把空轉",
+"走廊盡頭大片玻璃",
+"泳池畔黃色景觀燈",
+"床正對行李架上的鏡子",
+"老爸應酬被急call回",
+"媽媽用台語罵人"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"escalation",
+"presence",
+"witness_mismatch"
+],
+"ending": "fade",
+"ghost": 2,
+"premise": "夫妻住進歐洲古鎮老旅館，丈夫一靠近單人床就被抓腳踝，最後親眼看見那雙手",
+"anchors": [
+"旅行團二度蜜月",
+"沒被二戰摧毀的小鎮",
+"走廊繞柱的直角彎",
+"童話風木製床架",
+"早餐跟同團夫妻聊天",
+"八點半大廳集合"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"witness_mismatch",
+"retro_reveal",
+"dead_contact"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "礦工之子連夜私奔，在月台被發光身影拍肩，臥床的阿嬤同時現身送女友手環",
+"anchors": [
+"桃林鐵路拆除紀念專題",
+"礦工父親入坑出坑",
+"國中老師代付高中學費",
+"阿嬤坐門口洗地瓜",
+"三重味全工廠工作",
+"月台閃黃燈柱"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"dead_contact",
+"retro_reveal",
+"sound_only"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "員警深夜接到女子喊冷的怪電話，循線發現來電者早已死在家中好幾天",
+"anchors": [
+"派出所備勤大備",
+"來電顯示回撥沒人接",
+"派案系統通報腐臭",
+"消防隊撬開大門",
+"法醫判定心肌梗塞",
+"調閱路口監視器"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"object",
+"sound_only",
+"presence"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "小學生硬著頭皮去傳說鬧鬼的器材室還球，聽見裡面有拍球聲",
+"anchors": [
+"被派去倉庫收球",
+"下課操場有人打球",
+"自然教室泡藥水標本",
+"走廊重建前常有人跌倒",
+"同學跌倒骨折"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"presence",
+"object",
+"taboo"
+],
+"ending": "fade",
+"ghost": 0,
+"premise": "獨自白天探汐止廢墟，先撞見廁所裡被祭拜的娃娃，又在夾層感到窒息壓迫",
+"anchors": [
+"從圍牆破洞鑽進去",
+"只在白天探廢墟",
+"燒黑的女廁隔間",
+"牆上貼滿羅剎面具",
+"夾層高度約一百五",
+"建築後來被拆除"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"retro_reveal",
+"sound_only",
+"taboo"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "四人夜宿斷電的廢棄旅館，半夜電梯響起並傳來女人唱搖籃曲，嗆聲的無神論者隔天離奇死亡",
+"anchors": [
+"櫃台鑰匙架鑰匙齊全",
+"機房測試無法通電",
+"辦公室留有工作文件",
+"以半小時為單位交代行程",
+"三人分坐不同警車",
+"拘留四十八小時的恐懼"
+]
+},
+{
+"setting": "hotel",
+"mechanisms": [
+"escalation",
+"presence"
+],
+"ending": "fade",
+"ghost": 2,
+"premise": "生日和女友住溫泉會館，半夜怪聲從淋浴間一路蔓延到床前，最後親眼看到不明物體",
+"anchors": [
+"捷運新北投站附近",
+"私湯房型附三溫暖",
+"浴池區鐵門防熱氣",
+"睡前滑手機看美股",
+"玄關燈留著沒關",
+"退房填意見表"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"identity_swap",
+"escalation",
+"object"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "男子在畢業紀念冊裡發現一張舊照，照片裡的女高中生把他一步步引向死亡現場",
+"anchors": [
+"未收到的畢業紀念冊",
+"學校倉庫裡未拆封新品",
+"高級住宅夜間保全",
+"鐵製逃生梯腳步聲",
+"觀光巴士外包清洗",
+"目擊者做筆錄而遲到"
+]
+},
+{
+"setting": "school",
+"mechanisms": [
+"presence",
+"escalation",
+"witness_mismatch"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "兩名員警深夜到山腳學校摸魚守望，遭看不見的女子哭聲、腳步聲纏上並拍打警車",
+"anchors": [
+"凌晨零到兩點巡邏班",
+"金融機構必簽巡邏表",
+"老學長問想不想抓",
+"校門口殘障坡道",
+"關掉巡邏燈守望",
+"開警示燈才停"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"dead_contact",
+"dream",
+"object"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "同事們幫病逝的女處長辦喪禮，敘事者靠擲筊和暗號問她意見，之後卻夜夜夢見女鬼",
+"anchors": [
+"十元硬幣代替筊杯",
+"禮儀公司的布置相本",
+"紀念小卡三個文案選項",
+"離開殯儀館車窗丟葉子",
+"去行天宮收驚求平安符",
+"搬家後小卡就找不到了"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"witness_mismatch",
+"repetition",
+"identity_swap"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "房仲半夜去坪林找屋主，屋內屋外看到同一個小女孩，同時出現在不同樓層",
+"anchors": [
+"房仲深夜查同業網站新物件",
+"連夜開車去屋主家留信",
+"沒有智慧型手機找門牌",
+"三號旁的房子沒門牌",
+"按一次電鈴亮一層燈",
+"新店捷運站旁便利商店"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"escalation",
+"retro_reveal",
+"sound_only"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "三個大學生夜探傳聞溺童與母親自縊的廢棄別墅，邊拍邊被腳步聲追趕，事後影片裡拍到東西",
+"anchors": [
+"卡多里對面的7-11",
+"十元商店買的手電筒",
+"門口地上燒紙錢灰燼",
+"二樓牆上塗寫去死",
+"廁所牆面紅色塗料",
+"二樓吧檯與撞球桌"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"presence",
+"escalation",
+"repetition"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "男子搭末班捷運睡過站，月台上盯著他的女人隨後又坐在他家樓下",
+"anchors": [
+"文湖線末班車",
+"忠孝復興站轉車",
+"南港軟體園區月台",
+"坐計程車回內湖",
+"斜坡下的711",
+"跟大樓管理員打招呼"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"proxy_sighting",
+"presence",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "叔叔頭七前夜，弟弟在老家樓梯下的廁所看見一個沒有臉的人，後來能通靈的長輩也證實",
+"anchors": [
+"客廳臨時當靈堂",
+"頭七前夜徹夜誦經",
+"樓梯下方的三角空間",
+"前後院搭遮陽棚",
+"找師父來收驚",
+"隔天上學路上追問"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"retro_reveal",
+"identity_swap",
+"escalation"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "KTV夜班遇上已撤場包廂叫服務，下班路上又被一位已過世的老人盯著看",
+"anchors": [
+"凌晨兩點後撤掉兩個樓層",
+"專線來電顯示包廂號碼",
+"包廂服務鈴按掉又亮",
+"副廚房跟組長回報",
+"六點半下班買早餐",
+"捐血中心轉角"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"presence",
+"escalation",
+"taboo"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "男學生搭夜班客運熟睡時遭看不見的冰冷存在侵犯，最後還聽到她說要嫁給他",
+"anchors": [
+"凌晨客運票價較便宜",
+"台北高雄遠距戀愛",
+"一人佔兩個座位睡覺",
+"車上廁所簡單清洗",
+"半夜獨自掛急診打點滴",
+"點滴時被偷九千多元"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"retro_reveal",
+"presence",
+"repetition"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "超商大夜店員碰上自動門兩次空開，隔天才得知前晚下班的女同事已遭酒駕撞死",
+"anchors": [
+"儲備幹部輪大夜班",
+"交接現金盤點列管物",
+"PDA掃貨架補訂貨",
+"洗關東煮機熱狗機",
+"集點送KITTY貼紙話術",
+"早上門市電話通知"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"retro_reveal",
+"dead_contact",
+"taboo"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "男子重返童年廢眷村，與兒時玩伴女孩重逢，事後才知她當年已溺死池中",
+"anchors": [
+"轉角小土地公廟",
+"鐵欄杆門掛生鏽大鎖",
+"一米半高水泥圍牆",
+"泥造灶爐與嵌牆木櫃",
+"被扔進池裡的髮圈",
+"大人拿手電筒搜眷村"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"witness_mismatch",
+"dead_contact",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "九歲回南投老家，看見臥病的二伯母魂魄離體奔跑，她死後又現身在灶前生火",
+"anchors": [
+"扶桑花叢當圍牆",
+"土狗衝下山路迎接",
+"曬穀場燙腳柏油",
+"堂弟搖伴手禮盒",
+"灶台撕報紙生火",
+"告別式前全家回鄉"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"taboo",
+"identity_swap",
+"witness_mismatch"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "少年違反禁令，夜探村中輪住的豪邸並挖出密室牢房；之後同行的摯友漸漸變成另一個人",
+"anchors": [
+"淡水老街帶日本客",
+"各戶輪住宅邸滿六年",
+"深夜兩點後的碰撞聲",
+"供桌上放完血的兔子",
+"一長一短兩根蠟燭",
+"成年後四季都穿長襪"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"retro_reveal",
+"proxy_sighting",
+"taboo"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "大學生半夜在危險海岸講電話，不知不覺走向海裡，母親突然來電叫他立刻離開",
+"anchors": [
+"打工下班後騎車去海邊",
+"講電話時有插播進來",
+"鞋襪濕透才發覺",
+"海邊有禁止下水的告示",
+"帶去給師傅收驚",
+"說好暑假請媽媽吃牛排"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"sound_only",
+"dead_contact"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "刑警學長回憶支援火車出軌搜救時，在已清空的車廂反覆聽見有人哭泣",
+"anchors": [
+"竊盜慣犯移送地檢署",
+"辦公室泡茶區與無糖綠",
+"鐵路警察局通報OHCA",
+"警車開道時速破百",
+"破壞器具撬開車廂",
+"肉攤般的血腥焦味"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"dead_contact",
+"benign",
+"dream"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "當兵的孫子夢見外公告別，之後靠手麻替他挑塔位、照託付買供品",
+"anchors": [
+"凌晨四點零八分醒來",
+"軍中連上准假回家",
+"靈堂前摺紙蓮花",
+"連擲六個聖筊",
+"皮蛋豆腐要淋醬油膏",
+"中風後靠拐杖走路"
+]
+},
+{
+"setting": "old_house",
+"mechanisms": [
+"object",
+"escalation",
+"retro_reveal"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "陌生男子向封閉農村借田遭拒，各家收到狗頭後戶長接連暴斃，原來是犬神詛咒",
+"anchors": [
+"農業聯合會介紹的陌生人",
+"僅十幾戶的開墾村落",
+"例會圍暖爐吃羊肉爐",
+"死因都以心臟衰竭結案",
+"鄰村住持常來喝酒",
+"小地方醫院清空病房"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"possession",
+"escalation",
+"retro_reveal"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "童年隨父母到印尼工廠，夜裡樹林的呻吟讓保姆和幹部接連中邪，源頭是吊死的女工",
+"anchors": [
+"保全比手勢說草裡有蛇",
+"鄧麗君歌和小叮噹漫畫",
+"村長叫警察一小時才到",
+"工廠裡圍圈驅邪儀式",
+"把亡魂引進娃娃祭祀",
+"桃芝颱風土石流"
+]
+},
+{
+"setting": "abroad",
+"mechanisms": [
+"sound_only",
+"retro_reveal",
+"witness_mismatch"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "在南太平洋小島幫忙挖日軍遺骨的志工，聽當地人說入夜後工地常有人用陌生語言高喊",
+"anchors": [
+"戰歿者遺骨收集志工",
+"請日本和尚來辦燒骨式",
+"挖到手榴彈和美軍武器",
+"大腿骨脊椎零散出土",
+"請當地專家一起勘查",
+"宿舍內的遺骨登記帳簿"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"proxy_sighting",
+"sound_only",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "東京上班族聽見無形童聲打招呼，同事看見一個小女孩跟在他身旁",
+"anchors": [
+"下班輪值倒垃圾",
+"地下二樓垃圾集中處",
+"婦產科外的廢棄物櫃",
+"在陽台撒鹽",
+"回家洗澡加鹽",
+"休息時開著電視"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"taboo",
+"presence",
+"dream"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "礦區孩子逼轉學生撕下坑口鎮符當入團考驗，當晚他從鎖住的家中憑空消失",
+"anchors": [
+"方圓三十公里沒有超商",
+"全校不到百人的小學",
+"日治礦業建築長滿藤蔓",
+"老師宿舍門窗都鎖著",
+"拿膠帶把破符黏回去",
+"法師在坑口作法一週"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"repetition",
+"retro_reveal",
+"escalation"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "女宿有間因學姊套袋自殺而封鎖的寢室，那個套著塑膠袋的身影開始出現在其他樓層",
+"anchors": [
+"房號324、618、620",
+"門上貼董事長室牌子",
+"晚上十一點熄燈只開桌燈",
+"門鍊鍊著時門被撞開",
+"逃生指示燈的綠光",
+"牆間穿電線的小洞"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"identity_swap",
+"escalation",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "從小常被看不見的東西推倒的女孩，接連兩次被水邊的東西引誘下水，差點被抓去當替身",
+"anchors": [
+"溜滑梯被推膝蓋常破皮",
+"撞牆送醫縫針",
+"被關進沒開燈的空房間",
+"全家暑假去美濃玩",
+"幼稚園海邊撿貝殼",
+"隔天帶去收驚"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"sound_only",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "殯儀館大夜常聽到淡淡鈴聲，老同事說是生前掛鈴撿回收的聾啞老伯",
+"anchors": [
+"亂葬崗改成的停車場",
+"單一通道的進館動線",
+"撿罐頭塔飲料轉賣",
+"家屬留下的三牲水果",
+"機動班輪替代班",
+"清晨四點出門收回收"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"escalation",
+"presence"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "國中生遲到獨自爬補習班樓梯，身後住戶雜物接連翻倒，一路追著他往上",
+"anchors": [
+"電梯門開就是樓梯間",
+"補習班占一二三和十樓",
+"電梯殘留球後汗臭",
+"住戶鞋櫃雨鞋堆樓梯",
+"嬰兒車與打氣筒",
+"九樓歐巴桑罵吵鬧"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"retro_reveal",
+"proxy_sighting",
+"presence"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "鬼月超商晚班，纏繃帶的女客一直說店裡有狗，事後店長提起前員工曾看到狗靈",
+"anchors": [
+"晚班下午三點到十一點",
+"進門要喊歡迎光臨",
+"開門鈴叮咚聲",
+"櫃檯後是香菸櫃",
+"去倉庫看監視器",
+"整堆美工刀加衛生棉"
+]
+},
+{
+"setting": "funeral",
+"mechanisms": [
+"proxy_sighting",
+"dead_contact",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "外曾祖母喪禮上，表姐看見生前結怨的已故伯母穿著入殮重孝回來看遺照",
+"anchors": [
+"沿路芒草與公墓",
+"三合院左右對門分家",
+"先走晚輩穿重孝入殮",
+"鬢邊別白絨花",
+"稻埕搭棚辦流水席",
+"九十六歲喜喪"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"proxy_sighting",
+"presence"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "男子跟在宮廟工作的通靈女生約會，吃飯時她對他身旁的空座位擺筷子拜拜",
+"anchors": [
+"朋友介紹宮廟工作女生",
+"走路突然被拉到路邊",
+"滷肉飯配十顆水餃",
+"四人座兩人對坐",
+"多抽一雙筷子擺空位"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"proxy_sighting",
+"dead_contact",
+"possession"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "玩完見鬼遊戲後室友被附身自殘身亡，此後他在宿舍反覆現身，直到好友與他喝酒道別",
+"anchors": [
+"宿舍浴廁在房外",
+"陽台洗手槽",
+"天馬下載音樂",
+"表特版",
+"大林慈濟醫院",
+"阿杜的〈天黑〉"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"escalation",
+"presence",
+"witness_mismatch"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "賣場家俱股員工在地下倉庫撞見只有下半身的黑衣鬼，怪事從此在全店蔓延",
+"anchors": [
+"DIY部門A股B股分工",
+"棧板加拖板車卸貨",
+"Nokia 6233放MP3",
+"偷開商管的電動拖板車",
+"閉店前收銀線收孤兒",
+"保全巡邏定點簽到簿"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"identity_swap",
+"witness_mismatch",
+"possession"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "泰國團去廢墟探險後點名無誤，晚上才發現有位團員從沒回來，跟著回程的是別的東西",
+"anchors": [
+"自由活動半日行程",
+"遊覽車門口逐一點名",
+"鄰座互相確認人數",
+"旅館大廳解散",
+"家屬傳語音訊息找人",
+"當地朋友介紹巫師"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"retro_reveal",
+"presence",
+"object"
+],
+"ending": "twist",
+"ghost": 1,
+"premise": "姑姑回台待產，未出生的表弟夜裡在耳邊說話、戳她、藏她的東西找她玩。",
+"anchors": [
+"房間冷氣壞掉",
+"書包裡的琴譜缺頁",
+"松香和弱音器不見",
+"東西出現在嬰兒床",
+"半夜羊水破了",
+"過年帶表弟去小七"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"presence",
+"repetition",
+"sound_only"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "常被鬼壓床的上班族在公司會議室午睡，被一個愛玩的小女孩連續壓了三次",
+"anchors": [
+"國中加強班趴在圖書館睡",
+"偷看整套灌籃高手",
+"銀行地下室車上補眠",
+"玻璃隔間小會議室",
+"坐著睡午覺",
+"道歉加唸阿彌陀佛"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"possession",
+"retro_reveal",
+"proxy_sighting"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "女大生租屋處不平靜，熟識的乩身點破她的床位，又說她腿上的瘀青是守護者推開她留下的",
+"anchors": [
+"初二十六拜拜後拿供品",
+"茶行裡熟客圍桌泡茶",
+"自組的小三層矮櫃",
+"叔嬸開CIVIC載人",
+"宿醉醒來馬克杯碎地",
+"鏡子轉向牆、螢幕蓋外套"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"escalation",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "物流員獨自在倉庫加班，看見臉部漆黑的長髮人影從鎖著的倉間走出，追到廁所",
+"anchors": [
+"喇叭換貼出貨標籤",
+"下班鐘六點響起",
+"躲廁所偷抽菸",
+"飲水機運轉聲",
+"主任來電問要吃什麼",
+"申請職傷津貼"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"object",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 0,
+"premise": "在德國留學的人搭火車穿過森林，從車窗看見荒林中突兀立著一座破木梯",
+"anchors": [
+"留學生假期去柏林找朋友",
+"週末搭火車回小鎮",
+"落葉堆裡的破舊木梯",
+"約一個半人高",
+"二十分鐘後才見民宅",
+"手上戴著佛珠"
+]
+},
+{
+"setting": "store",
+"mechanisms": [
+"proxy_sighting",
+"retro_reveal",
+"benign"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "流產後的女子再訪改衣阿姨，被說出之前身旁跟著孩子，如今孩子已回到她肚裡",
+"anchors": [
+"接案做禮服設計",
+"固定找修改阿姨改尺寸",
+"龍山寺拜註生娘娘",
+"小產後只休一週",
+"阿姨是寺廟供菜志工",
+"老公開車載回家"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"witness_mismatch",
+"identity_swap",
+"time_slip"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "姐姐小時候在樓上撞見母親燒信，回家母親卻一直在廚房，化妝箱也是空的",
+"anchors": [
+"週三中午放學",
+"用鑰匙開木門",
+"清明節收拾供品",
+"鐵臉盆燒信件",
+"米白色化妝箱",
+"只有一條樓梯可走"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"witness_mismatch",
+"retro_reveal",
+"taboo"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "劇場員工深夜收工，誤入舞台撞見不屬於任何劇團的古裝隊伍與花轎",
+"anchors": [
+"過年期間跨夜裝台",
+"舞監最後巡場",
+"電梯誤按舞台層",
+"休息室逐間巡查上鎖",
+"休息室配有鋼琴",
+"排練室不夠借休息室"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"object",
+"time_slip"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "在大樓地下二樓打破收藏的啤酒瓶，上樓後卻在一樓門外撿到同一支瓶子的碎片",
+"anchors": [
+"垃圾要搭電梯到地下二樓",
+"比利時帶回的浮雕啤酒瓶",
+"碎片約悠遊卡大小",
+"拿另一支同款瓶比對",
+"掃完碎片後走樓梯上樓"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"witness_mismatch",
+"repetition",
+"escalation"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "從泰國逃回台灣的領隊身上帶著黑氣，帶團和騎車時都撞見死者，還總有個小孩影子出手",
+"anchors": [
+"廉價航空紅色機身",
+"曼谷日租公寓吊扇",
+"溶洞彩色照明燈",
+"地下河六人一船",
+"林口下山九十度彎",
+"報案119問地標"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"possession",
+"taboo",
+"escalation"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "迎新夜教時，不拜土地公的基督徒學弟躲在廢墟冰櫃後兩晚都疑似被附身",
+"anchors": [
+"出發前領值星帶拜關公",
+"夜教扮鬼嚇新生",
+"對講機夾雜雜訊",
+"躲涼亭下偷抽菸",
+"值星官沿路喊打擾了",
+"回宿舍先過火爐"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"proxy_sighting",
+"presence",
+"sound_only"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "夜班護理師巡房時被無形碰觸，失智阿嬤說看見虎爺，隨後她也聽見低吼見到尾巴",
+"anchors": [
+"推抽痰車幫住民抽痰",
+"床簾當時綁起來",
+"大廳放音響辦活動",
+"阿嬤推輪椅半夜下床",
+"iPhone 8 突然無法對焦",
+"沙美老街廢棄戲院"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"dead_contact",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "父親少年時在大排玩水，同伴腳被纏住拔不出，原來是被搜尋多日的浮屍抓住",
+"anchors": [
+"大排旁一排排米粉架",
+"徒手摸出拳頭大蛤蜊",
+"放蝦籠抓螃蟹",
+"岸上警察大人在場",
+"大人拿竹竿撥水草",
+"台語問話附翻譯"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"presence",
+"sound_only",
+"escalation"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "拜廟回程導航屢指怪路，當晚獨睡宿舍時被壓床，有女聲在耳邊輕問是否睡了",
+"anchors": [
+"騎車拜兩間媽祖廟",
+"導航硬帶往沒路燈小路",
+"貼滿LED燈條的小廟",
+"兩人導航方向相反",
+"宿舍紗門加木門",
+"棉被裹成春捲"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"dead_contact",
+"presence",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "爬山遇到的社工同行說，聞到某種怪甜味就會出事，不久峽谷就有狗墜崖",
+"anchors": [
+"火炎山大O型路線",
+"2K處大峽谷打卡點",
+"老子不幹社工了T恤",
+"登山隊群組傳消息",
+"獨居個案連結送餐服務",
+"鞋側四條長泥痕"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"proxy_sighting",
+"presence",
+"escalation"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "業餘法事人幫忙淨化廢棄工廠，同伴在頂樓撞見不可名狀之物，眾人倉皇撤離",
+"anchors": [
+"對講機逐層回報",
+"棚上銅製虎頭鈴",
+"午時水化淨符",
+"九金按七星位擺放",
+"酬勞只有十萬",
+"盲眼師姊拒絕下車"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"identity_swap",
+"witness_mismatch",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "有靈異體質的同事在電梯遇見已故的前同事還握了手，對方卻始終進不了辦公室",
+"anchors": [
+"同事留職停薪期間",
+"離職同事回公司探望",
+"電梯裡握手寒暄",
+"辦公室擺水晶陣",
+"業績導向重風水"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"retro_reveal",
+"witness_mismatch",
+"escalation"
+],
+"ending": "twist",
+"ghost": 2,
+"premise": "母親在夜班客運上講老家鬼故事，到站後才知道聽眾裡多出許多不是人的乘客",
+"anchors": [
+"國光客運午夜班次",
+"坐最靠前門的位置",
+"山路彎道害小孩暈車",
+"凌晨四點多到站",
+"到站開燈時清點人數",
+"司機從後照鏡盯人"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"dead_contact",
+"retro_reveal",
+"dream"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "消防員在縱火現場扯下孕婦腹中胎兒，事後死者託夢叫弟弟來道謝",
+"anchors": [
+"夜間值勤癱沙發滑手機",
+"瞄子手持水線先進火場",
+"用敲棒破舊鐵門鎖",
+"木造隔間燃燒倒塌",
+"公務員不能收謝禮",
+"邊轉珠邊講往事"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"proxy_sighting",
+"retro_reveal",
+"dead_contact"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "菜鳥救護員送走被水門夾頭的工人後，老司機看見死者仍留在車上",
+"anchors": [
+"到院前心肺停止代碼",
+"回程繞土地公廟",
+"自動CPR機與長背板",
+"河濱水門液壓門",
+"救護車代號91、92",
+"打給勤務中心改派"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"retro_reveal",
+"dead_contact",
+"witness_mismatch"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "運鈔員夜班去取吞卡，銀行一直接到女客人的催促電話，現場卻找不到人",
+"anchors": [
+"提款機熱感紙更換",
+"卡紙卡鈔障礙排除",
+"銀行轉通報吞卡客人",
+"提款機旁專線電話",
+"三噸半改裝運鈔車",
+"車長與副手兩人編組"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"sound_only",
+"taboo",
+"escalation"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "補習班老師被派到閒置多年的三樓上課，接連遇到怪事，原來是前屋主沒帶走的祖先",
+"anchors": [
+"三樓教室原當儲藏室",
+"喇叭鎖的教室門",
+"需施力的氣窗把手",
+"內線與市話鈴聲不同",
+"暑假早班七點拉鐵門",
+"走廊角落擺米杯上香"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"identity_swap",
+"escalation",
+"presence"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "研究生深夜搭電梯每層亂停，傳聞有白影的四樓門還被擋住，後來又遇到同乘女生憑空消失",
+"anchors": [
+"電梯視障語音播報",
+"節電感應式照明",
+"皮帶上的折疊小刀",
+"逃生指示燈綠光",
+"廁所門把綠色無人標示",
+"窗外防鳥鐵絲網"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"proxy_sighting",
+"object",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "少年在荒廢日式宿舍看見古董鏡臺彷彿在動，帶同學去探險後同學在鏡中撞見黑影",
+"anchors": [
+"民國85年前後",
+"舅舅把車停在樹蔭空地",
+"榕樹氣根竄進屋頂",
+"歐式橢圓化妝鏡臺斜一腳",
+"放學後同學結伴探險",
+"收驚的花生夾心餅乾"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"witness_mismatch",
+"sound_only",
+"repetition"
+],
+"ending": "fade",
+"ghost": 1,
+"premise": "宿舍半夜總有人輕聲問你還好嗎，室友和來訪的朋友都跟它對答過，卻沒人開過口",
+"anchors": [
+"上床下桌的宿舍床位",
+"室友是夜貓子",
+"凌晨三點五十幾分",
+"符放在枕頭底下",
+"阿姨帶去收驚",
+"大二換房間"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"witness_mismatch",
+"taboo",
+"retro_reveal"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "弟弟不顧民宿老闆警告夜訪海灘，朝海上人聲丟石頭，合照裡他的小腿消失了",
+"anchors": [
+"民宿老闆勸改去南灣",
+"凌晨兩點傳來寺廟鐘聲",
+"由上往下的自拍照",
+"搭客運回程翻照片",
+"退燒三天後又復燒",
+"收驚婆婆用草蓆蓋身"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"repetition",
+"benign",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "過勞上班族回家總在樓梯看見會說歡迎回來的人頭，多年後竟在溫泉又遇上",
+"anchors": [
+"搭末班車回公寓",
+"新鮮人加班撐不住",
+"玄關接樓梯的格局",
+"溫泉更衣室吹風機旁",
+"持續約三年才消失"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"dream",
+"taboo",
+"dead_contact"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "乩身之子常在夢中受亡魂託付超度，一次忘了交代，兩週後亡魂在夢裡兇猛討債",
+"anchors": [
+"父親是廟裡乩身",
+"從小幫忙折紙蓮花",
+"托夢時留姓名住址",
+"醒來打電話回報父親",
+"等大普渡一起超度",
+"白天趕報告晚上睡"
+]
+},
+{
+"setting": "water",
+"mechanisms": [
+"proxy_sighting",
+"taboo",
+"object"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "系學會在海灘旁的樹林練香舞，香少了一束，原來是有人在廢棄物上撒尿惹怒了那些「人」",
+"anchors": [
+"宿營香舞一束約五百支",
+"樹叢裡堆著廢棄馬桶沙發",
+"收道具清點少一束香",
+"改到附近麥當勞集合",
+"戴佛珠的學長",
+"學長回去後發燒請病假"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"retro_reveal",
+"dead_contact",
+"presence"
+],
+"ending": "twist",
+"ghost": 2,
+"premise": "女職員獨自留在辦公室等人，接連遇到怪事，事後才知道生病的老闆娘就在那時過世",
+"anchors": [
+"窗外遠眺觀音山",
+"隔壁拉下鐵捲門",
+"同事手機未接來電6:38",
+"鐵櫃電子鐘停住",
+"管理員巡樓關空調主機",
+"電梯後方的鏡子"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"proxy_sighting",
+"dead_contact",
+"escalation"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "高雄一棟大樓在附近動工後接連有人跳樓，之後住戶開始聽見怪聲、看到死者",
+"anchors": [
+"大中路蓋高架橋",
+"午夜後刷卡過管理室",
+"中庭花圃磚頭碎裂",
+"住十樓，樓上是E棟11樓",
+"電梯內整面大鏡子",
+"管理員帶出去指樓上"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"presence",
+"taboo"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "高中生夜裡在無人小站地下道遇見裹小腳的古裝女子，一回頭她就不見了",
+"anchors": [
+"無人站上車後再補票",
+"只停電車和復興號",
+"車站後方鏽黃鐵皮廠",
+"田與民房間的無燈小路",
+"週末進市區上家教",
+"晚上九點多末段班車"
+]
+},
+{
+"setting": "dorm",
+"mechanisms": [
+"presence",
+"retro_reveal",
+"sound_only"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "傳聞有人跳樓的男宿三樓，連假獨處時兩人都關不上的紗窗自己被關上",
+"anchors": [
+"宿舍五棟分男女",
+"變形紗窗兩人都關不動",
+"隔壁寢打三國到三點",
+"墜樓點前的小石獅",
+"行天宮收驚",
+"室友護身符加到六個"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"escalation",
+"benign",
+"object"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "山區上班族下班前看見黑影化成人形逼近，危急時一位紅袍老爺爺現身把它趕走。",
+"anchors": [
+"週六傍晚還在值班",
+"盯著時鐘等下班",
+"落地窗外的人行步道",
+"鑰匙錢包都在背包裡",
+"身上只剩香菸和打火機",
+"土地公廟求來的平安符"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"identity_swap",
+"escalation",
+"presence"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "加油站工讀生獨守大夜，玻璃隔間被敲擊圍繞，隨後出現一名不像人的高大女子",
+"anchors": [
+"獨自值加油站大夜班",
+"四面玻璃的收銀小隔間",
+"單耳戴耳機聽歌打瞌睡",
+"冬夜冷風灌進門縫",
+"加油機高過兩公尺",
+"逃到7-11打給站長"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"escalation",
+"object",
+"taboo"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "同事夜遊石地藏洞窟後，肩上多了一撮濕長髮，回東京後全員被高跟鞋聲和笑聲纏上",
+"anchors": [
+"同事合租廂型車夜遊",
+"隧道外林道封鎖柵欄",
+"地圖切衛星圖查岔路",
+"便當附的牙籤挑頭髮",
+"辦公室鋪隔音地毯",
+"神社茅草圈夏越之祓"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"witness_mismatch",
+"identity_swap",
+"sound_only"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "在日本上班的台灣人搬進半地下的新辦公室，第一晚就碰上有人冒充她下班",
+"anchors": [
+"入口大廳設在二樓",
+"七樓以上是住宅",
+"廁所音姬流水聲",
+"下班先走的日語招呼",
+"株主大會前的忙季",
+"刷卡進辦公室"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"presence",
+"benign",
+"sound_only"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "拍攝廢棄礦坑的紀錄者殿後時，聽見坑內傳出台語道謝並吹來一陣暖風",
+"anchors": [
+"2019年10月中旬",
+"抓樹根攀近垂直山坡",
+"封坑磚牆留兩三個洞",
+"下午三點多陽光",
+"小攝影機收進背包",
+"爺爺死於基隆礦工醫院"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"identity_swap",
+"retro_reveal",
+"sound_only"
+],
+"ending": "twist",
+"ghost": 2,
+"premise": "易招靈的日本友人被神秘「晴者」吞掉身上詛咒，數年後自己似乎也成了晴者",
+"anchors": [
+"奈良朱雀門天平祭",
+"近鐵奈良站旁飯店",
+"病房門上的毛玻璃",
+"大久保站前通勤時段",
+"居酒屋用平板點酒",
+"回日本辦手機解約"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"taboo",
+"witness_mismatch"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "高中生不信校內禁忌，晚歸到車站求證，親眼目睹傳說中的「清潔員」",
+"anchors": [
+"高中搭電車遠距通勤",
+"運動社團不留校練習",
+"躲在社辦拖到九點",
+"月台散落廚餘與蟲",
+"寒冬穿露肚短T短褲"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"possession",
+"retro_reveal",
+"repetition"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "夜遊青年突然闖進廢屋說要幫人找手，警察揭露當地有具始終缺一臂的分屍案",
+"anchors": [
+"晚報社會新聞",
+"超商店員夜遊",
+"三台機車上省道",
+"警察父親辦過的舊案",
+"狗骨頭騙嫌犯",
+"木製手臂陪葬"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"proxy_sighting",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "有陰陽眼的新同事開會時硬要他坐刁難人的承辦人旁邊，事後才說那裡底下全是冤親債主",
+"anchors": [
+"整棟整修工程的送審文件",
+"職安缺失開單罰款",
+"下雨高速公路塞車遲到",
+"借出的貨車變速箱壞掉",
+"會勘後巡視施工現場",
+"磚塊般厚的紅包信封"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"repetition",
+"escalation",
+"object"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "三個國中生闖進發生過命案的廢屋試膽，親眼看著當年的殺人過程在面前重演一次",
+"anchors": [
+"騎腳踏車翻過兩個村莊",
+"廢屋外圍著鐵絲網",
+"窗戶全釘上木板",
+"地上散落沒用過的筷子",
+"祈求健康的護身符",
+"門口掃地的住持"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"time_slip",
+"taboo",
+"identity_swap"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "窮學生在末班車上睡過頭，到了永遠黃昏的面具祭典，回來時人間已過了十二年",
+"anchors": [
+"居酒屋廚房打工到打烊",
+"搭末班車最後一節車廂",
+"手錶停擺、手機沒訊號",
+"票價單位寫成「錢」",
+"站務室菸灰缸還在冒煙",
+"監視器拍到車廂內消失"
+]
+},
+{
+"setting": "office",
+"mechanisms": [
+"dead_contact",
+"retro_reveal",
+"dream"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "上班族深夜看地圖街景，撞見沒打碼的斷頸女子，當晚她循聲到床邊喊痛",
+"anchors": [
+"街景路人臉部打馬賽克",
+"加班到午夜查隔天工地",
+"人形標誌落點偏移",
+"抽菸平復情緒",
+"開燈開電視撐到天亮",
+"路口徵求肇逃目擊者看板"
+]
+},
+{
+"setting": "ruins",
+"mechanisms": [
+"possession",
+"escalation",
+"object"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "三名高中生夜闖滅門凶宅自拍，碰了書房怪器物後，同伴被附身自縊",
+"anchors": [
+"窗戶木板釘死、二樓貼報紙",
+"疊木箱拆後門小窗",
+"流理台鋁盆被踩扁聲",
+"停擺的客廳大鐘",
+"書房門上貼滿符",
+"警方比對繩上指紋"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"presence",
+"escalation",
+"witness_mismatch"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "七〇年代小機場夜班管制員，兩次撞見赤腳女子從跑道一路追進塔台",
+"anchors": [
+"一九七九年二月二十日",
+"西斯納單引擎小飛機",
+"塔台開到凌晨四點",
+"航空站只有一名保全",
+"早班七點四十五分接班",
+"設備修了十一天"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"dead_contact",
+"identity_swap",
+"benign"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "想輕生的男子深夜搭上計程車，健談司機把他載回家後消失，原來是過世的爺爺",
+"anchors": [
+"喝到錯過末班電車",
+"車內司機名牌",
+"運將主動聊自己的人生",
+"沒付車資就被趕下車",
+"目的地是自殺名所"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"retro_reveal",
+"repetition",
+"presence"
+],
+"ending": "explained",
+"ghost": 2,
+"premise": "男子每晚出電梯都看見陌生女人走在前面又憑空消失，事後查出三樓曾有女子死亡。",
+"anchors": [
+"住戶和公司混住的大樓",
+"樓梯在走廊另一頭",
+"轉角後只剩三間房",
+"自己住中間那間",
+"雜誌撰稿的人脈",
+"熟悉當地的人幫忙查"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"escalation",
+"possession",
+"witness_mismatch"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "大學生在診所值夜，保全燈無故轉紅，上樓來的卻不是院長而是哼歌的怪物",
+"anchors": [
+"ALSOK保全儀表板",
+"感應燈綠轉紅",
+"內外兩道大門分開上鎖",
+"和室值班室拉門",
+"超商便當配週六日劇",
+"解除保全的嗶聲"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"time_slip",
+"taboo",
+"escalation"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "為擺脫跟蹤狂而徵室友，結果自稱惡魔的租客救了他，也把他捲進異界",
+"anchors": [
+"Craigslist徵室友廣告",
+"填補剩餘租約期限",
+"Twitter沒設私人帳號",
+"公寓監視器被設成循環",
+"地鐵LED站名燈全熄",
+"手機在月台沒有訊號"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"identity_swap",
+"witness_mismatch",
+"retro_reveal"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "新來的夜班保全和一名女同事很投緣，後來才知道她半年前就在值班時遇害了",
+"anchors": [
+"租客要出示兩種證件",
+"影印駕照留存",
+"凌晨4:17公共電話響",
+"火車票2.5元",
+"交班老頭早上六點到",
+"欠租倉庫要清空"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"taboo",
+"time_slip",
+"identity_swap"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "男子週末到公司電梯玩網路流傳的按樓層儀式，出電梯後發現大樓變成另一個世界",
+"anchors": [
+"週六辦公室沒人加班",
+"大廳警衛看守台",
+"手機存按鍵順序清單",
+"車停在遠處停車格",
+"手機顯示上午十一點十分",
+"手機突然沒網路"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"possession",
+"witness_mismatch",
+"identity_swap"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "電車上看見阿伯長著女人的腿，那雙腿獨自下車後，鄰座女孩突然問起自己的腳",
+"anchors": [
+"週日中午乘客稀少",
+"看完書才抬頭",
+"到站廣播報站名",
+"關門提醒廣播",
+"阿伯穿長褲皮鞋",
+"旁座情侶閒聊"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"benign",
+"retro_reveal",
+"object"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "男子搭夜間臥鋪車，收到老伯送的無味糖果，後來才發現妻子也收過同樣的糖",
+"anchors": [
+"簾子隔開的四人臥鋪",
+"停業的餐車當休息區",
+"車站買的火車便當",
+"和紙包的彩色糖果",
+"出雲大社旅遊",
+"松江出差行程"
+]
+},
+{
+"setting": "stairwell",
+"mechanisms": [
+"retro_reveal",
+"presence",
+"repetition"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "膽小的狗在鬼門開那晚拒絕下樓，事後才想起那正是子時鬼門開的時刻",
+"anchors": [
+"靈骨塔旁撿到的狗",
+"睡前十一點遛狗",
+"狗耳朵往後倒、夾尾巴",
+"清晨五點公園老人運動",
+"鬼門開前一天8/6",
+"研究生與工程師同居"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"dead_contact",
+"benign"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "因妹妹病逝而不過聖誕的男子，在平安夜月台與亡妹重逢並受她囑託",
+"anchors": [
+"病房裡的簡樸聖誕蛋糕",
+"妹妹臨終的道歉",
+"訂貨出錯被叫回公司",
+"趕平安夜末班電車",
+"從老家通勤上班",
+"朋友介紹同齡對象"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"retro_reveal",
+"witness_mismatch",
+"presence"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "七歲男孩在東京地鐵和一隻只有他看得見的有翼怪物聊天，多年後才明白那天發生了什麼",
+"anchors": [
+"七歲時跟爸爸搭地鐵",
+"父親留給母親的紙條",
+"母親發現後報警",
+"目擊者描述衝向軌道",
+"同齡小男孩的證詞"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"retro_reveal",
+"witness_mismatch",
+"benign"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "夜班經理天天招待一對老夫妻，後來才知道那位沉默的老太太早已過世",
+"anchors": [
+"固定點燉牛肉配薯泥",
+"每晚十一點半進門",
+"固定給二十元小費",
+"經理兼服務生",
+"跨年夜人手不足",
+"主廚愛抽大麻"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"taboo",
+"escalation",
+"possession"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "超商店員莫名狂嗑鹽到脫水，違背高中生「別開窗」的警告後被一團蟲狀靈體跟上",
+"anchors": [
+"超商早班一人顧店",
+"駕訓班課程同時進行",
+"偷舔家裡的鹽和醬油",
+"醫院吊點滴補水",
+"妹妹的小台腳踏車",
+"陽台下水泥牆窄縫"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"object",
+"escalation",
+"benign"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "博物館夜班保全發現維京展區的白板會自己寫字，竟跟一名徘徊的古戰士成了朋友",
+"anchors": [
+"時薪二十美金大夜班",
+"每小時出館外巡查",
+"矛柄黏魔鬼氈",
+"Google翻譯查出冰島語",
+"辦公室看Netflix影集",
+"腰間廉價識別牌"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"proxy_sighting",
+"repetition",
+"object"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "喪偶男子每逢雨天都坐在公車站，國中生拉著自稱有陰陽眼的同學去看他身旁有沒有亡魂。",
+"anchors": [
+"便宜雨衣騎腳踏車上學",
+"立在長椅旁的黑色大傘",
+"公車照時刻表進站",
+"村裡謠言傳得很快",
+"留職停薪在家發呆",
+"地藏橋當集合點"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"dead_contact",
+"repetition",
+"sound_only"
+],
+"ending": "open",
+"ghost": 1,
+"premise": "911接線員接過一對姊弟死於龍捲風前的求救，幾個月後同一通電話又不斷打來",
+"anchors": [
+"固定的接線開場白",
+"來電顯示的地址",
+"龍捲風警告閃上螢幕",
+"電話線拉不到浴室",
+"警車還差五分鐘",
+"墓前只有小鐵牌"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"proxy_sighting",
+"escalation",
+"object"
+],
+"ending": "fade",
+"ghost": 3,
+"premise": "完全沒有靈感的車主跑完靈異景點後，車子開始出怪事，坐過車的朋友一個個倒楣",
+"anchors": [
+"引擎蓋同一處每天滴血",
+"大夜班中間的休息時段",
+"北關東鄉下靈異景點",
+"灑日本酒來驅邪",
+"賣給二手車行換跑車",
+"只有三碼的來電號碼"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"identity_swap",
+"proxy_sighting",
+"taboo"
+],
+"ending": "explained",
+"ghost": 3,
+"premise": "容易招東西的研究生搭雨天公車時，能看見鬼的同學搶先坐上他大腿，擋下一個想跟他下車的少女鬼",
+"anchors": [
+"祖母給的貼身護身符",
+"研究室同學一起做報告",
+"後門上車前門下車",
+"農田中無頂的站牌",
+"冷氣開著仍悶熱",
+"隔天發燒三十八度"
+]
+},
+{
+"setting": "transport",
+"mechanisms": [
+"escalation",
+"presence",
+"possession"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "剛分手的姊姊在末班地鐵上，目睹長髮女鬼纏住熟睡男子，還被她隔窗搭話",
+"anchors": [
+"客滿的末班電車",
+"被人潮擠貼車門",
+"地下段車窗映出車廂",
+"置物架上方垂物",
+"下車衝向剪票口",
+"刪掉前男友信箱"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"presence",
+"repetition",
+"sound_only"
+],
+"ending": "explained",
+"ghost": 1,
+"premise": "房仲探望在新建空樓值夜的保全朋友，聽他講每晚定時開關的燈和看不見的訪客",
+"anchors": [
+"櫃台監視器分割畫面",
+"大門感應式電磁鎖",
+"手動開關與感應燈之分",
+"早班來才辦交接",
+"從地下三樓開始巡邏",
+"帶爌肉飯去探班"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"identity_swap",
+"witness_mismatch",
+"retro_reveal"
+],
+"ending": "twist",
+"ghost": 3,
+"premise": "國道警察隊的替代役夜巡扣押事故車場，接連撞見消失的人影和沒電的車響起警報",
+"anchors": [
+"巡邏簽到簿",
+"替代役沒配槍自帶甩棍",
+"扣車場電動閘門遙控",
+"無線電呼叫值班台",
+"夜視監視器畫面",
+"事故車電瓶引擎已拆"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"witness_mismatch",
+"escalation",
+"presence"
+],
+"ending": "open",
+"ghost": 3,
+"premise": "夜班工程師去查停工機台自行運轉，同事在黑暗中看見人頭，錄影卻拍到怪狗",
+"anchors": [
+"每季輪調夜班",
+"分機電話通報",
+"自動門電源在門頂",
+"編號04機台",
+"調監視器倒帶",
+"上層下封口令"
+]
+},
+{
+"setting": "night_shift",
+"mechanisms": [
+"retro_reveal",
+"taboo",
+"witness_mismatch"
+],
+"ending": "open",
+"ghost": 2,
+"premise": "新人不信前輩交代的夜班禁忌，親身試過後才懂廠區夜裡另有東西在活動",
+"anchors": [
+"機台24小時運轉要通報",
+"監視器畫面解析度差",
+"同事來都先打電話",
+"只走有設定亮燈的區域",
+"設備故障警報才去機房",
+"門鈴被鈍器砸壞多年"
+]
+}
+]
+}
