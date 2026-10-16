@@ -314,7 +314,8 @@ def main(argv=None) -> int:
     for opt in ("--setting", "--mechanism", "--ending", "--ghost", "--length", "--style", "--style-note", "--taste"):
         p.add_argument(opt, default=None)
     p.add_argument("--note", action="append", default=None)
-    p.add_argument("--seed", type=int, default=None)
+    p.add_argument("--seed", type=int, default=None, help="可重現；配合 --count 時從這個 seed 往上連號")
+    p.add_argument("--count", type=int, default=1, help="一次抽幾副骨架（要寫幾篇來比，SKILL.md 預設 3）")
     p.add_argument("--json", action="store_true", help="印 JSON 而不是說明文字")
     sub.add_parser("options")
     c = sub.add_parser("count")
@@ -336,11 +337,21 @@ def main(argv=None) -> int:
     except OptionError as e:
         print(f"選項錯誤：{e}", file=sys.stderr)
         return 2
-    seed = a.seed if a.seed is not None else random.randrange(10**9)
     T = json.loads(TABLE.read_text(encoding="utf-8"))
-    plan = make_plan(T, random.Random(seed), **kw)
-    plan["seed"] = seed
-    print(json.dumps(plan, ensure_ascii=False, indent=1) if a.json else f"seed={seed}\n" + render(plan))
+    n = max(1, a.count)
+    base = a.seed if a.seed is not None else None
+    plans = []
+    for i in range(n):
+        seed = base + i if base is not None else random.randrange(10**9)
+        plan = make_plan(T, random.Random(seed), **kw)
+        plan["seed"] = seed
+        plans.append(plan)
+    if a.json:
+        print(json.dumps(plans[0] if n == 1 else plans, ensure_ascii=False, indent=1))
+    else:
+        for i, plan in enumerate(plans, 1):
+            head = f"===== 骨架 {i}/{n}\n" if n > 1 else ""
+            print(head + f"seed={plan['seed']}\n" + render(plan) + ("\n" if n > 1 else ""))
     return 0
 
 

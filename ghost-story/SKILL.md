@@ -1,6 +1,6 @@
 ---
 name: ghost-story
-description: Write a Taiwanese ghost story in the voice of a PTT marvel board (飄板) 經驗 post, from a skeleton sampled out of 9,395 annotated marvel posts, then self-review and revise it. Takes options in plain Chinese — setting (校園、宿舍、當兵、夜班、醫院、山路…), horror mechanism (附身、事後才知道、身份錯置…), ending (開放、有解釋、反轉、淡出), how much the ghost shows, length (極短 to 超長 or a character count), narration style (PTT 鄉民、簡約、幽默、口述、文學、紀錄、長輩講古), taste (直接 or 留白) and free-form extra requirements. Use whenever the user asks for a 鬼故事, 靈異故事, 恐怖故事, 怪談, 經驗文, 飄板文, a scary story set in Taiwan, "write me a ghost story", "寫一篇鬼故事", "來個短篇靈異", or wants several ghost stories, a different style of one, or a story with a given setting or twist, even if they don't mention PTT. Not for real-world paranormal claims, ghost-story analysis, or translating an existing story.
+description: Write a Taiwanese ghost story in the voice of a PTT marvel board (飄板) 經驗 post, from a skeleton sampled out of 9,395 annotated marvel posts, then self-review and revise it. By default it writes three stories from three different skeletons and delivers the one a blind pairwise judge ranks best (the count is an option). Takes options in plain Chinese — setting (校園、宿舍、當兵、夜班、醫院、山路…), horror mechanism (附身、事後才知道、身份錯置…), ending (開放、有解釋、反轉、淡出), how much the ghost shows, length (極短 to 超長 or a character count), narration style (PTT 鄉民、簡約、幽默、口述、文學、紀錄、長輩講古), taste (直接 or 留白) and free-form extra requirements. Use whenever the user asks for a 鬼故事, 靈異故事, 恐怖故事, 怪談, 經驗文, 飄板文, a scary story set in Taiwan, "write me a ghost story", "寫一篇鬼故事", "來個短篇靈異", or wants several ghost stories, a different style of one, or a story with a given setting or twist, even if they don't mention PTT. Not for real-world paranormal claims, ghost-story analysis, or translating an existing story.
 ---
 
 # Ghost story (PTT marvel style)
@@ -32,6 +32,7 @@ what the data says works, so leave it out rather than guessing.
 | style note | `--style-note` | free text, e.g. 像寫給朋友的信 |
 | taste | `--taste` | 直接 (default) or 留白 |
 | extra | `--note` (repeatable) | free text, e.g. 主角是護理師、發生在颱風夜 |
+| count | `--count` | how many stories to write and compare, **default 3**; only the best one is delivered. 1 skips the comparison |
 
 Common phrasings:
 - **two places** (醫院夜班、宿舍頂樓): put the place the scariest scene happens in as
@@ -40,6 +41,9 @@ Common phrasings:
   20% either way. Use a preset only when the user names one (短、長).
 - **不要把鬼寫得太清楚、克制一點**: that is `--taste 留白`, and it is enough on its own. Set
   `--ghost` only when the user names a level (完全不要出現 → 0, 只要一瞬間 → 2).
+- **How many**: 產生 5 個選最好的 → count 5; 只要一篇、寫一篇就好 → count 1; anything else → 3.
+  The count is how many compete, not how many are delivered. If the user wants to read all of
+  them (三篇都給我看), deliver all, ranked.
 
 **Taste** is the one choice that changes how the scare works, so pick it from the user's
 words: 克制、含蓄、留白、不要太直接、不要血腥 → 留白; otherwise 直接. 直接 follows what
@@ -58,8 +62,9 @@ are legitimate.
    python "<skill dir>/scripts/ghost_plan.py" plan --setting 校園 --ending 開放結局 --length 短 --style 幽默
    ```
    `options` lists every value; an ambiguous word (「家」) errors with the candidates — ask
-   the user or pick the closest. Add `--seed N` to reproduce a skeleton. For several stories,
-   run it once per story without a seed so they differ.
+   the user or pick the closest. Add `--seed N` to reproduce a skeleton. `--count N` samples N
+   different skeletons in one call (with `--seed`, the seeds run N, N+1, …); use the story count
+   from Inputs, 3 by default.
 2. **Read the rules for this taste and style.** `references/writing_direct.md` or
    `references/writing_restrained.md`, plus `references/styles/<style>.md` (for 留白 with
    簡約, read `minimal_restrained.md` instead of `minimal.md`). These are the full rules;
@@ -82,11 +87,27 @@ are legitimate.
    - Keep the version with the highest overall score; on a tie, the later one. The rubric
      catches rule breaks and continuity errors well, but it is a poor judge of whether readers
      will like it (see its last section), so don't polish forever chasing its score.
-5. **Deliver.** The story as plain text, then one line: setting / mechanism / ending /
-   taste / style, and the character count against the target. Save it to a file only if
-   the user asked or there are several. If the user wants to know which of two versions is
-   scarier, use `references/pairwise_judge.md` — in a fresh subagent if you can spawn one,
-   since judging your own draft is biased — and run it twice with A and B swapped.
+   With several stories, do steps 2–4 for each, saving each draft as its own file
+   (`s1.md`, `s2.md`, …); every one has to pass on its own before the comparison.
+5. **Pick** (count 2 or more). Judge in a fresh subagent, not yourself: you wrote all of them and
+   will favour the one you like. Give it the drafts as A, B, C… with each one's brief (mechanism,
+   ghost cap, target and actual length) and the paths to `review_rubric.md`,
+   `pairwise_judge.md` and the writing rules, and ask for:
+   - the rubric for each story (five scores, overall, pass or fail, at most three fix notes);
+   - every pair judged twice with `pairwise_judge.md`, once in each order, recording the
+     popular and scary winner each time, then the win counts per story.
+   The winner is the story with the most **scary** wins; ties go to more popular wins, then to
+   the higher rubric overall. Pairwise comes first because it picked the right real post about
+   90% of the time, while the absolute rubric did no better than chance (AUC about 0.5). If the
+   two disagree, say so in one line. Apply the winner's fix notes in place if they are concrete
+   and cheap (step 4's rule), then recount.
+6. **Deliver.** The winning story as plain text, then one line: setting / mechanism / ending /
+   taste / style, and the character count against the target. With several stories, add a
+   short table of all of them (title, mechanism, rubric overall, scary and popular wins), one
+   sentence on why the winner won, and the folder where every draft is saved. Save to a file
+   only if the user asked or there are several. If the user later wants to know which of two
+   versions is scarier, use `references/pairwise_judge.md` the same way: a fresh subagent, run
+   twice with A and B swapped.
 
 ## Rules
 
