@@ -26,6 +26,7 @@ trigger on the phrases listed in its frontmatter.
 | [`h3-reference-to-video`](h3-reference-to-video/SKILL.md) | Several pictures of one character (e.g. a three-view) in, a video with sound out, with MiniMax-H3 reference-to-video on a local ComfyUI. The pictures hold the look; the prompt says what happens. |
 | [`h3-multiframe-video`](h3-multiframe-video/SKILL.md) | Same engine, but pictures are pinned to seconds of the output (side at 2 s, back at 4 s...) and H3 fills the motion between them. |
 | [`h3-character-replacement`](h3-character-replacement/SKILL.md) | A short clip plus a picture of a new character in; the same clip out with the subject redrawn as that character, keeping motion, timing and audio. SAM3 masks the subject, MiniMax-H3 reference-to-video does the rest. Consent-gated. |
+| [`story-skill-builder`](story-skill-builder/SKILL.md) | Building a generator skill for one kind of short text (鬼故事, 笑話, 心靈雞湯…) from a corpus whose readers left a signal: scrape, label structure with Claude, weight by reception, derive rules from the high/low contrast, calibrate a pairwise judge, blind-test with the owner, package. The pipeline behind `ghost-story`, with gates where the owner decides. |
 
 ### agent-team-delivery
 
@@ -124,4 +125,16 @@ the source depended on the seed.
 Because it swaps identities in real footage on an uncensored model set, it requires the
 consent of every real person involved and refuses minors, sexual content of real people
 and deceptive impersonation before it runs.
+
+### story-skill-builder
+
+The pipeline that built `ghost-story`, moved into the repo as a skill of its own: PTT
+scraping with a high-push set plus a random low-push control group, serial merging and
+deduplication, Claude annotation against a structure schema (with the served model and the
+cost recorded per call), push percentiles within tag and year, high-versus-low contrasts
+with p-values, a planner that samples skeletons from the resulting table, judge calibration
+on real pairs, and the owner's blind A/B page. `SKILL.md` is the seven-phase playbook with a
+gate at the end of each phase (axes approved, counts seen, cost agreed, judge calibrated,
+taste chosen) and the numbers ghost-story set for them. The genre vocabulary is still the
+ghost one in code; a per-genre config is the next step.
 
