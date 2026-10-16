@@ -16,6 +16,7 @@
 | `characters` | 角色，見下 |
 | `scenes` | 場景卡的描述，`{"room": "...", "hall": "..."}`；在 refs 裡寫成 `scene:room` |
 | `consistency` | 場景一致和人物比例的固定句子，見下 |
+| `lights` | 光線狀態，`{"night_camp": "Late at night: ...", "morning": "Bright morning: ..."}`；格子用 `light` 指定，句子接在格子 prompt 後面 |
 | `pages` | 頁，見下 |
 
 ## characters
@@ -26,27 +27,51 @@
   "features": "鳥窩頭＋翹毛、超粗眉、下垂眼",
   "views": "The same character is drawn twice side by side: full body front view on the left, ...",
   "desc": "A 19-year-old Taiwanese university guy, thin, with a huge messy bird's-nest of black hair ...",
+  "keywords": ["bird's-nest", "cowlick", "thick eyebrows"],
   "ref_crop": "left"
 }
 ```
 
-- `features`：中文的記憶點，挑版本那張圖的標題。每個角色至少兩個一眼認得出的特徵（髮型、鼻子、眼睛、臉型、一件固定的衣服），寫進 `desc`，每格 prompt 再重複一次。
+- `features`：中文的記憶點，挑版本那張圖的標題，也是檢查 brief 裡逐項對的清單。每個角色至少兩個一眼認得出的特徵（髮型、鼻子、眼睛、臉型、一件固定的衣服），寫進 `desc`，每格 prompt 再重複一次。
+- `keywords`：英文的特徵關鍵字；`lint` 會檢查有這個角色的格子，prompt 裡至少出現其中一個。
 - `views`：角色卡要畫哪幾個視角。
 - `ref_crop`：`refs` 指令從角色卡裁哪一邊當參考圖。預設 `left`（正面）；動物的正面常畫錯毛色時用側面那邊；`none` 不裁。
+- `ref_boxes`：自動找的頭部、半身框不準時手動指定，`{"head": [x0, y0, x1, y1]}`，相對於單一視角的比例。
+- `animal`：`true` 的角色（狗）不算進人數，也不建議改用頭部裁切。
+
+### 參考圖的三種裁切
+
+`refs` 從挑好的角色卡做三張參考圖：`me`（全身，只留一個視角）、`me:bust`（半身）、`me:head`（頭部）。格子的 `refs` 裡寫 `me:head`、`me:bust`、`me` 或 `me:full`。
+
+- 全身站姿的角色卡會把姿勢一起帶進格子：該坐著吃麵、該特寫的格子都被畫成站著（第二本的 p31、p32 各三次）。特寫用 `:head`，坐著和腰部以上用 `:bust`，只有全身站姿的格子用全身。
+- `lint` 會在特寫、坐著的格子用了全身參考時提醒。
 
 ## consistency
 
 ```json
 "consistency": {
   "scene": {"room": "Scene consistency: the living room never changes. ...", "hall": "..."},
-  "scale": {"me": "Character scale: the young man is about 175 cm tall and thin; ...", "ama": "..."},
-  "scene_refs": {"room": ["scene:room", "panel:p7", "panel:p19", "panel:p2"], "hall": ["scene:hall", "panel:p15", "panel:p8"]}
+  "scale": {"me": "Character scale: the young man is about 175 cm tall and thin; ...", "ama": "..."}
 }
 ```
 
-- `scene`：每個場景寫一次固定格局（家具在哪、門在哪、比例），之後所有參考到這個場景的格子自動接上這句。
-- `scale`：每個角色的身高和相對比例（「比主角矮一個半頭，頭不比他大」）。格子的 refs 裡有誰，就接上誰的。
-- `scene_refs`：哪些參考算這個場景。用畫好的格子當場景參考時（光線一致的作法），要把那格加進來，比例句才會跟著接上。
+- `scene`：每個場景寫一次固定格局（家具在哪、門在哪、比例）。格子用 `scene` 欄位指定要接哪一個，**沒寫就不接**。
+- `scale`：每個角色的身高和相對比例（「比主角矮一個半頭，頭不比他大」）。格子裡有誰（`cast`，或 refs 裡的角色），就接上誰的。
+- 舊的 `scene_refs`（從參考圖推斷場景）只在整份分鏡都沒有任何格子寫 `scene` 時才用，`lint` 會警告。不用它的原因：從帳篷紗網往外看的格子拿營地格當參考，被接上「三頂帳篷一排」，結果畫出從帳篷裡看不到的帳篷。
+
+## lights
+
+```json
+"lights": {
+  "night_camp": "Late at night: the sky is a slightly lighter flat black than the arrow bamboo ...",
+  "tent_inside": "Clean line art, inside a small dark dome tent at night: everything is solid flat black ...",
+  "morning": "Bright morning: the sky and the background are plain white with crisp shadows; no black background."
+}
+```
+
+- 每一段劇情只用一種光線狀態，寫一次、每格用 `light` 指定，不要每格各寫各的。
+- 白天狀態一定要寫明背景是白的：A 畫風（少年漫畫線稿）預設愛用平塗黑，第二本的早上、白天格子全變黑。
+- 要讓光線前後一致，同一狀態的第一格畫好、挑定後，後面同場景的格子可以用 `panel:<那格>` 當參考；但參考格會連構圖一起帶進來（見 prompting.md），只在鏡位相同時這樣做。
 
 ## pages
 
@@ -71,7 +96,10 @@
 |---|---|
 | `id` | 唯一，`p1`、`p9t` |
 | `label` | 中文一句話，草圖上顯示，讓擁有者審分鏡 |
-| `refs` | 參考圖，依序對應 prompt 裡的 `<image1>`、`<image2>`：角色 id、`scene:<id>`、`panel:<id>`（那格挑定的圖）、`file:<out 底下的路徑>` |
+| `refs` | 參考圖，依序對應 prompt 裡的 `<image1>`、`<image2>`：角色 id（可加 `:head`、`:bust`）、`scene:<id>`、`panel:<id>`（那格挑定的圖）、`file:<out 底下的路徑>`。每張參考圖都要在 prompt 裡提到，沒提到的照樣會把構圖帶進來 |
+| `scene` | 這格接哪個場景的固定格局（`consistency.scene` 的 key），可以是清單；視角跟場景卡不同的格子（從帳篷裡往外看、特寫）不要寫 |
+| `light` | 這格的光線狀態（`lights` 的 key） |
+| `cast` | 這格畫面裡的角色。沒寫就用 refs 裡的角色；只用文字描述、沒帶參考圖的角色要寫進來，只拿來當花樣參考的（睡衣的碎花）寫 `[]`。人數檢查和比例句都看它 |
 | `prompt` | 英文。描述畫面看得到的東西，見 prompting.md |
 | `n` | 候選張數，預設 2；改動參考圖的格子給 3 |
 | `pass` | 用到 `panel:` 參考的格子設 2，第二輪才畫 |

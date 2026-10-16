@@ -14,6 +14,8 @@
 
 ## 坑和修法
 
+這張表裡能用字面判斷的，`manga.py lint` 都會檢查（`panels` 也會先跑，有錯就不畫）：全身構圖抱胸、沒在 prompt 裡提到的參考圖、特寫和坐著的格子用全身參考、wall of、招牌海報、dim 和 lit by、顏色字、halfway、reflection、單人格沒寫 Only one person、角色特徵沒重複、`panel:` 參考的輪次、不存在的 scene 或 light。判斷不了的（同一人畫兩次、手的數量、大小）留給獨立檢查（qa_checklist.md）。
+
 | 發生了什麼 | 原因 | 修法 |
 |---|---|---|
 | 小芳的視訊格畫成兩個全身的她並排站著；主角也被畫成兩個 | 角色卡上本來就有正面和側面兩隻，模型連「兩個人」一起照抄 | `refs` 指令只裁正面那一半當參考；prompt 加 `Only one person in the frame` |
@@ -33,7 +35,8 @@
 | 從帳篷紗網往外看的格子冒出三頂帳篷（〈半夜叫我全名的人〉） | 那格被列進 `consistency.scene_refs.camp`，營地格局那句（三頂帳篷一排）被自動接上 | 視角跟場景卡不同的格子不要列進 `scene_refs`；換成在 prompt 裡寫明畫面裡只有什麼（`no tents, no dead tree`） |
 | 「a wall of arrow bamboo」畫成帳篷前一道水泥牆 | wall 被照字面畫 | 寫 `thin dark bamboo stalks`、`no walls, no buildings, no fences` |
 | 用參考格鎖場景，結果連參考格裡的人和構圖一起搬過來（四個人走過倒木 → 小美出現兩次；整個營地遠景 → 該是帳篷特寫的格子也變遠景） | 參考格整張進去，模型照抄 | 要的是場景不是構圖時，用沒有人的場景卡，不用畫好的格子；特寫格乾脆不帶參考，用文字寫 |
-| 角色卡是站姿，該坐著吃麵、該特寫的格子他都站著（三次） | 參考圖的姿勢被照抄 | 改用一格他已經坐著的畫面當參考，或不帶他的角色卡、用文字描述外貌加 `seated ... Nobody is standing` |
+| 角色卡是站姿，該坐著吃麵、該特寫的格子他都站著（三次） | 參考圖的姿勢被照抄 | 用頭部、半身裁切（`akai:head`、`akai:bust`）：重畫三張都坐著，也穿回角色卡上的拉鍊外套（用全身參考時臉變漫畫化、衣服變毛衣） |
+| 阿凱的特寫背後一直多一張桌子和凳子（六張全中，prompt 寫了 no tables 也一樣） | 帶了麵店場景卡當參考，場景卡上的桌凳被搬進背景；場景格局句也寫了桌子和凳子 | 特寫不帶場景參考、不寫 `scene`，背景用文字寫（`behind him only the tiled wall, the wall fan and the dark doorway`）；`lint` 會警告特寫帶場景參考 |
 | A 畫風的早上、白天格子背景變全黑 | 線稿畫風預設愛用平塗黑 | 白天格子加 `Bright morning: the sky and the background are plain white; no black background` |
 | 學長雙手抱胸，兩隻手又從身體兩側垂下來，一共四隻手（擁有者抓到的） | 抱胸加全身構圖，模型把垂手的姿勢也畫上去 | 抱胸的格子取到腰部為止（waist-up），寫 `each hand tucked under the opposite upper arm; he has exactly two arms and two hands, and nothing hangs at his sides`；挑圖時數手 |
 | 揭露的黑影比箭竹矮 | 沒寫比例 | `so tall that its head and shoulders rise clearly above the tops of the bamboo`；最後一格同位置換成主角時寫 `the bamboo rises well above his head` |

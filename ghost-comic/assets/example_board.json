@@ -33,32 +33,53 @@
    "name": "我",
    "views": "The same character is drawn twice side by side: full body front view on the left, full body three-quarter view on the right, same height, standing upright, neutral expression.",
    "desc": "A 19-year-old Taiwanese university guy, thin, with a huge messy bird's-nest of black hair sticking out in every direction and one tall cowlick standing straight up on top, very thick straight black eyebrows, sleepy droopy half-closed eyes, a narrow chin, wearing an oversized plain grey hoodie, black basketball shorts and plastic flip-flops.",
-   "features": "鳥窩頭＋翹毛、超粗眉、下垂眼"
+   "features": "鳥窩頭＋翹毛、超粗眉、下垂眼",
+   "keywords": [
+    "bird's-nest",
+    "cowlick",
+    "thick eyebrows"
+   ]
   },
   "fang": {
    "name": "小芳",
    "views": "The same character is drawn twice side by side: full body front view on the left, full body three-quarter view on the right, same height, standing upright, neutral expression.",
    "desc": "A 21-year-old Taiwanese university woman with a noticeably long narrow face and a long pointed chin, very small narrow eyes like short thin lines, thin eyebrows, her black hair pulled up into a tight round bun on top of her head with two loose strands at the temples, wearing a loose horizontal-striped long-sleeve T-shirt and wide pants.",
-   "features": "長臉尖下巴、細線眼、頭頂包包頭"
+   "features": "長臉尖下巴、細線眼、頭頂包包頭",
+   "keywords": [
+    "long narrow face",
+    "narrow eyes",
+    "bun"
+   ]
   },
   "mom": {
    "name": "媽媽",
    "views": "The same character is drawn twice side by side: full body front view on the left, full body three-quarter view on the right, same height, standing upright, neutral expression.",
    "desc": "A 52-year-old Taiwanese mother with a round face, a big round bulbous nose, short tight curly permed black hair, thin-rimmed reading glasses pushed up on top of her head, wearing a plain black blouse and black trousers for a funeral, holding a mobile phone.",
-   "features": "大圓鼻、小捲燙髮、老花眼鏡推在頭上"
+   "features": "大圓鼻、小捲燙髮、老花眼鏡推在頭上",
+   "keywords": [
+    "round nose",
+    "curly perm",
+    "glasses"
+   ]
   },
   "ama": {
    "name": "陳阿嬤",
    "views": "The same character is drawn twice side by side: full body front view on the left, full body three-quarter view on the right, same height, standing hunched, neutral expression.",
    "desc": "A tiny hunched Taiwanese grandmother in her late eighties, very short cropped white hair like a buzz cut, a small deeply wrinkled face with sunken cheeks, very large protruding ears, a few chin whiskers, wearing a loose faded two-piece pajama set with a small flower print, barefoot, her hands clasped behind her back.",
-   "features": "白色短髮、大耳朵、碎花睡衣、手背在後"
+   "features": "白色短髮、大耳朵、碎花睡衣、手背在後",
+   "keywords": [
+    "cropped white hair",
+    "large ears",
+    "flower-print"
+   ]
   },
   "dog": {
    "name": "狗",
    "views": "The same dog is drawn twice side by side: standing side view on the left, sitting front view on the right.",
    "desc": "A medium-size Taiwanese mixed-breed dog drawn with very few simple clean lines and almost no fur texture, like a dog in a shonen manga: the short dark coat is one flat tone, a white chest patch, four white socks, a curled tail, upright pointed ears and a narrow muzzle.",
    "features": "線條簡化：深色平塗、白胸口、白襪子、捲尾巴",
-   "ref_crop": "left"
+   "ref_crop": "left",
+   "animal": true
   }
  },
  "scenes": {
@@ -76,19 +97,6 @@
    "mom": "Character scale: the mother is about 155 cm tall and plump.",
    "ama": "Character scale: the old woman is tiny, about 140 cm tall, a head and a half shorter than the young man; her head is no bigger than his head.",
    "dog": "Character scale: the dog is medium-size; standing, its back reaches the young man's knee."
-  },
-  "scene_refs": {
-   "room": [
-    "scene:room",
-    "panel:p7",
-    "panel:p19",
-    "panel:p2"
-   ],
-   "hall": [
-    "scene:hall",
-    "panel:p15",
-    "panel:p8"
-   ]
   }
  },
  "pages": [
@@ -126,7 +134,7 @@
       {
        "id": "p2",
        "refs": [
-        "me",
+        "me:bust",
         "dog",
         "panel:p7"
        ],
@@ -147,7 +155,8 @@
        ],
        "w": 1.0,
        "label": "主角登場：沙發上開筆電，狗睡腳邊",
-       "pass": 2
+       "pass": 2,
+       "scene": "room"
       }
      ]
     },
@@ -157,7 +166,7 @@
       {
        "id": "p3",
        "refs": [
-        "fang"
+        "fang:bust"
        ],
        "screen": true,
        "prompt": "Webcam view of a video call, introducing a character: the young woman from <image1> sits at a desk in her small dim bedroom at night, facing the camera at eye level, head and shoulders filling most of the frame, talking and gesturing with a pen, a desk lamp lighting one side of her face. Keep her long narrow face, long pointed chin, tiny narrow eyes and the tight bun on top of her head exactly as in <image1>. Only one person in the frame.",
@@ -180,7 +189,7 @@
       {
        "id": "p4",
        "refs": [
-        "fang"
+        "fang:head"
        ],
        "screen": true,
        "prompt": "Extreme close-up from a webcam: only the eyes and the bridge of the nose of the young woman from <image1> fill the frame; her tiny narrow eyes have stopped and slid to one side, looking past the camera at something behind the viewer. Fine screentone, tense. Only one person in the frame.",
@@ -211,7 +220,7 @@
       {
        "id": "p5",
        "refs": [
-        "fang"
+        "fang:head"
        ],
        "screen": true,
        "prompt": "Webcam view: the young woman from <image1>, head and shoulders, leaning slightly toward the camera, eyebrows raised, looking just over the camera rather than into it, lips parted as she asks a question. Keep her long narrow face, tiny narrow eyes and top bun exactly as in <image1>. Only one person in the frame: head and shoulders only, as seen by her laptop's webcam, not a full body.",
@@ -228,7 +237,7 @@
       {
        "id": "p6",
        "refs": [
-        "me",
+        "me:head",
         "scene:room"
        ],
        "prompt": "Medium close-up from the laptop's webcam position: the young man from <image1> on the sofa in the room from <image2>, relaxed, scratching his messy hair, half-smiling as he answers; behind him the dark hallway. Keep his bird's-nest hair, thick eyebrows, droopy eyes and grey hoodie exactly as in <image1>. It is late at night: only the floor lamp is on, and flat black shadows fill the corners, the window and the far end of the hallway. Only one person in the frame.",
@@ -245,7 +254,8 @@
         }
        ],
        "w": 0.5,
-       "label": "主角抓頭，輕鬆回答"
+       "label": "主角抓頭，輕鬆回答",
+       "scene": "room"
       }
      ]
     },
@@ -258,7 +268,7 @@
         {
          "id": "p7",
          "refs": [
-          "me",
+          "me:bust",
           "scene:room"
          ],
          "prompt": "Wide shot from the laptop's webcam position, the same angle as <image2>: the young man from <image1> sits on the sofa looking at the camera, small in the frame; behind him the narrow hallway opening is completely dark, the bathroom door at its end barely visible. Lots of empty black space around him. Keep his hair and clothes exactly as in <image1>. It is late at night: only the floor lamp is on, and flat black shadows fill the corners, the window and the far end of the hallway. Only one person in the frame.",
@@ -275,12 +285,13 @@
           }
          ],
          "h": 0.54,
-         "label": "鏡頭看主角，身後走廊一片黑"
+         "label": "鏡頭看主角，身後走廊一片黑",
+         "scene": "room"
         },
         {
          "id": "p9",
          "refs": [
-          "me"
+          "me:bust"
          ],
          "prompt": "Clean line art: the young man from <image1> sits on a sofa and twists around to look back over his shoulder toward the hallway behind him, one arm on the sofa back. The room around him is solid flat black; he is drawn in clean white line art, lit only by the laptop screen in front of him. Keep his bird's-nest hair with the tall cowlick, very thick eyebrows and grey hoodie exactly as in <image1>. Only one person in the frame.",
          "text": [
@@ -309,7 +320,8 @@
         }
        ],
        "w": 0.38,
-       "label": "走廊：門關著、燈關著（長格）"
+       "label": "走廊：門關著、燈關著（長格）",
+       "scene": "hall"
       }
      ]
     }
@@ -323,7 +335,7 @@
       {
        "id": "p9t",
        "refs": [
-        "me"
+        "me:bust"
        ],
        "prompt": "Clean line art, side view: the young man from <image1> sits on a sofa, half turned back toward a laptop on the coffee table, pointing with his thumb at a large flat-screen TV on a low cabinet beside him; the TV screen is solid black with a thin white reflection streak. The room is solid flat black; he is drawn in clean white line art lit by the laptop. Keep his bird's-nest hair, very thick eyebrows and grey hoodie exactly as in <image1>. Only one person in the frame.",
        "text": [
@@ -344,7 +356,7 @@
       {
        "id": "p10",
        "refs": [
-        "fang"
+        "fang:head"
        ],
        "screen": true,
        "prompt": "Webcam view: the young woman from <image1>, head and shoulders, not smiling now, chin down, her tiny narrow eyes fixed on a point just past the camera. Keep her long narrow face and top bun exactly as in <image1>. Only one person in the frame: head and shoulders only, as seen by her laptop's webcam, not a full body.",
@@ -401,12 +413,13 @@
         }
        ],
        "w": 0.48,
-       "label": "走廊燈亮，主角走回來"
+       "label": "走廊燈亮，主角走回來",
+       "scene": "hall"
       },
       {
        "id": "p13",
        "refs": [
-        "fang"
+        "fang:head"
        ],
        "screen": true,
        "prompt": "Tall narrow vertical composition. Tight webcam close-up of the young woman from <image1>: her face fills the frame, mouth set in a hard line, her tiny narrow eyes not blinking. Keep her long narrow face and top bun exactly as in <image1>. Only one person in the frame: head and shoulders only, as seen by her laptop's webcam, not a full body.",
@@ -428,7 +441,7 @@
       {
        "id": "p14",
        "refs": [
-        "me",
+        "me:bust",
         "panel:p19"
        ],
        "prompt": "Wide shot from the laptop's webcam position. Same room, camera angle and lighting as <image2>: late at night, only the floor lamp is on, the walls, ceiling and window are solid flat black, a pool of white lamplight falls on the sofa, and the hallway light is on, so the hallway behind the sofa is a bright white rectangle with the closed bathroom door at its end. The young man from <image1> is standing on the floor between the sofa and the coffee table, the coffee table in the foreground between him and the camera. His knees are bent in a half squat, his bottom just above the sofa cushion, about to sit down but frozen, hands hovering at his sides, eyes wide, staring straight at the camera. He is not on the table and not on the sofa back. Keep his bird's-nest hair, very thick eyebrows and grey hoodie exactly as in <image1>. Only one person in the frame. He is the same size in the frame as the young man in <image2>.",
@@ -446,7 +459,8 @@
        ],
        "w": 1.0,
        "label": "主角半蹲僵住（大格）",
-       "pass": 2
+       "pass": 2,
+       "scene": "room"
       }
      ]
     }
@@ -476,7 +490,8 @@
         }
        ],
        "w": 1.0,
-       "label": "走廊：什麼都沒有（同構圖）"
+       "label": "走廊：什麼都沒有（同構圖）",
+       "scene": "hall"
       }
      ]
     },
@@ -510,7 +525,7 @@
         {
          "id": "p17",
          "refs": [
-          "fang"
+          "fang:head"
          ],
          "screen": true,
          "prompt": "Webcam view: the young woman from <image1>, head and shoulders, her face gone pale, one hand pressed over her mouth, her tiny narrow eyes wide open for the first time, staring at her screen. Keep her long narrow face and top bun exactly as in <image1>. Only one person in the frame: head and shoulders only, as seen by her laptop's webcam, not a full body.",
@@ -532,7 +547,7 @@
         {
          "id": "p18",
          "refs": [
-          "fang"
+          "fang:head"
          ],
          "screen": true,
          "prompt": "Extreme webcam close-up of only the eyes of the young woman from <image1>: her tiny narrow eyes trembling, the pupils small, a bead of sweat at her temple. Only her eyes are in the frame; nobody else.",
@@ -554,7 +569,7 @@
         {
          "id": "p19",
          "refs": [
-          "me",
+          "me:bust",
           "scene:room"
          ],
          "prompt": "From the laptop's webcam position, the same angle as <image2>: the young man from <image1> sits on the sofa leaning toward the camera, puzzled, one eyebrow raised; behind him the hallway is lit, the bathroom door at its end closed. Keep his bird's-nest hair, thick eyebrows and grey hoodie exactly as in <image1>. It is late at night: only the floor lamp is on, and flat black shadows fill the corners, the window and the far end of the hallway. Only one person in the frame.",
@@ -571,7 +586,8 @@
           }
          ],
          "h": 0.62,
-         "label": "主角一臉疑惑"
+         "label": "主角一臉疑惑",
+         "scene": "room"
         }
        ]
       }
@@ -610,7 +626,8 @@
         }
        ],
        "w": 1.0,
-       "label": "小芳的螢幕：阿嬤站在廁所門口（同構圖）"
+       "label": "小芳的螢幕：阿嬤站在廁所門口（同構圖）",
+       "scene": "hall"
       }
      ]
     },
@@ -627,7 +644,7 @@
        "screen": true,
        "pip": "p5",
        "pass": 2,
-       "prompt": "Keep the same camera angle, room, lighting and the young man exactly as in <image2>. Add only this: behind him, the old woman from <image1> leans forward over the back of the sofa above his shoulder, smaller than him in the frame and partly hidden behind his head. Her face is in deep flat black shadow: only the outline of her very large ears and cropped white hair and a faint glint of two eyes can be seen, no other facial features. Her flower-print pajama sleeve shows at the edge of the lamplight. He has not noticed her. The old woman is human-sized and smaller than him: her head is no bigger than his head, and she stays behind the sofa back, never closer to the camera than he is. He is the same size and in the same place as in <image2>.",
+       "prompt": "Keep the same camera angle, room, lighting and the young man exactly as in <image2>. Add only this: behind him, the old woman from <image1> leans forward over the back of the sofa above his shoulder, smaller than him in the frame and partly hidden behind his head. Her face is in deep flat black shadow: only the outline of her very large ears and cropped white hair and a faint glint of two eyes can be seen, no other facial features. Her flower-print pajama sleeve shows at the edge of the lamplight. He has not noticed her. The old woman is human-sized and smaller than him: her head is no bigger than his head, and she stays behind the sofa back, never closer to the camera than he is. He is the same size and in the same place as in <image2>. Only one person in the frame.",
        "text": [
         {
          "kind": "screen",
@@ -641,7 +658,8 @@
         }
        ],
        "w": 1.0,
-       "label": "揭露（大格）：阿嬤彎腰在主角身後"
+       "label": "揭露（大格）：阿嬤彎腰在主角身後",
+       "scene": "room"
       }
      ]
     }
@@ -656,9 +674,9 @@
       0.97
      ],
      "refs": [
-      "ama"
+      "ama:head"
      ],
-     "prompt": "Extreme close-up of the deeply wrinkled lips and chin of the old woman from <image1>, moving as if murmuring, a few sparse teeth, chin whiskers, fine screentone.",
+     "prompt": "Extreme close-up of the deeply wrinkled lips and chin of the old woman from <image1>, moving as if murmuring, a few sparse teeth, chin whiskers, fine screentone. Only one person in the frame.",
      "text": [
       {
        "kind": "screen",
@@ -680,7 +698,7 @@
       {
        "id": "p23",
        "refs": [
-        "fang"
+        "fang:head"
        ],
        "screen": true,
        "prompt": "Webcam view: the young woman from <image1> leans hard toward the camera, face very close and slightly distorted by the lens, urgent, one hand reaching toward the keyboard as if to end the call. Keep her long narrow face, tiny narrow eyes and top bun exactly as in <image1>. Only one person in the frame: head and shoulders only, as seen by her laptop's webcam, not a full body.",
@@ -721,7 +739,7 @@
       {
        "id": "p25",
        "refs": [
-        "me",
+        "me:bust",
         "dog"
        ],
        "prompt": "Tall vertical composition. Early dawn, inside a small generic convenience store: the young man from <image1> sits on a stool at the window counter, exhausted, hood up, holding the dog from <image2> in his arms, a paper cup of coffee in front of him; outside the glass the street is pale and empty. No logos, no signs, no text anywhere. Keep his bird's-nest hair poking out of the hood, thick eyebrows and droopy eyes exactly as in <image1>, and the dog as in <image2>. Only one person in the frame.",
@@ -789,12 +807,12 @@
       {
        "id": "p28",
        "refs": [
-        "ama",
-        "mom",
+        "ama:bust",
+        "mom:bust",
         "scene:room"
        ],
        "flashback": true,
-       "prompt": "A memory scene in the living room from <image3>, the same angle, early evening, warm and soft: the old woman from <image1>, alive, sits small on the sofa with her hands in her lap, watching a television off-frame to the right with a faint smile; the woman from <image2> sets a plate of cut guava on the coffee table beside her. Keep the old woman's cropped white hair, large ears and flower-print pajamas exactly as in <image1>, and the woman's big round nose and curly perm exactly as in <image2>. Soft, light screentone.",
+       "prompt": "A memory scene in the living room from <image3>, the same angle, early evening, warm and soft: the old woman from <image1>, alive, sits small on the sofa with her hands in her lap, watching a television off-frame to the right with a faint smile; the woman from <image2> sets a plate of cut guava on the coffee table beside her. Keep the old woman's cropped white hair, large ears and flower-print pajamas exactly as in <image1>, and the woman's big round nose and curly perm exactly as in <image2>. Soft, light screentone. Exactly two people in the frame.",
        "text": [
         {
          "kind": "phone",
@@ -808,7 +826,12 @@
         }
        ],
        "w": 1.0,
-       "label": "回憶：阿嬤生前在我家看電視"
+       "label": "回憶：阿嬤生前在我家看電視",
+       "scene": "room",
+       "cast": [
+        "ama",
+        "mom"
+       ]
       }
      ]
     },
@@ -821,7 +844,7 @@
         {
          "id": "p29",
          "refs": [
-          "mom"
+          "mom:head"
          ],
          "prompt": "Close-up of the woman from <image1> holding a phone to her ear, eyes lowered, lips pressed together, morning light. Keep her big round nose, curly perm and the reading glasses on her head exactly as in <image1>. Only one person in the frame.",
          "text": [
@@ -837,7 +860,7 @@
         {
          "id": "p30",
          "refs": [
-          "ama"
+          "ama:head"
          ],
          "prompt": "Close-up of two middle-aged hands holding a neatly folded flower-print pajama top with the same pattern as the pajamas in <image1>, against a dark background, soft light.",
          "text": [
@@ -853,7 +876,8 @@
           }
          ],
          "h": 0.5,
-         "label": "手裡摺好的碎花睡衣"
+         "label": "手裡摺好的碎花睡衣",
+         "cast": []
         }
        ]
       },
@@ -884,7 +908,7 @@
         {
          "id": "p32",
          "refs": [
-          "me",
+          "me:bust",
           "dog",
           "panel:p19"
          ],
@@ -903,7 +927,8 @@
          ],
          "h": 0.64,
          "label": "現在：一個人在家，電視開著（較大格）",
-         "pass": 2
+         "pass": 2,
+         "scene": "room"
         }
        ]
       }
@@ -911,5 +936,9 @@
     }
    ]
   }
- ]
+ ],
+ "lights": {
+  "night_lamp": "Late at night: only the floor lamp is on; the walls, ceiling and window are solid flat black, a pool of white lamplight falls on the sofa.",
+  "morning": "Bright morning: the sky and the background are plain white with crisp shadows; no black background."
+ }
 }

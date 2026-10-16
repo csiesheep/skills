@@ -5,9 +5,11 @@
     py -X utf8 manga.py choose style=A
     py -X utf8 manga.py sheets                        # gate 2: 3 versions of every character and scene
     py -X utf8 manga.py choose me=1 fang=3 room=2 hall=3
-    py -X utf8 manga.py refs                          # single-view, grayscale references from the picks
+    py -X utf8 manga.py refs                          # single-view, grayscale references (plus :head and :bust crops)
     py -X utf8 manga.py plan                          # gate 3: every page as a wireframe with the real lettering
+    py -X utf8 manga.py lint                          # the pitfall table as checks; `panels` runs it and stops on errors
     py -X utf8 manga.py panels                        # pass 1 (2 candidates each, "n" overrides)
+    py -X utf8 manga.py review --page 3               # brief for an independent checker (references/qa_checklist.md)
     py -X utf8 manga.py contact p5 p10                # candidates side by side, for picking
     py -X utf8 manga.py choose p5=2 p10=1 ...
     py -X utf8 manga.py panels --pass 2               # panels that use other panels as references
@@ -33,6 +35,7 @@ import comfy  # noqa: E402
 
 WORK = Path.cwd()
 OUT = WORK / "out"
+BOARD = "board.json"
 
 # ---------------------------------------------------------------------------
 # fonts (Traditional Chinese with vertical punctuation forms)
@@ -74,7 +77,7 @@ def set_work(path: Path) -> None:
 
 
 def load_board() -> dict:
-    return json.loads((WORK / "board.json").read_text(encoding="utf-8"))
+    return json.loads((WORK / BOARD).read_text(encoding="utf-8"))
 
 
 def load_choices() -> dict:
@@ -177,12 +180,21 @@ def gen_size(box) -> tuple[int, int]:
 # ---------------------------------------------------------------------------
 
 
+def candidates(folder: Path, jid: str) -> list[Path]:
+    """Every candidate file of one panel or sheet (jid_1.png, jid_2.png, … jid_12.png), in number order."""
+    rx = re.compile(re.escape(jid) + r"_(\d+)\.png$")
+    found = [(int(m.group(1)), f) for f in folder.glob(f"{jid}_*.png") if (m := rx.match(f.name))]
+    return [f for _, f in sorted(found)]
+
+
 def job(kind: str, jid: str, prompt: str, refs: list[Path], w: int, h: int, n: int, seed: int, dest_dir: Path) -> list[str]:
     names = [comfy.upload(p) for p in refs]
     graph = comfy.build_graph(prompt, names, w, h, seed, n, f"ghost_comic/{kind}/{jid}")
     pid, images, wall, exec_s = comfy.run(graph)
+    # number after the existing candidates: a redraw must never overwrite the image already picked for the page
+    start = len(candidates(dest_dir, jid)) and max(int(f.stem.rsplit("_", 1)[1]) for f in candidates(dest_dir, jid))
     files = []
-    for k, img in enumerate(images, 1):
+    for k, img in enumerate(images, start + 1):
         dest = dest_dir / f"{jid}_{k}.png"
         comfy.fetch(img, dest)
         files.append(dest.name)
@@ -193,15 +205,175 @@ def job(kind: str, jid: str, prompt: str, refs: list[Path], w: int, h: int, n: i
     return files
 
 
+CROPS = ("full", "bust", "head")
+
+
+def char_ref(board: dict, ref: str) -> tuple[str, str] | None:
+    """(character id, crop) for a character reference such as "me", "me:head", "me:bust"; None for anything else."""
+    cid, _, crop = ref.partition(":")
+    if cid in board.get("characters", {}):
+        crop = crop or "full"
+        if crop not in CROPS:
+            raise SystemExit(f"unknown crop {ref!r}; use one of {', '.join(CROPS)}")
+        return cid, crop
+    return None
+
+
+def cast(board: dict, cell: dict) -> list[str]:
+    """Characters drawn in a panel. An explicit `cast` list wins (a character described in words only, or a sheet
+    used just for a pattern); otherwise the characters passed as references."""
+    if "cast" in cell:
+        return list(cell["cast"])
+    return list(dict.fromkeys(cr[0] for r in cell.get("refs", []) if (cr := char_ref(board, r))))
+
+
+def people(board: dict, cell: dict) -> list[str]:
+    """The cast without animals (`"animal": true`), for head counts."""
+    return [c for c in cast(board, cell) if not board["characters"].get(c, {}).get("animal")]
+
+
+def _explicit_scenes(board: dict) -> bool:
+    return any("scene" in c for _, c, _ in all_panels(board))
+
+
+def panel_scenes(board: dict, cell: dict) -> list[str]:
+    """Scene ids whose fixed layout applies to this panel. Explicit: the panel's `scene` field. A board that never
+    sets `scene` falls back to the old inference from references (consistency.scene_refs), which `lint` warns about:
+    a reference panel shot from a different viewpoint pulled in a layout it cannot show (tents seen from inside one)."""
+    if _explicit_scenes(board):
+        s = cell.get("scene")
+        return [] if not s else ([s] if isinstance(s, str) else list(s))
+    c = board.get("consistency", {})
+    refs = cell.get("refs", [])
+    return [sid for sid in c.get("scene", {}) if any(r in refs for r in c.get("scene_refs", {}).get(sid, [f"scene:{sid}"]))]
+
+
+def light_text(board: dict, cell: dict) -> str:
+    key = cell.get("light")
+    if not key:
+        return ""
+    v = board.get("lights", {}).get(key)
+    if v is None:
+        raise SystemExit(f"{cell['id']}: no light state {key!r} in board['lights']")
+    return v["text"] if isinstance(v, dict) else v
+
+
 def consistency(board: dict, cell: dict) -> str:
-    """Fixed scene-layout and character-scale sentences for whatever this panel shows (board["consistency"])."""
+    """Fixed scene-layout and character-scale sentences for what this panel shows (board["consistency"])."""
     c = board.get("consistency")
     if not c:
         return ""
-    refs = cell.get("refs", [])
-    out = [text for sid, text in c.get("scene", {}).items() if any(r in refs for r in c.get("scene_refs", {}).get(sid, [f"scene:{sid}"]))]
-    out += [text for cid, text in c.get("scale", {}).items() if cid in refs]
+    out = [c.get("scene", {})[sid] for sid in panel_scenes(board, cell) if sid in c.get("scene", {})]
+    out += [text for cid, text in c.get("scale", {}).items() if cid in cast(board, cell)]
     return " ".join(out)
+
+
+def compose_prompt(board: dict, ch: dict, cell: dict) -> str:
+    """Style prefix, the panel's own prompt, its lighting state, then scene layout and character scale."""
+    parts = [style_text(board, ch, "panel"), cell["prompt"], light_text(board, cell), consistency(board, cell)]
+    return " ".join(p.strip() for p in parts if p and p.strip())
+
+
+# ---------------------------------------------------------------------------
+# lint: the pitfall table in references/prompting.md, as checks that run before any GPU time is spent
+# ---------------------------------------------------------------------------
+
+_NEG = re.compile(r"\b(no|not|without|never|nothing|nobody)\b[^.;:]*$", re.I)
+_RISKY = [
+    ("warn", re.compile(r"\bwall of\b", re.I), "「wall of …」 gets drawn as a real wall; describe the things themselves (thin bamboo stalks) and add 'no walls'"),
+    ("warn", re.compile(r"\b(signs?|signboards?|posters?|banners?|labels?|menus?|captions?|placards?)\b", re.I), "anything that carries writing comes out as garbled text; leave it out or say 'no writing anywhere'"),
+    ("warn", re.compile(r"\b(dim|dimly|lit by|glowing|soft light|cinematic|realistic lighting)\b", re.I), "light words pull a line-art style toward grey photographic shading; say 'solid flat black' and 'clean white line art' instead"),
+    ("warn", re.compile(r"\b(red|pink|brown|blue|green|yellow|purple|orange|bluish|golden|beige)\b", re.I), "colour words leak into the black-and-white pages; describe tone or pattern instead"),
+    ("warn", re.compile(r"\b(halfway|about to)\b", re.I), "abstract actions get misdrawn (a hero on the coffee table); write positions: standing between X and Y, knees bent"),
+    ("warn", re.compile(r"\breflect(ion|ions|ed|s)?\b", re.I), "the model draws the person instead of a reflection; make the screen fill the frame and say 'nobody outside the screen'"),
+]
+_CROSSED = re.compile(r"\b(arms? crossed|crossed arms|folds? (his|her) arms|arms? folded|folded across)\b", re.I)
+_CLOSE = re.compile(r"\b(waist-up|bust shot|close-up|head-and-shoulders|head and shoulders)\b", re.I)
+_SEATED_OR_CLOSE = re.compile(r"\b(close-up|bust shot|head-and-shoulders|head and shoulders|waist-up|seated|sits|sitting|sit)\b", re.I)
+_FLAT = re.compile(r"\b(solid flat black|flat black|clean (white )?line art)\b", re.I)
+_HEADSHOT = re.compile(r"(close-up|head-and-shoulders|head and shoulders|bust shot)", re.I)
+_ONE = re.compile(r"\b(only one person|the only person|exactly one person|nobody else)\b", re.I)
+_TWO = re.compile(r"\bexactly two people\b", re.I)
+
+
+def _risky_hits(rx: re.Pattern, text: str) -> list[str]:
+    hits = []
+    for m in rx.finditer(text):
+        before = text[max(0, m.start() - 60):m.start()]
+        if not _NEG.search(before):
+            hits.append(m.group(0))
+    return hits
+
+
+def lint(board: dict, only: list[str] | None = None) -> list[tuple[str, str, str]]:
+    """[(panel id, 'error'|'warn', message)]. Errors stop `panels`; warnings are printed."""
+    out: list[tuple[str, str, str]] = []
+    passes = {c["id"]: c.get("pass", 1) for _, c, _ in all_panels(board)}
+    lights = board.get("lights", {})
+    scene_ids = set(board.get("consistency", {}).get("scene", {})) | set(board.get("scenes", {}))
+    if not _explicit_scenes(board) and board.get("consistency", {}).get("scene_refs"):
+        out.append(("board", "warn", "scene layouts are inferred from references (consistency.scene_refs); set `scene` on each panel instead"))
+    for _, cell, _ in all_panels(board):
+        pid = cell["id"]
+        if cell.get("fill") or (only and pid not in only):
+            continue
+        prompt, refs = cell.get("prompt", ""), cell.get("refs", [])
+        say = lambda lvl, msg: out.append((pid, lvl, msg))  # noqa: E731
+        mentioned = {int(n) for n in re.findall(r"<image(\d+)>", prompt)}
+        if mentioned and max(mentioned) > len(refs):
+            say("error", f"prompt mentions <image{max(mentioned)}> but the panel has {len(refs)} reference(s)")
+        for i in range(1, len(refs) + 1):
+            if i not in mentioned:
+                say("warn", f"reference {refs[i - 1]!r} (<image{i}>) is never mentioned; an unmentioned reference still drags its composition in")
+        for r in refs:
+            if r.startswith("panel:"):
+                src = r.split(":", 1)[1]
+                if src not in passes:
+                    say("error", f"{r}: no such panel")
+                elif passes[src] >= cell.get("pass", 1):
+                    say("error", f"{r} is drawn in pass {passes[src]}, so this panel must be in a later pass (now {cell.get('pass', 1)})")
+            elif r.startswith("scene:") and r.split(":", 1)[1] not in board.get("scenes", {}):
+                say("error", f"{r}: no such scene")
+            elif not r.startswith(("panel:", "scene:", "file:")) and char_ref(board, r) is None:
+                say("error", f"{r}: not a character, scene, panel or file reference")
+        for s in ([cell["scene"]] if isinstance(cell.get("scene"), str) else cell.get("scene", []) or []):
+            if s not in scene_ids:
+                say("error", f"scene {s!r} is not defined")
+        if cell.get("light") and cell["light"] not in lights:
+            say("error", f"light state {cell['light']!r} is not in board['lights']")
+        for lvl, rx, msg in _RISKY:
+            if rx is _RISKY[2][1] and _FLAT.search(prompt):
+                continue  # light words are fine once the flat-black wording that fixes them is there
+            hits = _risky_hits(rx, prompt)
+            if hits:
+                say(lvl, f"{', '.join(dict.fromkeys(h.lower() for h in hits))}: {msg}")
+        if _CROSSED.search(prompt) and not _CLOSE.search(prompt):
+            say("error", "crossed arms in a full-body shot grew two extra hands; make it waist-up and say 'exactly two arms and two hands'")
+        heads = people(board, cell)
+        if len(heads) == 1 and not _ONE.search(prompt):
+            say("warn", "one character: add 'Only one person in the frame' (character sheets carry two figures)")
+        if len(heads) == 2 and not _TWO.search(prompt):
+            say("warn", "two characters: add 'Exactly two people in the frame'")
+        for r in refs:
+            cr = char_ref(board, r)
+            if cr and cr[1] == "full" and cr[0] in heads and _SEATED_OR_CLOSE.search(prompt):
+                say("warn", f"{r}: a full-body standing sheet keeps the pose standing in seated and close-up panels; use {cr[0]}:head or {cr[0]}:bust")
+        if _HEADSHOT.search(prompt) and any(r.startswith("scene:") for r in refs):
+            say("warn", "a close-up with a scene reference: the sheet's furniture comes in behind the character even when the "
+                        "prompt says not to (a second table behind 阿凱, six times); leave the scene out and describe the background")
+        for cid in cast(board, cell):
+            kws = board["characters"][cid].get("keywords", [])
+            if kws and not any(k.lower() in prompt.lower() for k in kws):
+                say("warn", f"{cid}: none of its features ({', '.join(kws)}) is repeated in the prompt")
+    return out
+
+
+def print_lint(issues: list[tuple[str, str, str]]) -> int:
+    for pid, lvl, msg in issues:
+        print(f"{pid:<6} {lvl.upper():<5} {msg}")
+    errors = sum(1 for _, lvl, _ in issues if lvl == "error")
+    print(f"{errors} error(s), {len(issues) - errors} warning(s)")
+    return errors
 
 
 def text_only(board: dict, cell: dict) -> str:
@@ -212,8 +384,8 @@ def text_only(board: dict, cell: dict) -> str:
     for r in cell.get("refs", []):
         if r.startswith("scene:"):
             descs.append(board["scenes"][r.split(":", 1)[1]])
-        elif r in board.get("characters", {}):
-            descs.append(board["characters"][r]["desc"])
+        elif cr := char_ref(board, r):
+            descs.append(board["characters"][cr[0]]["desc"])
     return p + (" " + " ".join(descs) if descs else "")
 
 
@@ -283,7 +455,7 @@ def pick_sheet(b: dict, ids: list[str], name: str, titles: dict) -> None:
     cw = 600
     rows = []
     for sid in ids:
-        files = sorted((OUT / "sheets").glob(f"{sid}_[0-9].png"))
+        files = candidates(OUT / "sheets", sid)
         if not files:
             continue
         rh = round(cw * 1024 / 1536)
@@ -344,24 +516,61 @@ def cmd_refs(a) -> None:
     dest.mkdir(parents=True, exist_ok=True)
     for sid, path in ch["sheets"].items():
         im = Image.open(OUT / path).convert("L")
-        crop = b.get("characters", {}).get(sid, {}).get("ref_crop", "left") if sid in b.get("characters", {}) else "none"
+        char = b.get("characters", {}).get(sid)
+        crop = char.get("ref_crop", "left") if char else "none"
         if crop == "left":
             im = im.crop((0, 0, im.width // 2, im.height))
         elif crop == "right":
             im = im.crop((im.width // 2, 0, im.width, im.height))
-        out = dest / f"{sid}.png"
-        im.convert("RGB").save(out)
+        im.convert("RGB").save(dest / f"{sid}.png")
         ch["refs"][sid] = f"refs/{sid}.png"
+        if char:  # head and bust: identity without the sheet's standing pose
+            for kind, box in figure_crops(im, char.get("ref_boxes", {})).items():
+                im.crop(box).convert("RGB").save(dest / f"{sid}_{kind}.png")
+                ch["refs"][f"{sid}:{kind}"] = f"refs/{sid}_{kind}.png"
     save_choices(ch)
     print(json.dumps(ch["refs"], ensure_ascii=False))
 
 
-def ref_path(ref: str, ch: dict) -> Path:
+def figure_crops(im: Image.Image, override: dict | None = None) -> dict[str, tuple[int, int, int, int]]:
+    """Head and bust boxes for the single figure on a light background. The figure's extent comes from the ink;
+    the head is centred on the ink of the figure's top rows. `override` takes {"head": [x0, y0, x1, y1]} as fractions."""
+    g = im.convert("L")
+    w, h = g.size
+    out: dict[str, tuple[int, int, int, int]] = {}
+    for kind, fr in (override or {}).items():
+        out[kind] = (round(fr[0] * w), round(fr[1] * h), round(fr[2] * w), round(fr[3] * h))
+    mask = g.point(lambda v: 255 if v < 200 else 0)
+    bbox = mask.getbbox()
+    if not bbox:
+        return out
+    x0, y0, x1, y1 = bbox
+    fh = y1 - y0
+    top = mask.crop((x0, y0, x1, y0 + max(1, round(fh * 0.12))))
+    tb = top.getbbox()
+    cx = x0 + ((tb[0] + tb[2]) / 2 if tb else (x1 - x0) / 2)
+
+    def box(cy: float, side: float) -> tuple[int, int, int, int]:
+        bx0, by0 = max(0, round(cx - side / 2)), max(0, round(cy - side / 2))
+        return bx0, by0, min(w, round(bx0 + side)), min(h, round(by0 + side))
+
+    out.setdefault("head", box(y0 + fh * 0.13, fh * 0.30))
+    out.setdefault("bust", box(y0 + fh * 0.27, fh * 0.58))
+    return out
+
+
+def ref_path(ref: str, ch: dict, board: dict | None = None) -> Path:
     if ref.startswith("panel:"):
         return OUT / "panels" / ch["panels"][ref.split(":", 1)[1]]
     if ref.startswith("file:"):
         return OUT / ref.split(":", 1)[1]
-    sid = "scene_" + ref.split(":", 1)[1] if ref.startswith("scene:") else ref
+    if ref.startswith("scene:"):
+        sid = "scene_" + ref.split(":", 1)[1]
+    else:
+        cid, _, crop = ref.partition(":")
+        sid = cid if crop in ("", "full") else f"{cid}:{crop}"
+        if sid != cid and sid not in ch["refs"]:
+            raise SystemExit(f"{ref}: no {crop} crop yet; run `manga.py refs` after picking the sheet")
     if sid in ch["refs"]:
         return OUT / ch["refs"][sid]
     return OUT / ch["sheets"][sid]
@@ -370,18 +579,66 @@ def ref_path(ref: str, ch: dict) -> Path:
 def cmd_panels(a) -> None:
     b = load_board()
     ch = load_choices()
-    style = style_text(b, ch, "panel")
-    for _, cell, box in all_panels(b):
-        if cell.get("fill"):
-            continue
-        if a.only and cell["id"] not in a.only:
-            continue
-        if not a.only and cell.get("pass", 1) != a.pass_:
-            continue
+    todo = [(cell, box) for _, cell, box in all_panels(b) if not cell.get("fill")
+            and (cell["id"] in a.only if a.only else cell.get("pass", 1) == a.pass_)]
+    issues = lint(b, [c["id"] for c, _ in todo])
+    if issues:
+        errors = print_lint(issues)
+        if errors and not a.force:
+            raise SystemExit("lint errors: fix them, or pass --force to draw anyway")
+    for cell, box in todo:
         w, h = gen_size(box)
-        refs = [ref_path(r, ch) for r in cell["refs"]]
-        prompt = f"{style} {cell['prompt']} {consistency(b, cell)}".strip()
-        job("panels", cell["id"], prompt, refs, w, h, cell.get("n", a.n), a.seed or random.randrange(2**31), OUT / "panels")
+        refs = [ref_path(r, ch, b) for r in cell["refs"]]
+        job("panels", cell["id"], compose_prompt(b, ch, cell), refs, w, h, cell.get("n", a.n),
+            a.seed or random.randrange(2**31), OUT / "panels")
+
+
+def cmd_lint(a) -> None:
+    raise SystemExit(1 if print_lint(lint(load_board(), a.only)) else 0)
+
+
+def cmd_review(a) -> None:
+    """A brief for an independent checker (references/qa_checklist.md): for each panel, what must be in it and every
+    candidate's path. The checker is a fresh subagent: the one who wrote the prompts sees what was meant, not what is there."""
+    b = load_board()
+    ch = load_choices()
+    ids = list(a.ids or [])
+    if a.page:
+        ids += [c["id"] for c, _ in page_cells(b, b["pages"][a.page - 1])]
+    if a.unpicked:
+        ids += [c["id"] for _, c, _ in all_panels(b) if not c.get("fill") and c["id"] not in ch["panels"]]
+    ids = list(dict.fromkeys(i for i in ids if not find_panel(b, i).get("fill")))
+    if not ids:
+        raise SystemExit("nothing to review")
+    scale = b.get("consistency", {}).get("scale", {})
+    L = [f"# 格子檢查：{', '.join(ids)}", "",
+         "照 qa_checklist.md 逐張檢查下面每一張候選圖，每張都要開原圖看，不要看縮圖。", ""]
+    for pid in ids:
+        cell = find_panel(b, pid)
+        files = candidates(OUT / "panels", pid)
+        heads, everyone = people(b, cell), cast(b, cell)
+        L += [f"## {pid}：{cell.get('label', '')}", ""]
+        L.append(f"- 人數：剛好 {len(heads)} 人" + ("（" + "、".join(b['characters'][c].get('name', c) for c in heads) + "）" if heads else "，畫面上不該有人"))
+        animals = [c for c in everyone if c not in heads]
+        if animals:
+            L.append("- 動物：" + "、".join(b['characters'][c].get('name', c) for c in animals) + "，各一隻")
+        for c in everyone:
+            ci = b["characters"][c]
+            L.append(f"- {ci.get('name', c)} 的特徵：{ci.get('features', '')}。{scale.get(c, '')}")
+        if cell.get("light"):
+            L.append(f"- 光線：{light_text(b, cell)}")
+        for sid in panel_scenes(b, cell):
+            L.append(f"- 場景：{b.get('consistency', {}).get('scene', {}).get(sid, sid)}")
+        L.append(f"- 畫面要的是：{cell['prompt']}")
+        L.append("- 候選：")
+        L += [f"  - {f}" for f in files] or ["  - （還沒畫）"]
+        L.append("")
+    dest = OUT / "review"
+    dest.mkdir(parents=True, exist_ok=True)
+    name = a.name or (f"page{a.page}" if a.page else ("unpicked" if a.unpicked else "_".join(ids[:4])))
+    p = dest / f"{name}.md"
+    p.write_text("\n".join(L), encoding="utf-8")
+    print(p)
 
 
 def cmd_contact(a) -> None:
@@ -389,7 +646,7 @@ def cmd_contact(a) -> None:
     files = []
     for jid in a.ids:
         for d in ("panels", "sheets", "styles"):
-            files += sorted((OUT / d).glob(f"{jid}_[0-9].png"))
+            files += candidates(OUT / d, jid)
     if not files:
         raise SystemExit("no candidates found")
     cw, cols = a.width, a.cols
@@ -673,6 +930,7 @@ def cmd_pages(a) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--work", default=".", help="work folder with board.json (default: current folder)")
+    ap.add_argument("--board", default="board.json", help="board file name inside the work folder")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("check")
     st = sub.add_parser("styles")
@@ -683,6 +941,14 @@ def main() -> None:
     p = sub.add_parser("panels")
     p.add_argument("--pass", dest="pass_", type=int, default=1)
     p.add_argument("--n", type=int, default=2)
+    p.add_argument("--force", action="store_true", help="draw even if lint reports errors")
+    li = sub.add_parser("lint")
+    li.add_argument("--only", type=lambda v: v.split(","), default=None)
+    rv = sub.add_parser("review")
+    rv.add_argument("ids", nargs="*")
+    rv.add_argument("--page", type=int, default=None)
+    rv.add_argument("--unpicked", action="store_true")
+    rv.add_argument("--name", default=None)
     for x in (s, p):
         x.add_argument("--seed", type=int, default=0)
         x.add_argument("--only", type=lambda v: v.split(","), default=None)
@@ -699,7 +965,10 @@ def main() -> None:
     pg.add_argument("--pages", type=lambda v: [int(x) for x in v.split(",")], default=None)
     a = ap.parse_args()
     set_work(Path(a.work))
+    global BOARD
+    BOARD = a.board
     {"check": cmd_check, "styles": cmd_styles, "sheets": cmd_sheets, "choose": cmd_choose, "refs": cmd_refs,
+     "lint": cmd_lint, "review": cmd_review,
      "plan": cmd_plan, "panels": cmd_panels, "contact": cmd_contact, "pages": cmd_pages}[a.cmd](a)
 
 

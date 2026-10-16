@@ -189,3 +189,12 @@ each), and a wireframe of every page with the real lettering. Learned on the fir
 - the strongest device is the same framing three times empty and a fourth time with the ghost,
   seen only inside the other person's screen
 
+After the second comic (6 pages, 32 panels, about 61 GPU minutes) the pitfalls became tools:
+`lint` checks prompts against the failure table before any GPU time (crossed arms in a
+full-body shot, a reference the prompt never mentions, a full-body sheet in a close-up, words
+that draw walls, signs or photographic light) and `panels` refuses to draw on errors; `refs`
+adds head and bust crops, which stopped a standing sheet from keeping a seated friend standing;
+panels name their `scene` and `light` instead of having them inferred from references; and
+`review` writes a brief for a fresh subagent that opens every candidate and counts heads,
+hands and feet, because the four-handed club leader got past the one who wrote the prompts.
+
