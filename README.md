@@ -26,6 +26,7 @@ trigger on the phrases listed in its frontmatter.
 | [`h3-reference-to-video`](h3-reference-to-video/SKILL.md) | Several pictures of one character (e.g. a three-view) in, a video with sound out, with MiniMax-H3 reference-to-video on a local ComfyUI. The pictures hold the look; the prompt says what happens. |
 | [`h3-multiframe-video`](h3-multiframe-video/SKILL.md) | Same engine, but pictures are pinned to seconds of the output (side at 2 s, back at 4 s...) and H3 fills the motion between them. |
 | [`h3-character-replacement`](h3-character-replacement/SKILL.md) | A short clip plus a picture of a new character in; the same clip out with the subject redrawn as that character, keeping motion, timing and audio. SAM3 masks the subject, MiniMax-H3 reference-to-video does the rest. Consent-gated. |
+| [`ghost-story`](ghost-story/SKILL.md) | A Taiwanese ghost story in the voice of a PTT marvel (飄板) 經驗 post, from a skeleton sampled out of 9,395 annotated marvel posts. Setting, mechanism, ending, length, narration style and taste (直接 or 留白) are options in plain Chinese; Claude writes it, reviews it against a rubric, and revises. |
 | [`story-skill-builder`](story-skill-builder/SKILL.md) | Building a generator skill for one kind of short text (鬼故事, 笑話, 心靈雞湯…) from a corpus whose readers left a signal: scrape, label structure with Claude, weight by reception, derive rules from the high/low contrast, calibrate a pairwise judge, blind-test with the owner, package. The pipeline behind `ghost-story`, with gates where the owner decides. |
 
 ### agent-team-delivery
@@ -125,6 +126,31 @@ the source depended on the seed.
 Because it swaps identities in real footage on an uncensored model set, it requires the
 consent of every real person involved and refuses minors, sexual content of real people
 and deceptive impersonation before it runs.
+
+### ghost-story
+
+Distilled from a pipeline that scraped PTT's marvel board (2003 to 2026: `[經驗]`,
+`[真實]`, `[翻譯]` posts and the digest), merged serials, deduplicated, and had Claude
+Opus 5.5 label 9,395 units for setting, horror mechanism, ending, beat proportions, how
+much the ghost shows, and voice. Push counts were turned into percentiles within the same
+year and tag, so 2015's push-happy board and 2025's quiet one compare fairly. The skill
+ships the resulting sampling table (structure and paraphrased one-line premises only, no
+original text, titles or authors) and a stdlib script that samples a skeleton from it;
+the writing, review and revision are Claude's. What the data said:
+
+- PTT readers push concrete stories: dialogue (80% of top posts, 57% of low ones), a
+  specific place, a ghost that actually shows up. A ghost that never appears scores
+  lowest on pushes and on how often readers write 好毛
+- popular is not scary: explained endings get more pushes but fewer 好毛 and more 虛;
+  twist endings get fewer pushes and the most 好毛
+- a 1-10 judge could not tell real top posts from low ones (AUC about 0.5); asking
+  "which of these two" picked the more-pushed post 91% of the time and the scarier one
+  93% of the time, with no position bias
+- one blind reader preferred restrained stories while the reader data preferred direct
+  ones, so taste is an option (`--taste 直接|留白`) rather than a rule
+
+Generated stories are fiction. The skill tells the user to post them as `[創作]` with an AI
+note, never as a `[經驗]` that happened.
 
 ### story-skill-builder
 
