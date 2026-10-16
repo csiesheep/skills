@@ -1,4 +1,7 @@
-"""指令入口：py -m storypipe.cli <collect|annotate|stats|generate> ..."""
+"""指令入口：py -m storypipe.cli <index|fetch|corpus|annotate|stats|generate|...> ...
+
+資料都在目前工作目錄的 data/ 底下；類型由 STORYPIPE_GENRE 決定（預設 genres/ghost-story）。
+"""
 from __future__ import annotations
 
 import argparse
@@ -7,14 +10,15 @@ import sys
 import time
 from pathlib import Path
 
+from .genre import GENRE
 from .llm import DEFAULT_MODELS, make_backend
-from .taxonomy import ENDINGS, MECHANISMS, SETTINGS
 
-RAW = Path("data/raw/ptt_marvel.jsonl")
-ANNOTATED = Path("data/annotated.opus55.v2.jsonl")  # 預設：Opus 5.5 + prompt v2；種子在 data/annotated.seed.jsonl
+RAW = Path(f"data/raw/{GENRE.source.kind}_{GENRE.source.board or GENRE.name}.jsonl")
+ANNOTATED = Path("data/annotated.jsonl")
 WEIGHTS = Path("data/weights.json")
 REPORT = Path("data/report.md")
 OUT_DIR = Path("data/out")
+DEFAULT_INDEX = GENRE.source.tags.get(GENRE.source.default_tag, f"data/index/{GENRE.source.board}_{GENRE.source.default_tag}.jsonl")
 
 
 def cmd_collect(a: argparse.Namespace) -> int:
@@ -53,18 +57,18 @@ def cmd_fetch(a: argparse.Namespace) -> int:
 
 
 def cmd_fetch_early(a: argparse.Namespace) -> int:
-    """早期文章：[真實] 標籤全收，加上看板 2003 到 2006 年的列表頁（排除創作、轉貼等），都不看推文數。"""
+    """早期文章：某個標籤全收，加上看板早年的列表頁（排除創作、轉貼等），都不看推文數。寫給 marvel 板，別的板要看列表格式。"""
     from . import ptt_index
     from .collect_ptt import fetch_list, load_done_ids
 
     have: set[str] = set()
     for f in Path("data/raw").glob("*.jsonl"):
         have |= load_done_ids(f)
-    zs = ptt_index.select_unfiltered(ptt_index.load(Path(a.zhenshi_index)), require_tag="[真實]", source_tag="真實", exclude_ids=have)
+    zs = ptt_index.select_unfiltered(ptt_index.load(Path(a.zhenshi_index)), require_tag=f"[{a.all_tag}]", source_tag=a.all_tag, exclude_ids=have)
     zs_ids = {r["id"] for r in zs}
     early_rows = [r for r in ptt_index.load(Path(a.early_index)) if r["ts"] and r["ts"] < a.until_ts]
     early = ptt_index.select_unfiltered(ptt_index.early_title_ok(early_rows), source_tag="早期", exclude_ids=have | zs_ids)
-    print(f"[真實] {len(zs)} 篇，早期列表 {len(early)} 篇（已抓過的跳過）", flush=True)
+    print(f"[{a.all_tag}] {len(zs)} 篇，早期列表 {len(early)} 篇（已抓過的跳過）", flush=True)
     n = fetch_list(zs + early, Path(a.out), log=lambda m: print(m, flush=True))
     print(f"新增 {n} 篇 → {a.out}")
     return 0
@@ -94,7 +98,7 @@ def cmd_annotate(a: argparse.Namespace) -> int:
 
     backend = make_backend(a.backend)
     only = set(load_ids(Path(a.ids_from))) if a.ids_from else None
-    print(f"backend={backend.name} model={a.model} effort={a.effort} workers={a.workers}"
+    print(f"genre={GENRE.name} backend={backend.name} model={a.model} effort={a.effort} workers={a.workers}"
           + (f" ids={len(only)} from {a.ids_from}" if only is not None else ""))
     n = annotate_file(
         Path(a.raw), Path(a.out), backend, model=a.model, limit=a.limit,
@@ -109,7 +113,7 @@ def cmd_stats(a: argparse.Namespace) -> int:
 
     excl = ("translated",) if a.exclude_translated else ()
     w = run(Path(a.annotated), Path(a.out), Path(a.report), exclude_markers=excl, corpus_path=Path(a.corpus))
-    print(f"故事 {w['n_stories']} 個，有分數 {w.get('n_scored')}，高分組 {w['n_top']}、低分組 {w.get('n_low')} → {a.out}，報告 {a.report}")
+    print(f"{GENRE.unit} {w['n_stories']} 個，有分數 {w.get('n_scored')}，高分組 {w['n_top']}、低分組 {w.get('n_low')} → {a.out}，報告 {a.report}")
     return 0
 
 
@@ -145,32 +149,30 @@ def cmd_options(a: argparse.Namespace) -> int:
 
 def cmd_generate(a: argparse.Namespace) -> int:
     from .generate import generate, save_result
-    from .options import OptionError, resolve_ghost, resolve_length, resolve_list, resolve_style
+    from .options import OptionError, resolve_cap, resolve_length, resolve_list, resolve_style, resolve_taste
 
     try:
-        settings = resolve_list("setting", a.setting)
-        mechanisms = resolve_list("mechanism", a.mechanism)
-        endings = resolve_list("ending", a.ending)
-        ghost = resolve_ghost(a.ghost)
-        length = resolve_length(a.length if a.length is not None else a.chars)
+        choices = {ax.key: resolve_list(ax.key, getattr(a, ax.flag.replace("-", "_"))) for ax in GENRE.axes}
+        cap = resolve_cap(getattr(a, GENRE.cap.flag.replace("-", "_")))
+        length = resolve_length(a.length)
         style = resolve_style(a.style)
-        from .options import resolve_taste
-
-        taste_name, rules = resolve_taste(a.taste) if a.taste else (None, a.rules)
+        taste_name, rules = resolve_taste(a.taste) if a.taste else (None, a.rules or GENRE.default_rules)
     except OptionError as e:
-        print(f"選項錯誤：{e}\n用 `py -m storypipe.cli options` 看所有選項。")
+        print(f"選項錯誤：{e}\n用 `options` 指令看所有選項。")
         return 2
     target = length[0] if length and length[0] == length[1] else None
     length_range = length if length and length[0] != length[1] else None
 
     backend = make_backend(a.backend)
     weights = json.loads(Path(a.weights).read_text(encoding="utf-8"))
+    if weights.get("genre") not in (None, GENRE.name):
+        print(f"警告：{a.weights} 是 {weights.get('genre')} 的權重表，目前類型是 {GENRE.name}")
     models = dict(DEFAULT_MODELS)
     if a.write_model:
         models["write"] = a.write_model
     if a.judge_model:
         models["judge"] = a.judge_model
-    print(f"backend={backend.name} write={models['write']} judge={models['judge']}")
+    print(f"genre={GENRE.name} backend={backend.name} write={models['write']} judge={models['judge']} rules={rules}")
     for i in range(a.n):
         seed = a.seed + i if a.seed is not None else None
         res = generate(
@@ -179,16 +181,14 @@ def cmd_generate(a: argparse.Namespace) -> int:
             seed=seed,
             max_rounds=a.rounds,
             models=models,
-            setting=settings,
-            mechanism=mechanisms,
-            ending=endings,
-            ghost_max=ghost,
+            cap_max=cap,
             target_chars=target,
             length_range=length_range,
             style=style.key,
             style_note=a.style_note or "",
             notes=a.note or [],
             rules=rules,
+            **choices,
         )
         stem = f"{time.strftime('%Y%m%d-%H%M%S')}_{res['seed']}"
         md, js = save_result(res, Path(a.out_dir), stem)
@@ -202,43 +202,45 @@ def cmd_generate(a: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="ghost", description="鬼故事產生器")
+    src = GENRE.source
+    p = argparse.ArgumentParser(prog=GENRE.name, description=f"{GENRE.label}產生器管線（類型設定：{GENRE.path}）")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     c = sub.add_parser("collect", help="抓 PTT 文章")
-    c.add_argument("--board", default="marvel")
-    c.add_argument("--query", default="經驗 recommend:30", help="PTT 站內搜尋字串，recommend:N 篩推文數")
+    c.add_argument("--board", default=src.board)
+    c.add_argument("--query", default=src.default_query or src.default_tag, help="PTT 站內搜尋字串，recommend:N 篩推文數")
     c.add_argument("--max", type=int, default=200)
     c.add_argument("--max-pages", type=int, default=50)
     c.add_argument("--out", default=str(RAW))
     c.set_defaults(fn=cmd_collect)
 
     ix = sub.add_parser("index", help="建 PTT 搜尋索引（只翻列表頁）")
-    ix.add_argument("--board", default="marvel")
-    ix.add_argument("--query", nargs="+", default=["經驗"])
+    ix.add_argument("--board", default=src.board)
+    ix.add_argument("--query", nargs="+", default=[src.default_tag])
     ix.add_argument("--max-pages", type=int, default=2000)
     ix.set_defaults(fn=cmd_index)
 
     fe = sub.add_parser("fetch", help="從索引挑文章抓本文（推文 ≥ N 全部 + 隨機低推文對照組）")
-    fe.add_argument("--index", default="data/index/marvel_經驗.jsonl")
+    fe.add_argument("--index", default=DEFAULT_INDEX)
     fe.add_argument("--min-nrec", type=int, default=30)
     fe.add_argument("--control", type=int, default=500, help="對照組篇數（推文 ≤ 9）")
     fe.add_argument("--control-ratio", type=float, default=None, help="對照組篇數改成高推文篇數 × 這個比例")
-    fe.add_argument("--tag", default="[經驗]", help="標題要含的標籤")
+    fe.add_argument("--tag", default=f"[{src.default_tag}]", help="標題要含的標籤")
     fe.add_argument("--source-tag", default=None, help="每筆加 source_tag 欄位，例如 翻譯")
     fe.add_argument("--seed", type=int, default=0)
     fe.add_argument("--out", default=str(RAW))
     fe.set_defaults(fn=cmd_fetch)
 
-    fl = sub.add_parser("fetch-early", help="抓早期文章：[真實] 全收 + 看板 2003 到 2006 年列表（不看推文數）")
-    fl.add_argument("--zhenshi-index", default="data/index/marvel_真實.jsonl")
-    fl.add_argument("--early-index", default="data/index/marvel_board_early.jsonl")
+    fl = sub.add_parser("fetch-early", help="抓早期文章：某標籤全收 + 看板早年列表（不看推文數）；寫給 marvel 板")
+    fl.add_argument("--all-tag", default="真實", help="整個標籤全收的標籤名")
+    fl.add_argument("--zhenshi-index", default=f"data/index/{src.board}_真實.jsonl")
+    fl.add_argument("--early-index", default=f"data/index/{src.board}_board_early.jsonl")
     fl.add_argument("--until-ts", type=int, default=1167609600, help="早期列表只收這個時間以前的（預設 2007-01-01）")
-    fl.add_argument("--out", default="data/raw/ptt_marvel_early.jsonl")
+    fl.add_argument("--out", default=f"data/raw/ptt_{src.board}_early.jsonl")
     fl.set_defaults(fn=cmd_fetch_early)
 
-    dg = sub.add_parser("digest", help="抓精華區經驗區")
-    dg.add_argument("--out", default="data/raw/ptt_marvel_digest.jsonl")
+    dg = sub.add_parser("digest", help="抓精華區（寫給 marvel 板的經驗區）")
+    dg.add_argument("--out", default=f"data/raw/ptt_{src.board}_digest.jsonl")
     dg.set_defaults(fn=cmd_digest)
 
     co = sub.add_parser("corpus", help="合併系列、去重 → data/corpus.jsonl（標註的輸入）")
@@ -274,27 +276,26 @@ def build_parser() -> argparse.ArgumentParser:
     st.add_argument("--annotated", default=str(ANNOTATED))
     st.add_argument("--out", default=str(WEIGHTS))
     st.add_argument("--report", default=str(REPORT))
-    st.add_argument("--exclude-translated", action="store_true", help="排除翻譯／轉述外國故事（預設納入）")
+    st.add_argument("--exclude-translated", action="store_true", help="排除 voice_markers 有 translated 的（預設納入）")
     st.add_argument("--corpus", default="data/corpus.jsonl", help="用來查來源、年份、推文數；不存在就退回舊算法")
     st.set_defaults(fn=cmd_stats)
 
-    g = sub.add_parser("generate", help="產生故事（規劃 → 寫 → 評審 → 改）")
+    g = sub.add_parser("generate", help=f"產生{GENRE.unit}（規劃 → 寫 → 評審 → 改）")
     g.add_argument("--weights", default=str(WEIGHTS))
     g.add_argument("--n", type=int, default=1, help="產幾篇")
     g.add_argument("--seed", type=int, default=None)
     g.add_argument("--rounds", type=int, default=3, help="最多評審幾輪")
-    g.add_argument("--setting", default=None, help="場景，可多個用逗號分開，中文也行：校園,宿舍")
-    g.add_argument("--mechanism", default=None, help="主要機制，可多個：附身,事後")
-    g.add_argument("--ending", default=None, help="結尾：開放結局、有解釋、反轉、淡出，可多個")
-    g.add_argument("--ghost", default=None, help="鬼的露出上限：0 到 3，或 不露面、間接、一瞬間、清楚")
-    g.add_argument("--length", default=None, help="長度：字數 1500、範圍 1500-2500，或 極短、短、中、長、超長")
-    g.add_argument("--chars", default=None, help="同 --length（舊名稱）")
-    g.add_argument("--style", default=None, help="風格：PTT 鄉民（預設）、簡約、幽默、口述、文學、紀錄、長輩講古")
+    for ax in GENRE.axes:
+        ex = "、".join(list(ax.aliases)[:2] or list(ax.values)[:2])
+        g.add_argument(f"--{ax.flag}", default=None, help=f"{ax.label}，可多個用逗號分開，中文也行：{ex}")
+    cap = GENRE.cap
+    g.add_argument(f"--{cap.flag}", default=None, help=f"{cap.label}：{cap.min} 到 {cap.max}，或 " + "、".join(list(cap.words)[:4]))
+    g.add_argument("--length", default=None, help="長度：字數 1500、範圍 1500-2500，或 " + "、".join(GENRE.length.presets))
+    g.add_argument("--style", default=None, help="風格：" + "、".join(f"{s.label}" for s in GENRE.styles.values()) + "（第一個是預設）")
     g.add_argument("--style-note", default=None, help="風格的自由補充，例如「像寫給朋友的信」")
     g.add_argument("--note", action="append", default=None, help="額外要求，可重複：--note 主角是護理師 --note 發生在颱風夜")
-    g.add_argument("--taste", default=None, help="口味：直接（預設，照 PTT 讀者資料）或 留白（克制）")
-    g.add_argument("--rules", default="v2", choices=["v1", "v2", "restrained"],
-                   help="直接指定規則版本（--taste 優先）：v2 = 直接、restrained = 留白、v1 = 2026-10-14 前的舊規則，只供對照")
+    g.add_argument("--taste", default=None, help="口味：" + "、".join(GENRE.tastes) + "（第一個是預設）")
+    g.add_argument("--rules", default=None, choices=list(GENRE.rule_sets), help="直接指定規則版本（--taste 優先）")
     g.add_argument("--write-model", default=None)
     g.add_argument("--judge-model", default=None)
     g.add_argument("--backend", default=None, choices=["sdk", "cli", "fake"])

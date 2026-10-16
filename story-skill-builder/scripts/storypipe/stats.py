@@ -2,12 +2,14 @@
 
 分數：推文數在「同標籤、同年份的全部看板文章」裡的百分位（母體取自索引，不是只看抓下來的那些，
 抓下來的已經過推文篩選）。同年份文章少於 50 篇時，往前後年份擴大到夠為止。
-早期文章（2007 年前，推文很少）和精華區沒有可比的推文訊號，pct 是 None：不參與高低分比較和權重，
-但精華區收錄過的可以當範例。
+早期文章（genre.json 的 score_from_year 之前，推文很少）和精華區沒有可比的推文訊號，pct 是 None：
+不參與高低分比較和權重，但精華區收錄過的可以當範例。
 
 高分組：pct ≥ 0.75。低分組：pct ≤ 0.40（主要是隨機抽的對照組）。
-權重：weight = (這個類別在高分組出現的次數 + 1) ^ 0.7，只用有分數的故事算。
+權重：weight = (這個類別在高分組出現的次數 + 1) ^ 0.7，只用有分數的單位算。
 （舊版是 平均分數 × ln(1+n)，資料多了以後會把整張表壓平，抽出來的骨架近乎平均分配。）
+
+哪些軸、哪個露出上限、哪些節拍，都來自 genre.json；weights.json 的 axes 區跟著軸走。
 """
 from __future__ import annotations
 
@@ -18,9 +20,11 @@ from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
-from .taxonomy import BEATS, ENDINGS, MECHANISMS, SETTINGS, VOICE_MARKERS
+from .genre import GENRE
+from .taxonomy import BEATS, VOICE_MARKERS
 
-INDEX_FILES = {"經驗": "data/index/marvel_經驗.jsonl", "翻譯": "data/index/marvel_翻譯.jsonl"}
+INDEX_FILES: dict[str, str] = dict(GENRE.source.tags)
+TAGS: list[str] = list(GENRE.source.tags) or [GENRE.source.default_tag]
 HI_Q, LO_Q = 0.75, 0.40
 MIN_POP = 50
 
@@ -83,8 +87,19 @@ class Percentiles:
         return (below + 0.5 * equal) / len(vals)
 
 
+def source_of(u: dict) -> str:
+    """一個語料單位的來源標籤：標籤（＋對照）、早期、精華區。"""
+    sample = u.get("sample") or "top"
+    if sample == "digest":
+        return "精華區"
+    if sample == "unfiltered":
+        return "早期"
+    tag = u.get("source_tag") if u.get("source_tag") in TAGS else GENRE.source.default_tag
+    return tag + ("對照" if sample == "control" else "")
+
+
 def load_units(annotated_path: Path, corpus_path: Path, index_files: dict[str, str] = INDEX_FILES) -> tuple[list[dict], dict]:
-    """標註 × 語料。回傳 (故事列，覆蓋率統計)。每列多了 pct、year、source、curated。只保留仍在語料裡的單位。"""
+    """標註 × 語料。回傳 (單位列，覆蓋率統計)。每列多了 pct、year、source、curated。只保留仍在語料裡的單位。"""
     corpus = {}
     for line in corpus_path.read_text(encoding="utf-8").splitlines():
         if line.strip():
@@ -101,16 +116,11 @@ def load_units(annotated_path: Path, corpus_path: Path, index_files: dict[str, s
             nonstory += 1
             continue
         sample = u.get("sample") or "top"
-        tag = "翻譯" if u.get("source_tag") == "翻譯" else "經驗"
+        source = source_of(u)
+        tag = u.get("source_tag") if u.get("source_tag") in TAGS else GENRE.source.default_tag
         year = _year(u.get("ts"))
-        if sample == "digest":
-            source = "精華區"
-        elif sample == "unfiltered":
-            source = "早期"
-        else:
-            source = tag + ("對照" if sample == "control" else "")
         pct = None
-        if sample in ("top", "control") and year and year >= 2007:
+        if sample in ("top", "control") and year and year >= GENRE.source.score_from_year:
             pct = P.pct(tag, year, int(u.get("nrec") or 0))
         rows.append({**rec, "pct": pct, "year": year, "source": source, "curated": bool(u.get("curated")),
                      "length_chars": len(u.get("body") or "")})
@@ -124,7 +134,7 @@ def load_units(annotated_path: Path, corpus_path: Path, index_files: dict[str, s
 # ---------------------------------------------------------------------------
 
 
-WEIGHT_POWER = 0.7  # 權重 = (高分組次數 + 1) ^ 0.7：抽出來的骨架長得像高分故事，又保留一點多樣性
+WEIGHT_POWER = 0.7  # 權重 = (高分組次數 + 1) ^ 0.7：抽出來的骨架長得像高分單位，又保留一點多樣性
 
 
 def _table(rows: list[tuple], min_n: int = 1) -> dict[str, dict]:
@@ -180,7 +190,7 @@ def _rank_pct(rows: list[dict]) -> None:
         r["pct"] = (below + 0.5 * equal) / len(xs)
 
 
-def compute_weights(rows: list[dict], hi_q: float = HI_Q, lo_q: float = LO_Q, per_setting_examples: int = 25) -> dict:
+def compute_weights(rows: list[dict], hi_q: float = HI_Q, lo_q: float = LO_Q, per_example_axis: int = 25) -> dict:
     if not rows:
         raise ValueError("沒有可用的標註資料")
     rows = [dict(r) for r in rows]
@@ -188,120 +198,120 @@ def compute_weights(rows: list[dict], hi_q: float = HI_Q, lo_q: float = LO_Q, pe
         _rank_pct(rows)
     scored = [r for r in rows if r.get("pct") is not None]
     if not scored:
-        raise ValueError("沒有帶分數的故事")
+        raise ValueError("沒有帶分數的單位")
     high = [r for r in scored if r["pct"] >= hi_q]
     low = [r for r in scored if r["pct"] <= lo_q]
     A = lambda r: r["annotation"]  # noqa: E731
     S = lambda r: 100 * r["pct"]  # noqa: E731
+    cap = GENRE.cap
 
     high_ids = {id(r) for r in high}
-    settings = _table([(A(r)["setting"], S(r), id(r) in high_ids) for r in scored])
-    primary_mech = _table([(A(r)["mechanisms"][0], S(r), id(r) in high_ids) for r in scored if A(r)["mechanisms"]])
-    any_mech = _table([(m, S(r), id(r) in high_ids) for r in scored for m in A(r)["mechanisms"]])
-    endings = _table([(A(r)["ending"], S(r), id(r) in high_ids) for r in scored])
-    pairs = _table([(f"{A(r)['setting']}|{A(r)['mechanisms'][0]}", S(r), id(r) in high_ids) for r in scored if A(r)["mechanisms"]],
-                   min_n=3 if len(scored) >= 300 else 2)
+    axes: dict[str, dict] = {}
+    for ax in GENRE.axes:
+        entry = {"table": _table([(ax.primary(A(r)), S(r), id(r) in high_ids) for r in scored if ax.primary(A(r)) is not None])}
+        if ax.multi:
+            entry["any"] = _table([(m, S(r), id(r) in high_ids) for r in scored for m in ax.all_values(A(r))])
+        axes[ax.key] = entry
+    pairs: dict[str, dict] = {}
+    if GENRE.pair:
+        a, b = GENRE.axis(GENRE.pair[0]), GENRE.axis(GENRE.pair[1])
+        pairs = _table(
+            [(f"{a.primary(A(r))}|{b.primary(A(r))}", S(r), id(r) in high_ids) for r in scored if a.primary(A(r)) and b.primary(A(r))],
+            min_n=3 if len(scored) >= 300 else 2,
+        )
 
     def mean_beats(group: list[dict]) -> dict[str, float]:
         if not group:
             return {b: 0.0 for b in BEATS}
-        return {b: round(sum(A(r)["beats"][b] for r in group) / len(group), 3) for b in BEATS}
+        return {b: round(sum(A(r)["beats"].get(b, 0.0) for r in group) / len(group), 3) for b in BEATS}
 
-    def ghost_dist(group: list[dict]) -> dict[str, int]:
-        d = {str(i): 0 for i in range(4)}
+    def cap_dist(group: list[dict]) -> dict[str, int]:
+        d = {str(i): 0 for i in range(cap.min, cap.max + 1)}
         for r in group:
-            d[str(A(r)["ghost_explicitness"])] += 1
+            d[str(A(r)[cap.key])] = d.get(str(A(r)[cap.key]), 0) + 1
         return d
 
-    def ghost_mean(group: list[dict]) -> float:
-        return round(sum(A(r)["ghost_explicitness"] for r in group) / len(group), 2) if group else 0.0
+    def cap_mean(group: list[dict]) -> float:
+        return round(sum(A(r)[cap.key] for r in group) / len(group), 2) if group else 0.0
 
     def share(group: list[dict], key) -> dict[str, float]:
         c = Counter(k for r in group for k in key(r))
         return {k: v / len(group) for k, v in c.items()} if group else {}
 
-    def contrast(key, hi=None, lo=None, base=None) -> list[dict]:
-        hi, lo, base = (high if hi is None else hi), (low if lo is None else lo), (scored if base is None else base)
+    def contrast(key, hi: list[dict], lo: list[dict], base: list[dict]) -> list[dict]:
         sh, sl, sa = share(hi, key), share(lo, key), share(base, key)
         keys = sorted(set(sh) | set(sl), key=lambda k: -sa.get(k, 0))
         return [{"key": k, "high": round(sh.get(k, 0), 3), "low": round(sl.get(k, 0), 3),
                  "lift": round(sh.get(k, 0) / sl[k], 2) if sl.get(k) else None,
                  "p": _two_prop_p(sh.get(k, 0), len(hi), sl.get(k, 0), len(lo))} for k in keys]
 
-    # 範例池：高分組 + 精華區收錄過的（沒分數的當 0.8），每個場景最多 per_setting_examples 篇
+    def contrasts(hs: list[dict], ls: list[dict], bs: list[dict]) -> dict[str, list[dict]]:
+        out = {ax.key: contrast(lambda r, ax=ax: [ax.primary(A(r))], hs, ls, bs) for ax in GENRE.axes}
+        out["cap"] = contrast(lambda r: [str(A(r)[cap.key])], hs, ls, bs)
+        out["voice"] = contrast(lambda r: A(r).get("voice_markers", []), hs, ls, bs)
+        return out
+
+    # 範例池：高分組 + 精華區收錄過的（沒分數的當 0.8），example_axis 的每個值最多 per_example_axis 個
+    ex_ax = GENRE.axis(GENRE.example_axis)
     cand = high + [r for r in rows if r.get("pct") is None and r.get("curated")]
     cand.sort(key=lambda r: -(r["pct"] if r.get("pct") is not None else 0.8))
     per: dict[str, int] = defaultdict(int)
     examples = []
     for r in cand:
-        s = A(r)["setting"]
-        if per[s] >= per_setting_examples:
+        a = A(r)
+        s = ex_ax.primary(a)
+        if per[s] >= per_example_axis:
             continue
         per[s] += 1
         examples.append({
             "id": r["id"], "title": r["title"], "score": round(r["pct"], 3) if r.get("pct") is not None else None,
             "source": r.get("source"), "year": r.get("year"), "curated": r.get("curated", False),
-            "setting": s, "setting_detail": A(r)["setting_detail"], "mechanisms": A(r)["mechanisms"],
-            "ending": A(r)["ending"], "ghost_explicitness": A(r)["ghost_explicitness"],
-            "one_line_premise": A(r)["one_line_premise"], "scariest_moment": A(r)["scariest_moment"],
-            "realism_anchors": A(r)["realism_anchors"],
+            "axes": GENRE.axis_values(a),
+            "detail": {ax.detail.key: a.get(ax.detail.key, "") for ax in GENRE.axes if ax.detail},
+            "cap": a[cap.key], "premise": a[GENRE.premise.key], "moment": a[GENRE.moment.key],
+            "anchors": list(a.get(GENRE.anchors.key, [])),
         })
 
     lengths_top = [r["length_chars"] for r in high if r.get("length_chars")]
     unscored = [r for r in rows if r.get("pct") is None]
+    by_tag = {}
+    for tag in TAGS:
+        hs = [r for r in high if str(r.get("source", "")).startswith(tag)]
+        ls = [r for r in low if str(r.get("source", "")).startswith(tag)]
+        bs = [r for r in scored if str(r.get("source", "")).startswith(tag)]
+        if hs and ls:
+            by_tag[tag] = {"n_high": len(hs), "n_low": len(ls), **contrasts(hs, ls, bs)}
     return {
+        "genre": GENRE.name,
         "n_stories": len(rows),
         "n_scored": len(scored),
         "n_top": len(high),
         "n_low": len(low),
         "hi_q": hi_q,
         "lo_q": lo_q,
-        "settings": settings,
-        "mechanisms_primary": primary_mech,
-        "mechanisms_any": any_mech,
-        "endings": endings,
+        "axes": axes,
         "pairs": pairs,
         "beats_top": mean_beats(high),
         "beats_low": mean_beats(low),
         "beats_all": mean_beats(scored),
-        "ghost_explicitness": {
-            "top_mean": ghost_mean(high), "bottom_mean": ghost_mean(low), "all_mean": ghost_mean(scored),
-            "dist_top": ghost_dist(high), "dist_low": ghost_dist(low),
+        "cap": {
+            "top_mean": cap_mean(high), "bottom_mean": cap_mean(low), "all_mean": cap_mean(scored),
+            "dist_top": cap_dist(high), "dist_low": cap_dist(low),
         },
         "length_top": {"p25": _percentile(lengths_top, 0.25), "p50": _percentile(lengths_top, 0.5), "p75": _percentile(lengths_top, 0.75)},
-        "contrast": {
-            "setting": contrast(lambda r: [A(r)["setting"]]),
-            "mechanism": contrast(lambda r: [A(r)["mechanisms"][0]]),
-            "ending": contrast(lambda r: [A(r)["ending"]]),
-            "ghost": contrast(lambda r: [str(A(r)["ghost_explicitness"])]),
-            "voice": contrast(lambda r: A(r)["voice_markers"]),
-        },
-        # 依標籤分開比：高低分組的來源組成不同（低分組約一半是翻譯文），混在一起比會把來源差異當成品質差異
-        "contrast_by_tag": {
-            tag: {
-                "n_high": len(hs), "n_low": len(ls),
-                "setting": contrast(lambda r: [A(r)["setting"]], hs, ls, bs),
-                "mechanism": contrast(lambda r: [A(r)["mechanisms"][0]], hs, ls, bs),
-                "ending": contrast(lambda r: [A(r)["ending"]], hs, ls, bs),
-                "ghost": contrast(lambda r: [str(A(r)["ghost_explicitness"])], hs, ls, bs),
-                "voice": contrast(lambda r: A(r)["voice_markers"], hs, ls, bs),
-            }
-            for tag in ("經驗", "翻譯")
-            for hs, ls, bs in [(
-                [r for r in high if str(r.get("source", "")).startswith(tag)],
-                [r for r in low if str(r.get("source", "")).startswith(tag)],
-                [r for r in scored if str(r.get("source", "")).startswith(tag)],
-            )]
-            if hs and ls
-        },
+        "contrast": contrasts(high, low, scored),
+        # 依標籤分開比：高低分組的來源組成不同（例如低分組約一半是翻譯文），混在一起比會把來源差異當成品質差異
+        "contrast_by_tag": by_tag,
         "years_top": dict(sorted(Counter(r.get("year") for r in high if r.get("year")).items())),
         "sources": {
             "all": dict(Counter(r.get("source", "?") for r in rows)),
             "top": dict(Counter(r.get("source", "?") for r in high)),
             "low": dict(Counter(r.get("source", "?") for r in low)),
         },
-        "unscored_endings": dict(Counter(A(r)["ending"] for r in unscored)),
-        "unscored_ghost_mean": ghost_mean(unscored),
+        "unscored": {
+            "axes": {ax.key: dict(Counter(ax.primary(A(r)) for r in unscored)) for ax in GENRE.axes},
+            "cap_mean": cap_mean(unscored),
+        },
         "examples": examples,
     }
 
@@ -312,8 +322,10 @@ def compute_weights(rows: list[dict], hi_q: float = HI_Q, lo_q: float = LO_Q, pe
 
 
 def render_report(w: dict, coverage: dict | None = None) -> str:
+    cap = GENRE.cap
+
     def lab(table: dict, k: str) -> str:
-        return table.get(k, k).split("：")[0]
+        return str(table.get(k, k)).split("：")[0]
 
     def tbl(title: str, table: dict, labels: dict) -> list[str]:
         lines = [f"## {title}", "", "| 類別 | 篇數 | 高分組篇數 | 平均百分位 | 權重 |", "|---|---|---|---|---|"]
@@ -330,11 +342,17 @@ def render_report(w: dict, coverage: dict | None = None) -> str:
             lines.append(f"| {lab(labels, x['key'])} | {100 * x['high']:.0f}% | {100 * x['low']:.0f}% | {lift} | {ptxt} |")
         return lines + [""]
 
-    mech_lab = {k: v for k, v in MECHANISMS.items()}
-    pair_labels = {k: f"{lab(SETTINGS, k.split('|')[0])} × {lab(MECHANISMS, k.split('|')[1])}" for k in w["pairs"]}
-    L = ["# 故事 DNA 統計", ""]
+    def ctr_block(c: dict, prefix: str) -> list[str]:
+        out: list[str] = []
+        for ax in GENRE.axes:
+            out += ctr(f"{prefix}{ax.label}", c[ax.key], ax.values)
+        out += ctr(f"{prefix}{cap.short_name}", c["cap"], {})
+        out += ctr(f"{prefix}敘事聲音", c["voice"], VOICE_MARKERS, 12)
+        return out
+
+    L = [f"# {GENRE.unit} DNA 統計", ""]
     if coverage:
-        L += [f"標註裡的故事 {coverage['stories']} 個（另有非故事 {coverage['non_stories']} 個、已不在語料裡的舊標註 {coverage['orphan_annotations']} 個）。", ""]
+        L += [f"標註裡的{GENRE.unit} {coverage['stories']} 個（另有非{GENRE.unit} {coverage['non_stories']} 個、已不在語料裡的舊標註 {coverage['orphan_annotations']} 個）。", ""]
     L += [
         f"有推文分數的 {w['n_scored']} 個；高分組（同年同標籤前 {100 * (1 - w['hi_q']):.0f}%）{w['n_top']} 個，"
         f"低分組（後 {100 * w['lo_q']:.0f}%）{w['n_low']} 個。沒有分數的（早期、精華區）{w['n_stories'] - w['n_scored']} 個，只用在範例池和分布。",
@@ -344,45 +362,41 @@ def render_report(w: dict, coverage: dict | None = None) -> str:
         "高分組年份：" + "、".join(f"{y}:{n}" for y, n in w["years_top"].items()),
         "",
     ]
-    L += tbl("場景", w["settings"], SETTINGS)
-    L += tbl("主要恐怖機制", w["mechanisms_primary"], mech_lab)
-    L += tbl("結尾型態", w["endings"], ENDINGS)
-    L += tbl("場景 × 機制", w["pairs"], pair_labels)
+    for ax in GENRE.axes:
+        L += tbl(ax.label if not ax.multi else f"主要{ax.label}", w["axes"][ax.key]["table"], ax.values)
+    if w.get("pairs") and GENRE.pair:
+        a, b = GENRE.axis(GENRE.pair[0]), GENRE.axis(GENRE.pair[1])
+        pair_labels = {k: f"{a.short(k.split('|')[0])} × {b.short(k.split('|')[1])}" for k in w["pairs"]}
+        L += tbl(f"{a.label} × {b.label}", w["pairs"], pair_labels)
     for tag, c in w.get("contrast_by_tag", {}).items():
         L += [f"# {tag}文內部的高低分對比（高分組 {c['n_high']}、低分組 {c['n_low']}）", "",
-              "同標籤內比，才不會把經驗文和翻譯文的差異誤當成品質差異。p 值 < 0.05 加粗；低分組篇數少時，沒加粗的差異多半是雜訊。", ""]
-        L += ctr(f"{tag}｜場景", c["setting"], SETTINGS)
-        L += ctr(f"{tag}｜主要機制", c["mechanism"], mech_lab)
-        L += ctr(f"{tag}｜結尾", c["ending"], ENDINGS)
-        L += ctr(f"{tag}｜鬼露出", c["ghost"], {})
-        L += ctr(f"{tag}｜敘事聲音", c["voice"], VOICE_MARKERS, 12)
+              "同標籤內比，才不會把不同來源的差異誤當成品質差異。p 值 < 0.05 加粗；低分組篇數少時，沒加粗的差異多半是雜訊。", ""]
+        L += ctr_block(c, f"{tag}｜")
     L += ["# 全部混在一起的對比（受來源組成影響，只當參考）", ""]
-    L += ctr("場景", w["contrast"]["setting"], SETTINGS)
-    L += ctr("主要機制", w["contrast"]["mechanism"], mech_lab)
-    L += ctr("結尾", w["contrast"]["ending"], ENDINGS)
-    L += ctr("鬼露出", w["contrast"]["ghost"], {})
-    L += ctr("敘事聲音", w["contrast"]["voice"], VOICE_MARKERS, 12)
+    L += ctr_block(w["contrast"], "")
     L += [
         "## 節拍比例", "", "| 節拍 | 高分組 | 低分組 | 全部 |", "|---|---|---|---|",
         *[f"| {b} | {w['beats_top'][b]:.2f} | {w['beats_low'][b]:.2f} | {w['beats_all'][b]:.2f} |" for b in BEATS],
         "",
-        "## 鬼的露出程度", "",
-        f"高分組平均 {w['ghost_explicitness']['top_mean']}，低分組平均 {w['ghost_explicitness']['bottom_mean']}，"
-        f"沒分數的 {w['unscored_ghost_mean']}。高分組分布 {w['ghost_explicitness']['dist_top']}，低分組 {w['ghost_explicitness']['dist_low']}。",
+        f"## {cap.label}", "",
+        f"高分組平均 {w['cap']['top_mean']}，低分組平均 {w['cap']['bottom_mean']}，"
+        f"沒分數的 {w['unscored']['cap_mean']}。高分組分布 {w['cap']['dist_top']}，低分組 {w['cap']['dist_low']}。",
         "",
         "## 高分組字數", "",
         f"p25 {w['length_top']['p25']:.0f}、p50 {w['length_top']['p50']:.0f}、p75 {w['length_top']['p75']:.0f}",
         "",
-        f"## 範例池（{len(w['examples'])} 個，每個場景最多 25 個）", "",
-        "依場景：" + "、".join(f"{lab(SETTINGS, k)} {v}" for k, v in Counter(e["setting"] for e in w["examples"]).most_common()),
-        "",
-        *[
-            f"- {('%.2f' % e['score']) if e['score'] is not None else '收錄'} [{e.get('source')}/{e.get('year')}] {e['title']}："
-            f"{e['one_line_premise']}（{lab(SETTINGS, e['setting'])}；{'/'.join(e['mechanisms'])}；{e['ending']}；鬼 {e['ghost_explicitness']}）"
-            for e in w["examples"][:20]
-        ],
+    ]
+    ex_ax = GENRE.axis(GENRE.example_axis)
+    L += [
+        f"## 範例池（{len(w['examples'])} 個，{ex_ax.label}的每個值最多 25 個）", "",
+        f"依{ex_ax.label}：" + "、".join(f"{ex_ax.short(k)} {v}" for k, v in Counter((e['axes'].get(ex_ax.key) or ['?'])[0] for e in w["examples"]).most_common()),
         "",
     ]
+    for e in w["examples"][:20]:
+        parts = "；".join("/".join(e["axes"].get(ax.key, [])) for ax in GENRE.axes)
+        score = ("%.2f" % e["score"]) if e["score"] is not None else "收錄"
+        L.append(f"- {score} [{e.get('source')}/{e.get('year')}] {e['title']}：{e['premise']}（{parts}；{cap.short_name} {e['cap']}）")
+    L.append("")
     return "\n".join(L)
 
 

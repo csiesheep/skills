@@ -15,15 +15,18 @@ decide.
 
 ## What is here now
 
-The pipeline that produced ghost-story, moved in whole: `scripts/storypipe/` (PTT scraping,
-corpus building, Claude annotation, statistics, planning, writing, judging, judge calibration,
-blind A/B pages) with `genres/ghost-story/` as its first genre (annotation prompt, writing
-rules in two tastes, seven style files, judge prompts). The genre's vocabulary (settings,
-mechanisms, endings, beats, the ghost-explicitness cap) still lives in
-`scripts/storypipe/taxonomy.py`. Moving it into a per-genre `genre.json`, so a second genre
-needs no code change, is the next step; the phases below are written for that state. Until
-then a new genre means copying `genres/ghost-story/`, editing `taxonomy.py`, and pointing
-`STORYPIPE_GENRE` at the copy.
+The pipeline that produced ghost-story, moved in whole and made genre-agnostic:
+`scripts/storypipe/` (PTT scraping, corpus building, Claude annotation, statistics, planning,
+writing, judging, judge calibration, blind A/B pages) with `genres/ghost-story/` as its first
+genre. A genre is a folder: `genre.json` (the axes with their values and Chinese aliases, the
+cap, the beats, the free-text fields, voice markers, length presets, rule sets, tastes,
+styles, the judge's dimensions, the comment-signal keywords) plus `prompts/` (`annotate.md`,
+`style_guide.md`, `judge.md`, `pairwise_judge.md`, one `styles/<style>.md` per style, and a
+subfolder per extra rule set). Nothing about ghosts is in the code: the annotation schema,
+the CLI flags, the weights table, the report and the planner are all built from the genre at
+import time, and `STORYPIPE_GENRE` picks the folder. The tests prove it by running a
+three-axis joke genre through options, annotate, stats and generate without a code change.
+`references/genre_config.md` documents every field with the ghost values beside a joke sketch.
 
 ## Running the pipeline
 

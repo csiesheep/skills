@@ -161,6 +161,7 @@ cost recorded per call), push percentiles within tag and year, high-versus-low c
 with p-values, a planner that samples skeletons from the resulting table, judge calibration
 on real pairs, and the owner's blind A/B page. `SKILL.md` is the seven-phase playbook with a
 gate at the end of each phase (axes approved, counts seen, cost agreed, judge calibrated,
-taste chosen) and the numbers ghost-story set for them. The genre vocabulary is still the
-ghost one in code; a per-genre config is the next step.
+taste chosen) and the numbers ghost-story set for them. Every genre-specific word lives in
+that genre's `genre.json` and prompts, never in the code; the tests run a second, three-axis
+joke genre through the whole chain to keep it that way.
 

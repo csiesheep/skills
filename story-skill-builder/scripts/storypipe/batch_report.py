@@ -10,21 +10,11 @@ from collections import Counter, defaultdict
 from datetime import datetime
 from pathlib import Path
 
+from .genre import GENRE
 from .llm import list_cost
-from .taxonomy import ENDINGS, MECHANISMS, SETTINGS
+from .stats import TAGS, source_of
 
-
-def source_of(u: dict) -> str:
-    s = u.get("sample")
-    if s == "digest":
-        return "精華區"
-    if s == "unfiltered":
-        return "早期"
-    base = "翻譯" if u.get("source_tag") == "翻譯" else "經驗"
-    return base + ("對照" if s == "control" else "")
-
-
-SOURCES = ["經驗", "經驗對照", "翻譯", "翻譯對照", "早期", "精華區"]
+SOURCES = [s for t in TAGS for s in (t, t + "對照")] + ["早期", "精華區"]
 
 
 def _pct(a: float, b: float) -> str:
@@ -49,6 +39,8 @@ def _wall(log: Path | None) -> float | None:
 
 
 def report(ann_path: Path, ids_path: Path, corpus_path: Path, log_path: Path | None = None, pending_after: int | None = None) -> str:
+    cap = GENRE.cap
+    last_ax = GENRE.axes[-1]
     ids = [l.strip() for l in ids_path.read_text(encoding="utf-8").splitlines() if l.strip()]
     idset = set(ids)
     units = {}
@@ -111,7 +103,7 @@ def report(ann_path: Path, ids_path: Path, corpus_path: Path, log_path: Path | N
         avg = sum(cost.values()) / max(1, n)
         L += [
             f"**推估剩下 {pending_after} 個**：約 ${avg * pending_after:.0f}"
-            + (f"，4 路平行約 {pending_after / (n / (wall / 60)) / 60:.1f} 小時" if wall else "")
+            + (f"，同樣的平行度約 {pending_after / (n / (wall / 60)) / 60:.1f} 小時" if wall else "")
             + "。",
             "",
         ]
@@ -120,18 +112,21 @@ def report(ann_path: Path, ids_path: Path, corpus_path: Path, log_path: Path | N
     by = defaultdict(list)
     for r in R:
         by[src.get(r["id"], "?")].append(r)
-    L += ["## 依來源", "", "| 來源 | 單位 | 判為故事 | 翻譯標記 | 平均花費 | 字數中位數 | 鬼露出平均 | 結尾：開放／解釋／反轉／淡出 |", "|---|---|---|---|---|---|---|---|"]
+    has_translated = "translated" in GENRE.voice_markers
+    head = f"| 來源 | 單位 | 判為{GENRE.unit} |" + (" 翻譯標記 |" if has_translated else "") + f" 平均花費 | 字數中位數 | {cap.short_name}平均 | {last_ax.label}：" + "／".join(last_ax.short(k) for k in last_ax.values) + " |"
+    L += ["## 依來源", "", head, "|---" * (7 + has_translated) + "|"]
     for s in SOURCES + ["?"]:
         g = by.get(s)
         if not g:
             continue
         st = [r for r in g if r["annotation"]["is_story"]]
-        e = Counter(r["annotation"]["ending"] for r in st)
-        gh = [r["annotation"]["ghost_explicitness"] for r in st]
+        e = Counter(last_ax.primary(r["annotation"]) for r in st)
+        gh = [r["annotation"][cap.key] for r in st]
+        tr = f" {sum('translated' in r['annotation'].get('voice_markers', []) for r in st)} |" if has_translated else ""
         L.append(
-            f"| {s} | {len(g)} | {len(st)}（{_pct(len(st), len(g))}） | {sum('translated' in r['annotation']['voice_markers'] for r in st)} "
-            f"| ${sum(cost[r['id']] for r in g) / len(g):.4f} | {int(_q([chars[r['id']] for r in g], .5))} "
-            f"| {sum(gh) / len(gh) if gh else 0:.2f} | {e['open']}／{e['explained']}／{e['twist']}／{e['fade']} |"
+            f"| {s} | {len(g)} | {len(st)}（{_pct(len(st), len(g))}） |{tr}"
+            f" ${sum(cost[r['id']] for r in g) / len(g):.4f} | {int(_q([chars[r['id']] for r in g], .5))} "
+            f"| {sum(gh) / len(gh) if gh else 0:.2f} | " + "／".join(str(e.get(k, 0)) for k in last_ax.values) + " |"
         )
     L.append("")
 
@@ -141,18 +136,17 @@ def report(ann_path: Path, ids_path: Path, corpus_path: Path, log_path: Path | N
 
     def dist(title: str, key, labels: dict, k: int = 10) -> None:
         c = Counter(key(r) for r in S)
-        L.extend([f"## {title}（故事 {ns} 個）", "", "| 類別 | 個數 | 比例 |", "|---|---|---|"])
+        L.extend([f"## {title}（{GENRE.unit} {ns} 個）", "", "| 類別 | 個數 | 比例 |", "|---|---|---|"])
         for kk, v in c.most_common(k):
-            L.append(f"| {labels.get(kk, kk).split('：')[0]} | {v} | {_pct(v, ns)} |")
+            L.append(f"| {str(labels.get(kk, kk)).split('：')[0]} | {v} | {_pct(v, ns)} |")
         L.append("")
 
-    dist("場景", lambda r: r["annotation"]["setting"], SETTINGS, 12)
-    dist("主要機制", lambda r: r["annotation"]["mechanisms"][0], MECHANISMS, 15)
-    dist("結尾", lambda r: r["annotation"]["ending"], ENDINGS, 4)
-    dist("鬼露出", lambda r: str(r["annotation"]["ghost_explicitness"]), {}, 4)
+    for ax in GENRE.axes:
+        dist(f"主要{ax.label}" if ax.multi else ax.label, lambda r, ax=ax: ax.primary(r["annotation"]), ax.values, 15)
+    dist(cap.short_name, lambda r: str(r["annotation"][cap.key]), {}, cap.max - cap.min + 1)
 
     non = [r for r in R if not r["annotation"]["is_story"]]
-    L += [f"## 判為非故事的標題抽樣（共 {len(non)} 個）", ""]
+    L += [f"## 判為非{GENRE.unit}的標題抽樣（共 {len(non)} 個）", ""]
     for r in sorted(non, key=lambda r: r["id"])[:25]:
         L.append(f"- [{src.get(r['id'], '?')}] {r['title']}")
     L.append("")

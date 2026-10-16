@@ -1,4 +1,4 @@
-"""新舊規則對照：同一副骨架（同一個 seed），v1、v2 規則各寫一篇。
+"""兩套規則對照：同一副骨架（同一個 seed），兩套規則（預設 genre.json 的前兩套）各寫一篇。
 
 輸出 data/ab/：
 - <seed>_<rules>.json：完整結果（骨架、每輪稿子、評分）
@@ -20,7 +20,8 @@ from pathlib import Path
 
 from .annotate import build_user_prompt, load_prompt
 from .generate import count_chars, generate, judge_story
-from .llm import make_backend
+from .genre import GENRE
+from .llm import DEFAULT_MODELS, make_backend
 from .taxonomy import Annotation, Plan
 
 AB = Path("data/ab")
@@ -32,12 +33,15 @@ def main() -> None:
     ap.add_argument("--start", type=int, default=9001)
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--backend", default="cli")
+    ap.add_argument("--rules", nargs=2, default=list(GENRE.rule_sets)[:2], help="要對照的兩套規則")
+    ap.add_argument("--weights", default="data/weights.json")
     a = ap.parse_args()
     AB.mkdir(parents=True, exist_ok=True)
-    weights = json.loads(Path("data/weights.json").read_text(encoding="utf-8"))
+    weights = json.loads(Path(a.weights).read_text(encoding="utf-8"))
     backend = make_backend(a.backend)
     seeds = list(range(a.start, a.start + a.seeds))
     lock = threading.Lock()
+    R1, R2 = a.rules
 
     def gen(seed: int, rules: str):
         p = AB / f"{seed}_{rules}.json"
@@ -50,7 +54,7 @@ def main() -> None:
         return res
 
     with ThreadPoolExecutor(max_workers=a.workers) as pool:
-        futs = {pool.submit(gen, s, r): (s, r) for s in seeds for r in ("v1", "v2")}
+        futs = {pool.submit(gen, s, r): (s, r) for s in seeds for r in (R1, R2)}
         results = {}
         for f in as_completed(futs):
             try:
@@ -67,18 +71,18 @@ def main() -> None:
     def cross(seed, rules, judge_rules):
         res = results[(seed, rules)]
         plan = Plan(**{**res["plan"], "rules": judge_rules})
-        v = judge_story(backend, plan, res["final"], "claude-opus-5-5")
+        v = judge_story(backend, plan, res["final"], DEFAULT_MODELS["judge"])
         return ("cross", {"seed": seed, "rules": rules, "judge": judge_rules, "verdict": v.model_dump()})
 
     def annot(seed, rules):
         res = results[(seed, rules)]
         title, _, body = res["final"].partition("\n")
-        ann = backend.structured(ann_sys, build_user_prompt({"title": title, "body": body}), Annotation, "claude-opus-5-5", max_tokens=2500)
+        ann = backend.structured(ann_sys, build_user_prompt({"title": title, "body": body}), Annotation, DEFAULT_MODELS["annotate"], max_tokens=2500)
         return ("annot", {"seed": seed, "rules": rules, "annotation": ann.model_dump()})
 
     jobs = []
     for (s, r) in results:
-        for jr in ("v1", "v2"):
+        for jr in (R1, R2):
             if (s, r, jr) not in done_c:
                 jobs.append((cross, (s, r, jr)))
         if (s, r) not in done_a:
@@ -100,9 +104,9 @@ def main() -> None:
     rng = random.Random(20261014)
     key = {}
     for i, s in enumerate(seeds, 1):
-        if (s, "v1") not in results or (s, "v2") not in results:
+        if (s, R1) not in results or (s, R2) not in results:
             continue
-        order = ["v1", "v2"]
+        order = [R1, R2]
         rng.shuffle(order)
         key[f"pair{i:02d}"] = {"A": order[0], "B": order[1], "seed": s}
         for label, rules in zip("AB", order):

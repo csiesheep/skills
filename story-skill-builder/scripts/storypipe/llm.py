@@ -299,10 +299,12 @@ class FakeBackend(Backend):
         self._set_last(model=f"fake/{model}", model_requested=model, usage={k: 1 for k in _USAGE_KEYS}, cost_usd=0.0, elapsed_s=0.0)
 
     def text(self, system: str, user: str, model: str, max_tokens: int = 16000, effort: str = "high") -> str:
+        from .genre import GENRE
+
         self._note("text", model)
         return (
-            "[經驗] 測試用的故事\n\n"
-            "飄點微弱，第一次發文。\n\n"
+            f"{GENRE.title_prefix} 測試用的{GENRE.unit}\n\n"
+            "第一次發文。\n\n"
             "這是 fake backend 產生的本文，用來驗證管線會不會跑。\n\n"
             + ("（修訂版）\n" if "fix_notes" in user or "評審意見" in user else "")
             + user[:200].replace("\n", " ")
@@ -311,34 +313,42 @@ class FakeBackend(Backend):
     def structured(
         self, system: str, user: str, schema: Type[T], model: str, max_tokens: int = 8000, effort: str = "medium"
     ) -> T:
+        """照 genre.json 的欄位湊一份合法的標註或評審；值由 user 文字的雜湊決定，同一篇每次一樣。"""
         self._note("structured", model)
-        from .taxonomy import Annotation, BeatShare, Verdict
+        from .genre import GENRE
+        from .taxonomy import VERDICT_DIMS, Annotation, BeatShare, Verdict
 
         h = sum(ord(c) for c in user[:400])
         if schema is Annotation:
-            settings = ["dorm", "military", "rental", "night_shift", "old_house", "road"]
-            mechs = ["presence", "retro_reveal", "identity_swap", "witness_mismatch", "escalation", "sound_only"]
-            endings = ["open", "explained", "twist", "fade"]
-            return Annotation(  # type: ignore[return-value]
-                is_story=(h % 7 != 0),
-                setting=settings[h % len(settings)],
-                setting_detail="fake 場景",
-                mechanisms=[mechs[h % len(mechs)], mechs[(h // 3) % len(mechs)]],
-                ending=endings[h % len(endings)],
-                beats=BeatShare(normal=0.25, anomaly=0.15, denial=0.1, escalation=0.25, reveal=0.15, aftermath=0.1),
-                ghost_explicitness=h % 3,
-                realism_anchors=["門禁時間", "值班交接簿"],
-                voice_markers=["first_person", "disclaimer"],
-                scariest_moment="fake 最可怕的一刻",
-                one_line_premise="fake 一句話前提",
-            )
+            fields: dict = {"is_story": (h % 7 != 0)}
+            for i, ax in enumerate(GENRE.axes):
+                vals = list(ax.values)
+                pick = vals[(h + i) % len(vals)]
+                if ax.multi:
+                    second = vals[(h // 3 + i) % len(vals)]
+                    fields[ax.key] = [pick] + ([second] if second != pick and ax.max_items > 1 else [])
+                else:
+                    fields[ax.key] = pick
+                if ax.detail:
+                    fields[ax.detail.key] = f"fake {ax.label}"
+            n = len(GENRE.beats)
+            fields["beats"] = BeatShare(**{b: 1 / n for b in GENRE.beats})
+            fields[GENRE.cap.key] = GENRE.cap.min + h % (GENRE.cap.max - GENRE.cap.min + 1)
+            fields[GENRE.anchors.key] = ["fake 細節一", "fake 細節二"]
+            fields["voice_markers"] = list(GENRE.voice_markers)[:2]
+            fields[GENRE.moment.key] = "fake 最關鍵的一刻"
+            fields[GENRE.premise.key] = "fake 一句話前提"
+            return Annotation(**fields)  # type: ignore[return-value]
         if schema is Verdict:
             revised = "修訂" in user or "第 2 輪" in user or "round 2" in user
             overall = 8 if revised else 5
+            dims = {k: 4 for k in VERDICT_DIMS}
+            weak = GENRE.verdict_cap_dim or (VERDICT_DIMS[0] if VERDICT_DIMS else None)
+            if weak and not revised:
+                dims[weak] = 2
             return Verdict(  # type: ignore[return-value]
-                realism=4, slow_burn=4, ghost_restraint=4 if revised else 2, ending=4, voice=4,
-                overall=overall, passes=overall >= 7,
-                fix_notes=[] if revised else ["第三段鬼寫太清楚，改成只寫感應燈亮了"],
+                **dims, overall=overall, passes=overall >= 7,
+                fix_notes=[] if revised else ["第三段超過露出上限，改成只寫間接跡象"],
             )
         raise NotImplementedError(schema)
 

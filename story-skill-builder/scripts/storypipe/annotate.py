@@ -10,10 +10,10 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+from .genre import GENRE
 from .llm import DEFAULT_MODELS, Backend
+from .paths import PROMPTS_DIR
 from .taxonomy import Annotation
-
-from .paths import PROMPTS_DIR  # noqa: E402
 PROMPT_VERSION = "v2.1"  # v1：給推文分數和推文、定義較鬆；v2：只給標題本文、補結尾和機制判定規則；v2.1：is_story 補「小說形式的創作、新聞、知識介紹算 false」
 
 
@@ -160,11 +160,11 @@ def annotate_file(
                     tot[k] += int(rec["usage"].get(k, 0) or 0)
                 cost["usd"] += float(rec["cost_usd"] or 0.0)
                 served[rec["model"]] = served.get(rec["model"], 0) + 1
-                a = ann
+                d = ann.model_dump()
+                axes_txt = " ".join("/".join(ax.all_values(d)) for ax in GENRE.axes)
                 log(
                     f"[{added['n']}/{len(todo)}] {rec['elapsed_s']:>5.1f}s {rec['model']:<26} score={rec['score']:>3} "
-                    f"{a.setting:<13} {'/'.join(a.mechanisms):<30} {a.ending:<9} ghost={a.ghost_explicitness} "
-                    f"story={a.is_story} | {art['title']}"
+                    f"{axes_txt} {GENRE.cap.flag}={d[GENRE.cap.key]} story={d['is_story']} | {art['title']}"
                 )
 
         def fail(art: dict, e: Exception) -> None:
