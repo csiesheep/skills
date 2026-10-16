@@ -1,0 +1,230 @@
+<title>鬼故事盲讀</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* 版面：一間讀故事的房間。上方是進度格和兩篇共用的骨架，中間兩篇並排（窄螢幕上下排），底部固定一條 PTT 推文式的選擇列。 */
+:root {
+  --paper: #f2f3ef;
+  --card: #fbfbf8;
+  --ink: #1d2320;
+  --muted: #5f6964;
+  --line: #d6dbd5;
+  --accent: #2f6b57;
+  --accent-soft: #dce9e2;
+  --push: #8a6a12;
+  --arrow: #9b3b2f;
+  --font-display: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+  --font-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-mono: "JetBrains Mono", "Consolas", "Menlo", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #121614; --card: #181d1b; --ink: #e2e7e4; --muted: #9aa49f; --line: #2b322f;
+    --accent: #7fb7a1; --accent-soft: #213330; --push: #e0c060; --arrow: #e08a7c; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #121614; --card: #181d1b; --ink: #e2e7e4; --muted: #9aa49f; --line: #2b322f;
+  --accent: #7fb7a1; --accent-soft: #213330; --push: #e0c060; --arrow: #e08a7c; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.7; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 140px; display: grid; gap: 18px; }
+header { display: grid; gap: 10px; }
+h1 { font-family: var(--font-display); font-weight: 900; font-size: clamp(26px, 4vw, 34px); margin: 0; letter-spacing: 0.04em; text-wrap: balance; }
+.lede { margin: 0; color: var(--muted); max-width: 64ch; }
+.status { font-family: var(--font-mono); font-size: 12px; color: var(--muted); letter-spacing: 0.04em; }
+.status[data-tone="warn"] { color: var(--arrow); }
+.pairs { display: flex; flex-wrap: wrap; gap: 6px; }
+.pairs button { font-family: var(--font-mono); font-size: 13px; min-width: 44px; padding: 6px 8px; border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 4px; cursor: pointer; font-variant-numeric: tabular-nums; }
+.pairs button[aria-current="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.pairs button[data-done="true"] { background: var(--accent-soft); }
+.pairs button:focus-visible, .choice button:focus-visible, .nav button:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.skeleton { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 10px 12px; border-left: 3px solid var(--accent); background: var(--card); font-size: 14px; }
+.skeleton b { font-family: var(--font-mono); font-weight: 600; font-size: 11px; letter-spacing: 0.08em; color: var(--muted); margin-right: 6px; }
+.stories { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+@media (max-width: 860px) { .stories { grid-template-columns: 1fr; } }
+article { min-width: 0; background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 18px 18px 22px; display: grid; gap: 10px; }
+article[data-picked="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.tag { display: flex; align-items: baseline; gap: 10px; }
+.tag .letter { font-family: var(--font-display); font-weight: 900; font-size: 34px; line-height: 1; color: var(--accent); }
+.tag .count { font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.title { font-weight: 700; font-size: 17px; margin: 0; text-wrap: balance; }
+.body { white-space: pre-wrap; word-break: break-word; line-height: 1.95; font-size: 16px; margin: 0; max-width: 40em; }
+.done-banner { padding: 12px 14px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 6px; }
+.bar { position: fixed; left: 0; right: 0; bottom: 0; background: var(--card); border-top: 1px solid var(--line); padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); }
+.bar-inner { max-width: 1180px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.choice { display: flex; gap: 6px; flex-wrap: wrap; }
+.choice button { font-family: var(--font-mono); font-size: 15px; padding: 8px 14px; border-radius: 4px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; }
+.choice button .pt { font-weight: 600; margin-right: 6px; }
+.choice button[data-k="A"] .pt, .choice button[data-k="B"] .pt { color: var(--push); }
+.choice button[data-k="tie"] .pt { color: var(--arrow); }
+.choice button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+textarea { flex: 1 1 220px; min-width: 0; height: 40px; resize: vertical; font-family: var(--font-body); font-size: 14px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--paper); color: var(--ink); }
+.nav { display: flex; gap: 6px; margin-left: auto; }
+.nav button { font-family: var(--font-mono); font-size: 13px; padding: 8px 10px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 4px; cursor: pointer; }
+@media (prefers-reduced-motion: no-preference) { article, .pairs button, .choice button { transition: border-color .15s, background-color .15s; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>鬼故事盲讀</h1>
+    <p class="lede">每一對用的是同一副骨架，一篇照舊的寫作規則寫，一篇照新的。A、B 是哪一版是隨機的，頁面上看不出來。讀完兩篇，推你覺得比較毛、比較像真人在 marvel 板發的那篇。</p>
+    <div class="status" id="status" role="status">正在連線，選擇會先存在這個瀏覽器</div>
+    <nav class="pairs" id="pairs" aria-label="選擇第幾對"></nav>
+  </header>
+  <div class="done-banner" id="done" hidden>十對都選好了。回到對話跟 Claude 說一聲，它會讀你的選擇、對答案。</div>
+  <div class="skeleton" id="skeleton"></div>
+  <section class="stories" id="stories"></section>
+</div>
+
+<div class="bar">
+  <div class="bar-inner">
+    <div class="choice" id="choice" role="group" aria-label="哪篇比較毛">
+      <button type="button" data-k="A" aria-pressed="false"><span class="pt">推</span>A 比較毛</button>
+      <button type="button" data-k="tie" aria-pressed="false"><span class="pt">→</span>差不多</button>
+      <button type="button" data-k="B" aria-pressed="false"><span class="pt">推</span>B 比較毛</button>
+    </div>
+    <textarea id="note" placeholder="一句話理由（可不填）" aria-label="理由"></textarea>
+    <div class="nav">
+      <button type="button" id="prev" aria-label="上一對">← 上一對</button>
+      <button type="button" id="next" aria-label="下一對">下一對 →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA = /*__DATA__*/null;
+const pairs = DATA.pairs;
+const votes = {};          // pair id -> {choice, note}
+let current = 0;
+let db = null;
+const $ = (id) => document.getElementById(id);
+
+function loadLocal() {
+  try { const v = JSON.parse(localStorage.getItem("blind-votes") || "{}"); Object.assign(votes, v); } catch (e) {}
+  try { const c = parseInt(localStorage.getItem("blind-current") || "0", 10); if (c >= 0 && c < pairs.length) current = c; } catch (e) {}
+}
+function saveLocal() {
+  try { localStorage.setItem("blind-votes", JSON.stringify(votes)); localStorage.setItem("blind-current", String(current)); } catch (e) {}
+}
+function setStatus(text, tone) { const s = $("status"); s.textContent = text; s.dataset.tone = tone || ""; }
+
+function renderNav() {
+  const nav = $("pairs");
+  nav.replaceChildren(...pairs.map((p, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = String(i + 1).padStart(2, "0");
+    b.setAttribute("aria-current", i === current ? "true" : "false");
+    b.dataset.done = votes[p.id]?.choice ? "true" : "false";
+    b.setAttribute("aria-label", `第 ${i + 1} 對` + (votes[p.id]?.choice ? "（已選）" : ""));
+    b.addEventListener("click", () => go(i));
+    return b;
+  }));
+  const n = pairs.filter(p => votes[p.id]?.choice).length;
+  $("done").hidden = n < pairs.length;
+}
+
+function renderPair() {
+  const p = pairs[current];
+  const sk = p.skeleton;
+  const items = [["場景", sk.setting], ["恐怖機制", sk.mechanisms], ["結尾", sk.ending], ["鬼露出上限", sk.ghost], ["目標字數", sk.chars], ["風格", sk.style]];
+  $("skeleton").replaceChildren(...items.map(([k, v]) => {
+    const span = document.createElement("span");
+    const b = document.createElement("b"); b.textContent = k;
+    span.append(b, document.createTextNode(v));
+    return span;
+  }));
+  const picked = votes[p.id]?.choice;
+  $("stories").replaceChildren(...["A", "B"].map(k => {
+    const s = p[k];
+    const a = document.createElement("article");
+    a.dataset.picked = picked === k ? "true" : "false";
+    const tag = document.createElement("div"); tag.className = "tag";
+    const L = document.createElement("span"); L.className = "letter"; L.textContent = k;
+    const c = document.createElement("span"); c.className = "count"; c.textContent = `${s.chars} 字`;
+    tag.append(L, c);
+    const t = document.createElement("h2"); t.className = "title"; t.textContent = s.title;
+    const body = document.createElement("p"); body.className = "body"; body.textContent = s.body;
+    a.append(tag, t, body);
+    return a;
+  }));
+  document.querySelectorAll("#choice button").forEach(b => b.setAttribute("aria-pressed", b.dataset.k === picked ? "true" : "false"));
+  $("note").value = votes[p.id]?.note || "";
+  $("prev").disabled = current === 0;
+  $("next").disabled = current === pairs.length - 1;
+  renderNav();
+}
+
+function go(i) {
+  if (i < 0 || i >= pairs.length) return;
+  flushNote();
+  current = i; saveLocal(); renderPair();
+  window.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+}
+
+async function persist(pid) {
+  saveLocal();
+  if (!db) return;
+  const v = votes[pid] || {};
+  try {
+    await db.doc("votes/" + pid).set({ choice: v.choice || null, note: v.note || "", updatedAt: new Date().toISOString() });
+    setStatus("已存到雲端，Claude 讀得到");
+  } catch (e) {
+    setStatus("沒能存到雲端（" + (e?.code || "錯誤") + "），這個選擇先留在這個瀏覽器", "warn");
+  }
+}
+
+function choose(k) {
+  const pid = pairs[current].id;
+  votes[pid] = { ...(votes[pid] || {}), choice: k, note: $("note").value.trim() };
+  renderPair();
+  persist(pid);
+}
+let noteTimer = null;
+function flushNote() {
+  const pid = pairs[current].id;
+  const text = $("note").value.trim();
+  if ((votes[pid]?.note || "") === text) return;
+  votes[pid] = { ...(votes[pid] || {}), note: text };
+  persist(pid);
+}
+
+document.querySelectorAll("#choice button").forEach(b => b.addEventListener("click", () => choose(b.dataset.k)));
+$("note").addEventListener("input", () => { clearTimeout(noteTimer); noteTimer = setTimeout(flushNote, 1200); });
+$("note").addEventListener("blur", flushNote);
+$("prev").addEventListener("click", () => go(current - 1));
+$("next").addEventListener("click", () => go(current + 1));
+document.addEventListener("keydown", (e) => {
+  if (e.target.tagName === "TEXTAREA") return;
+  if (e.key === "ArrowLeft") go(current - 1);
+  if (e.key === "ArrowRight") go(current + 1);
+});
+
+loadLocal();
+renderPair();
+
+(async () => {
+  try { db = (await window.claude?.use?.("db")) || null; } catch (e) { db = null; }
+  if (!db) { setStatus("這裡存不到雲端，選擇只留在這個瀏覽器。讀完把結果告訴 Claude", "warn"); return; }
+  setStatus("已連線，選擇會存到雲端");
+  db.collection("votes").onSnapshot((snap) => {
+    let changed = false;
+    for (const d of snap.docs) {
+      const v = d.data() || {};
+      const local = votes[d.id];
+      if (!local || local.choice !== v.choice || (local.note || "") !== (v.note || "")) {
+        votes[d.id] = { choice: v.choice || undefined, note: v.note || "" };
+        changed = true;
+      }
+    }
+    // 只存在這個瀏覽器、還沒進雲端的選擇，補寫上去
+    for (const p of pairs) {
+      if (votes[p.id]?.choice && !snap.docs.some(d => d.id === p.id)) persist(p.id);
+    }
+    if (changed) { saveLocal(); renderPair(); }
+  }, () => setStatus("雲端連線中斷，選擇先留在這個瀏覽器", "warn"));
+})();
+</script>
