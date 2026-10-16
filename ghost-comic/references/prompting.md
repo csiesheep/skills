@@ -30,6 +30,13 @@
 | 客廳場景卡前景多一雙人的膝蓋 | 「from the eye level of a seated person」 | 用編輯修掉：`Keep this room exactly the same ... Remove only the two knees`；場景卡 prompt 加 `nobody in it` |
 | 有編輯指令的格子（同構圖加一個人、只改椅子方向）一次對的比例不高 | | 這種格子給 `n: 3`；同構圖加人（走廊加阿嬤）三張都成功，改物件方向兩張成功一張 |
 | 寫實的預設畫風被擁有者退回（「太寫實」） | | 開始前先跑 `styles`，給三種畫風範例選；選定後才畫角色卡 |
+| 從帳篷紗網往外看的格子冒出三頂帳篷（〈半夜叫我全名的人〉） | 那格被列進 `consistency.scene_refs.camp`，營地格局那句（三頂帳篷一排）被自動接上 | 視角跟場景卡不同的格子不要列進 `scene_refs`；換成在 prompt 裡寫明畫面裡只有什麼（`no tents, no dead tree`） |
+| 「a wall of arrow bamboo」畫成帳篷前一道水泥牆 | wall 被照字面畫 | 寫 `thin dark bamboo stalks`、`no walls, no buildings, no fences` |
+| 用參考格鎖場景，結果連參考格裡的人和構圖一起搬過來（四個人走過倒木 → 小美出現兩次；整個營地遠景 → 該是帳篷特寫的格子也變遠景） | 參考格整張進去，模型照抄 | 要的是場景不是構圖時，用沒有人的場景卡，不用畫好的格子；特寫格乾脆不帶參考，用文字寫 |
+| 角色卡是站姿，該坐著吃麵、該特寫的格子他都站著（三次） | 參考圖的姿勢被照抄 | 改用一格他已經坐著的畫面當參考，或不帶他的角色卡、用文字描述外貌加 `seated ... Nobody is standing` |
+| A 畫風的早上、白天格子背景變全黑 | 線稿畫風預設愛用平塗黑 | 白天格子加 `Bright morning: the sky and the background are plain white; no black background` |
+| 學長雙手抱胸，兩隻手又從身體兩側垂下來，一共四隻手（擁有者抓到的） | 抱胸加全身構圖，模型把垂手的姿勢也畫上去 | 抱胸的格子取到腰部為止（waist-up），寫 `each hand tucked under the opposite upper arm; he has exactly two arms and two hands, and nothing hangs at his sides`；挑圖時數手 |
+| 揭露的黑影比箭竹矮 | 沒寫比例 | `so tall that its head and shoulders rise clearly above the tops of the bamboo`；最後一格同位置換成主角時寫 `the bamboo rises well above his head` |
 
 ## 時間（RTX 3090）
 

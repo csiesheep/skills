@@ -60,7 +60,7 @@ VERT = {"，": "︐", "、": "︑", "。": "︒", "：": "︓", "；": "︔", "�
 NO_START = set("︐︑︒︓︔︕︖﹂﹄︶")
 NO_END = set("﹁﹃︵")
 BREAK_AFTER = set("︐︑︒︓︔︕︖")
-PER_COL = {"speech": 8, "screen": 8, "phone": 8, "narration": 11, "title": 12, "tag": 8}
+PER_COL = {"speech": 8, "voice": 8, "screen": 8, "phone": 8, "narration": 11, "title": 12, "tag": 8}
 
 # ---------------------------------------------------------------------------
 # board and choices
@@ -372,6 +372,8 @@ def cmd_panels(a) -> None:
     ch = load_choices()
     style = style_text(b, ch, "panel")
     for _, cell, box in all_panels(b):
+        if cell.get("fill"):
+            continue
         if a.only and cell["id"] not in a.only:
             continue
         if not a.only and cell.get("pass", 1) != a.pass_:
@@ -476,13 +478,14 @@ def text_block(entry: dict, size: int, max_h: float | None = None) -> Image.Imag
 
 def draw_entry(page: Image.Image, entry: dict, cell_box, base: int) -> None:
     """One text item. The bubble shape says where the voice comes from: speech (round) is said in the room,
-    screen / phone (square, double outline) comes through a device, narration is a plain box, title and tag
-    are white on black."""
+    voice (round, white on black) comes from someone unseen, screen / phone (square, double outline) comes
+    through a device, narration is a plain box, title and tag are white on black."""
     kind = entry["kind"]
+    oval = kind in ("speech", "voice")
     size = round(base * entry.get("scale", 1.0) * {"title": 1.5, "tag": 1.25}.get(kind, 1.0))
-    room = (cell_box[3] - cell_box[1]) - 28 - (size * 1.1 if kind != "speech" else size * 0.8)
-    tile = text_block(entry, size, max_h=room / (1.22 if kind == "speech" else 1.0))
-    if kind == "speech":  # the text rectangle must fit inside the ellipse: scale by about sqrt(2)
+    room = (cell_box[3] - cell_box[1]) - 28 - (size * 1.1 if not oval else size * 0.8)
+    tile = text_block(entry, size, max_h=room / (1.22 if oval else 1.0))
+    if oval:  # the text rectangle must fit inside the ellipse: scale by about sqrt(2)
         bw, bh = round(tile.width * 1.42 + size * 0.5), round(tile.height * 1.22 + size * 0.8)
     else:
         pad = round(size * 0.55)
@@ -497,6 +500,12 @@ def draw_entry(page: Image.Image, entry: dict, cell_box, base: int) -> None:
     box = [bx, by, bx + bw, by + bh]
     if kind == "speech":
         d.ellipse(box, fill="white", outline="black", width=3)
+    elif kind == "voice":
+        d.ellipse(box, fill="black", outline="white", width=3)
+        white = Image.new("RGBA", tile.size, (255, 255, 255, 255))
+        white.putalpha(tile.split()[3])
+        page.paste(white, (bx + pad_x, by + pad_y), white)
+        return
     elif kind in ("screen", "phone"):
         d.rounded_rectangle(box, radius=round(size * 0.35), fill="white", outline="black", width=3)
         g = 5
@@ -566,6 +575,9 @@ def place_panel(page: Image.Image, cell: dict, box, ch: dict) -> None:
     x0, y0, x1, y1 = box
     w, h = x1 - x0, y1 - y0
     d = ImageDraw.Draw(page)
+    if cell.get("fill"):  # a flat panel (all black for a pause, a voice in the dark): nothing to generate
+        d.rectangle([x0, y0, x1 - 1, y1 - 1], fill=cell["fill"], outline="black", width=4)
+        return
     if cell["id"] not in ch["panels"]:
         placeholder(page, cell, box)
         return
@@ -603,7 +615,7 @@ def render_page(b: dict, page: dict, pi: int, ch: dict, wireframe: bool = False)
     for k, (cell, box) in enumerate(page_cells(b, page), 1):
         if "box" in cell:  # insets: white halo so they sit on top of the big panel
             ImageDraw.Draw(im).rectangle([box[0] - 8, box[1] - 8, box[2] + 8, box[3] + 8], fill="white")
-        if wireframe:
+        if wireframe and not cell.get("fill"):
             placeholder(im, cell, box, f"{k}. {cell.get('label', cell['id'])}")
         else:
             place_panel(im, cell, box, ch)

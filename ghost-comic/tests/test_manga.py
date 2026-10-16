@@ -130,6 +130,22 @@ class WorkFolderTest(unittest.TestCase):
         self.assertEqual(Image.open(manga.OUT / "refs" / "scene_room.png").size, (1536, 1024))  # scenes are not cropped
         self.assertEqual(manga.ref_path("scene:room", manga.load_choices()), manga.OUT / "refs" / "scene_room.png")
 
+    def test_fill_panel_and_voice_bubble(self):
+        b = json.loads((self.td / "board.json").read_text(encoding="utf-8"))
+        cell = b["pages"][0]["rows"][2]["cells"][1]  # p4
+        cell["fill"] = "black"
+        cell["text"] = [{"kind": "voice", "text": "……林志偉。", "pos": "mc"}]
+        (self.td / "board.json").write_text(json.dumps(b, ensure_ascii=False), encoding="utf-8")
+        ns = lambda **k: type("A", (), k)  # noqa: E731
+        manga.cmd_pages(ns(pages=[1]))
+        im = Image.open(manga.OUT / "pages" / "page_01.png").convert("L")
+        box = dict((c["id"], bx) for c, bx in manga.page_cells(b, b["pages"][0]))["p4"]
+        self.assertLess(im.getpixel((box[0] + 20, box[3] - 20)), 20)  # the fill is black, not a placeholder
+        center = im.crop(box).resize((40, 40)).getpixel((20, 20))
+        self.assertIsInstance(center, int)
+        passes = [c["id"] for _, c, _ in manga.all_panels(b) if c.get("fill")]
+        self.assertEqual(passes, ["p4"])
+
     def test_plan_and_partial_pages_render(self):
         ns = lambda **k: type("A", (), k)  # noqa: E731
         manga.cmd_plan(ns())
