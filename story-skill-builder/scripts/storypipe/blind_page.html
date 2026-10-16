@@ -1,4 +1,4 @@
-<title>鬼故事盲讀</title>
+<title>{{LABEL}}盲讀</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -69,8 +69,8 @@ textarea { flex: 1 1 220px; min-width: 0; height: 40px; resize: vertical; font-f
 
 <div class="wrap">
   <header>
-    <h1>鬼故事盲讀</h1>
-    <p class="lede">每一對用的是同一副骨架，一篇照舊的寫作規則寫，一篇照新的。A、B 是哪一版是隨機的，頁面上看不出來。讀完兩篇，推你覺得比較毛、比較像真人在 marvel 板發的那篇。</p>
+    <h1>{{LABEL}}盲讀</h1>
+    <p class="lede">每一對用的是同一副骨架，一篇照舊的寫作規則寫，一篇照新的。A、B 是哪一版是隨機的，頁面上看不出來。讀完兩篇，推你覺得比較{{BETTER}}、比較像真人寫的那篇。</p>
     <div class="status" id="status" role="status">正在連線，選擇會先存在這個瀏覽器</div>
     <nav class="pairs" id="pairs" aria-label="選擇第幾對"></nav>
   </header>
@@ -81,10 +81,10 @@ textarea { flex: 1 1 220px; min-width: 0; height: 40px; resize: vertical; font-f
 
 <div class="bar">
   <div class="bar-inner">
-    <div class="choice" id="choice" role="group" aria-label="哪篇比較毛">
-      <button type="button" data-k="A" aria-pressed="false"><span class="pt">推</span>A 比較毛</button>
+    <div class="choice" id="choice" role="group" aria-label="哪篇比較{{BETTER}}">
+      <button type="button" data-k="A" aria-pressed="false"><span class="pt">推</span>A 比較{{BETTER}}</button>
       <button type="button" data-k="tie" aria-pressed="false"><span class="pt">→</span>差不多</button>
-      <button type="button" data-k="B" aria-pressed="false"><span class="pt">推</span>B 比較毛</button>
+      <button type="button" data-k="B" aria-pressed="false"><span class="pt">推</span>B 比較{{BETTER}}</button>
     </div>
     <textarea id="note" placeholder="一句話理由（可不填）" aria-label="理由"></textarea>
     <div class="nav">
@@ -130,7 +130,7 @@ function renderNav() {
 function renderPair() {
   const p = pairs[current];
   const sk = p.skeleton;
-  const items = [["場景", sk.setting], ["恐怖機制", sk.mechanisms], ["結尾", sk.ending], ["鬼露出上限", sk.ghost], ["目標字數", sk.chars], ["風格", sk.style]];
+  const items = Array.isArray(sk) ? sk : [["場景", sk.setting], ["恐怖機制", sk.mechanisms], ["結尾", sk.ending], ["鬼露出上限", sk.ghost], ["目標字數", sk.chars], ["風格", sk.style]];
   $("skeleton").replaceChildren(...items.map(([k, v]) => {
     const span = document.createElement("span");
     const b = document.createElement("b"); b.textContent = k;

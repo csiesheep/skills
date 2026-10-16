@@ -1,25 +1,25 @@
-"""從推文內容算「毛率」和「虛率」，檢查跟推文數有關的特徵是不是也跟「讀者覺得毛」有關。
+"""從推文內容算第二個品質訊號（鬼故事是「毛率」和「虛率」），檢查跟推文數有關的特徵是不是也跟它有關。
 
-推文數量的是受歡迎；毛率量的是讀者有沒有說出「好毛」「雞皮疙瘩」。兩者方向一致，才比較能說某個特徵讓故事更可怕。
+推文數量的是受歡迎；第二訊號量的是讀者有沒有說出類型想要的反應（好毛、笑死、哭了）。
+兩者方向一致，才比較能說某個特徵讓單位更好。關鍵字在 genre.json 的 signal。
 
-py -m storypipe.scare
+py -m storypipe.scare [--annotated data/annotated.jsonl] [--corpus data/corpus.jsonl] [--out data/scare_report.md]
 """
 from __future__ import annotations
 
+import argparse
 import json
 import math
 import re
-from collections import defaultdict
 from pathlib import Path
 
-from .stats import load_units
+from .genre import GENRE
+from .stats import TAGS, load_units
 
-SCARY = re.compile(
-    r"毛毛|好毛|很毛|超毛|有夠毛|真毛|太毛|毛到|毛起來|發毛|毛骨|雞皮|疙瘩|起雞|頭皮發麻|頭皮麻|寒毛|背脊|背涼|發涼|冷汗"
-    r"|毛喔|毛啊|毛欸|毛耶|毛ㄟ|毛的|好恐|太恐|可怕|恐怖|嚇死|嚇到|嚇人|不敢|睡不著|怕怕|好怕|驚悚"
-)
-DOUBT = re.compile(r"虛|唬爛|豪洨|假的|編的|編故事|騙人|騙鬼|太扯|很扯|小說|創作文|業配|釣魚|不信|腦補|幻覺|吃藥|看醫生")
-MIN_PUSHES = 10  # 推文少於 10 則的不算比例，雜訊太大
+SIG = GENRE.signal
+POS = re.compile(SIG.positive) if SIG else None
+NEG = re.compile(SIG.negative) if SIG else None
+MIN_PUSHES = SIG.min_comments if SIG else 10  # 推文少於這個數的不算比例，雜訊太大
 
 
 def push_index(raw_dir: Path = Path("data/raw")) -> dict[str, list[dict]]:
@@ -33,12 +33,15 @@ def push_index(raw_dir: Path = Path("data/raw")) -> dict[str, list[dict]]:
 
 
 def rates(pushes: list[dict]) -> tuple[float, float, int]:
+    """回傳 (正向率, 負向率, 推文數)。"""
+    if POS is None or NEG is None:
+        raise ValueError("genre.json 沒有 signal，算不了第二訊號")
     texts = [p.get("text", "") for p in pushes]
     n = len(texts)
     if not n:
         return 0.0, 0.0, 0
-    s = sum(1 for t in texts if SCARY.search(t) and not DOUBT.search(t))
-    d = sum(1 for t in texts if DOUBT.search(t))
+    s = sum(1 for t in texts if POS.search(t) and not NEG.search(t))
+    d = sum(1 for t in texts if NEG.search(t))
     return s / n, d / n, n
 
 
@@ -77,22 +80,18 @@ def _spearman(xs: list[float], ys: list[float]) -> float:
     return cov / (vx * vy) if vx and vy else 0.0
 
 
-FEATURES = [
-    ("有對話", lambda a: "dialogue" in a["voice_markers"]),
-    ("鬼清楚露面（3）", lambda a: a["ghost_explicitness"] == 3),
-    ("鬼只有跡象（1）", lambda a: a["ghost_explicitness"] == 1),
-    ("鬼完全不露面（0）", lambda a: a["ghost_explicitness"] == 0),
-    ("結尾有解釋", lambda a: a["ending"] == "explained"),
-    ("結尾開放", lambda a: a["ending"] == "open"),
-    ("結尾反轉", lambda a: a["ending"] == "twist"),
-    ("日常程序細節", lambda a: "procedure_detail" in a["voice_markers"]),
-    ("具體地點", lambda a: "location_specific" in a["voice_markers"]),
-    ("轉述家人朋友", lambda a: "friend_of_friend" in a["voice_markers"]),
-    ("作者自我懷疑", lambda a: "self_doubt" in a["voice_markers"]),
-    ("開頭免責", lambda a: "disclaimer" in a["voice_markers"]),
-    ("主要機制：只有聲音", lambda a: a["mechanisms"][0] == "sound_only"),
-    ("主要機制：在場感", lambda a: a["mechanisms"][0] == "presence"),
-]
+def features() -> list[tuple[str, object]]:
+    """要檢查的特徵：每個敘事聲音標記、露出上限的每一級、每個軸的每個主要值。"""
+    cap = GENRE.cap
+    out: list[tuple[str, object]] = []
+    for k, label in GENRE.voice_markers.items():
+        out.append((label.split("：")[0], lambda a, k=k: k in a.get("voice_markers", [])))
+    for lv in range(cap.min, cap.max + 1):
+        out.append((f"{cap.short_name} {cap.level_label(lv)}", lambda a, lv=lv: a[cap.key] == lv))
+    for ax in GENRE.axes:
+        for k in ax.values:
+            out.append((f"{ax.label}：{ax.short(k)}", lambda a, ax=ax, k=k: ax.primary(a) == k))
+    return out
 
 
 def analyze(annotated: Path, corpus: Path) -> str:
@@ -108,46 +107,59 @@ def analyze(annotated: Path, corpus: Path) -> str:
         if r.get("pct") is None:
             continue
         u = corp[r["id"]]
-        pushes = [p for part in u["parts"] for p in P.get(part["id"], [])]
+        pushes = [p for part in u.get("parts", [{"id": r["id"]}]) for p in P.get(part["id"], [])]
         s, d, n = rates(pushes)
         if n < MIN_PUSHES:
             continue
-        data.append({"tag": "翻譯" if r["source"].startswith("翻譯") else "經驗", "pct": r["pct"], "scary": s, "doubt": d, "n": n, "a": r["annotation"]})
+        tag = next((t for t in TAGS if str(r["source"]).startswith(t)), TAGS[0])
+        data.append({"tag": tag, "pct": r["pct"], "pos": s, "neg": d, "n": n, "a": r["annotation"]})
 
-    L = ["# 毛率分析", "",
-         "毛率：推文裡出現「好毛、雞皮疙瘩、可怕、恐怖、頭皮發麻、不敢……」而且沒有「虛、唬爛、假的、小說……」的比例。",
-         "虛率：推文裡出現「虛、唬爛、假的、編的、小說、太扯……」的比例。",
-         f"只算有推文分數、推文至少 {MIN_PUSHES} 則的故事。", ""]
-    for tag in ("經驗", "翻譯"):
+    pn, nn = SIG.positive_name, SIG.negative_name
+    L = [f"# {pn}分析", "",
+         f"{pn}：推文裡出現正向關鍵字（{SIG.positive[:60]}…）而且沒有負向關鍵字的比例。",
+         f"{nn}：推文裡出現負向關鍵字（{SIG.negative[:60]}…）的比例。",
+         f"只算有推文分數、推文至少 {MIN_PUSHES} 則的{GENRE.unit}。", ""]
+    for tag in TAGS:
         D = [x for x in data if x["tag"] == tag]
         if len(D) < 30:
             continue
-        ms = sum(x["scary"] for x in D) / len(D)
-        md = sum(x["doubt"] for x in D) / len(D)
-        rho_s = _spearman([x["pct"] for x in D], [x["scary"] for x in D])
-        rho_d = _spearman([x["pct"] for x in D], [x["doubt"] for x in D])
+        ms = sum(x["pos"] for x in D) / len(D)
+        md = sum(x["neg"] for x in D) / len(D)
+        rho_s = _spearman([x["pct"] for x in D], [x["pos"] for x in D])
+        rho_d = _spearman([x["pct"] for x in D], [x["neg"] for x in D])
         L += [f"## {tag}文（{len(D)} 篇，推文中位數 {sorted(x['n'] for x in D)[len(D) // 2]} 則）", "",
-              f"平均毛率 {100 * ms:.1f}%，平均虛率 {100 * md:.1f}%。推文百分位跟毛率的等級相關 {rho_s:+.2f}，跟虛率 {rho_d:+.2f}。", "",
-              "| 特徵 | 篇數 | 有：毛率 | 沒有：毛率 | 差 | p | 有：虛率 | 沒有：虛率 | 差 | p |",
+              f"平均{pn} {100 * ms:.1f}%，平均{nn} {100 * md:.1f}%。推文百分位跟{pn}的等級相關 {rho_s:+.2f}，跟{nn} {rho_d:+.2f}。", "",
+              f"| 特徵 | 篇數 | 有：{pn} | 沒有：{pn} | 差 | p | 有：{nn} | 沒有：{nn} | 差 | p |",
               "|---|---|---|---|---|---|---|---|---|---|"]
-        for name, f in FEATURES:
+        for name, f in features():
             yes = [x for x in D if f(x["a"])]
             no = [x for x in D if not f(x["a"])]
             if len(yes) < 10 or len(no) < 10:
                 continue
+
             def m(g, k):
                 return sum(x[k] for x in g) / len(g)
-            ps, pd = _welch([x["scary"] for x in yes], [x["scary"] for x in no]), _welch([x["doubt"] for x in yes], [x["doubt"] for x in no])
+
+            ps, pd = _welch([x["pos"] for x in yes], [x["pos"] for x in no]), _welch([x["neg"] for x in yes], [x["neg"] for x in no])
             fmt = lambda p: "—" if p is None else (f"**{p:.3f}**" if p < 0.01 else f"{p:.2f}")  # noqa: E731
             L.append(
-                f"| {name} | {len(yes)} | {100 * m(yes, 'scary'):.1f}% | {100 * m(no, 'scary'):.1f}% | {100 * (m(yes, 'scary') - m(no, 'scary')):+.1f} | {fmt(ps)} "
-                f"| {100 * m(yes, 'doubt'):.1f}% | {100 * m(no, 'doubt'):.1f}% | {100 * (m(yes, 'doubt') - m(no, 'doubt')):+.1f} | {fmt(pd)} |"
+                f"| {name} | {len(yes)} | {100 * m(yes, 'pos'):.1f}% | {100 * m(no, 'pos'):.1f}% | {100 * (m(yes, 'pos') - m(no, 'pos')):+.1f} | {fmt(ps)} "
+                f"| {100 * m(yes, 'neg'):.1f}% | {100 * m(no, 'neg'):.1f}% | {100 * (m(yes, 'neg') - m(no, 'neg')):+.1f} | {fmt(pd)} |"
             )
         L.append("")
     return "\n".join(L)
 
 
-if __name__ == "__main__":
-    md = analyze(Path("data/annotated.opus55.v2.jsonl"), Path("data/corpus.jsonl"))
-    Path("data/scare_report.md").write_text(md, encoding="utf-8")
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--annotated", default="data/annotated.jsonl")
+    ap.add_argument("--corpus", default="data/corpus.jsonl")
+    ap.add_argument("--out", default="data/scare_report.md")
+    a = ap.parse_args()
+    md = analyze(Path(a.annotated), Path(a.corpus))
+    Path(a.out).write_text(md, encoding="utf-8")
     print(md)
+
+
+if __name__ == "__main__":
+    main()

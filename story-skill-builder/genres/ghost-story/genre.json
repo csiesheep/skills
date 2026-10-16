@@ -1,0 +1,245 @@
+{
+  "name": "ghost-story",
+  "label": "鬼故事",
+  "unit": "故事",
+  "title_prefix": "[經驗]",
+  "better_word": "毛",
+  "source": {
+    "kind": "ptt",
+    "board": "marvel",
+    "tags": {
+      "經驗": "data/index/marvel_經驗.jsonl",
+      "翻譯": "data/index/marvel_翻譯.jsonl"
+    },
+    "default_tag": "經驗",
+    "default_query": "經驗 recommend:30",
+    "score_from_year": 2007
+  },
+  "is_unit_description": "是不是一篇可以獨立閱讀的鬼故事；問卦、討論、轉貼、系列中段都是 false",
+  "axes": [
+    {
+      "key": "setting",
+      "label": "場景",
+      "flag": "setting",
+      "multi": false,
+      "description": "事件發生的地方：最可怕那一幕發生的場景",
+      "detail": {
+        "key": "setting_detail",
+        "description": "最可怕那一幕發生的具體場景，30 字內，例如「中部某大學女宿三樓廁所」",
+        "max_chars": 30
+      },
+      "values": {
+        "dorm": "學校宿舍",
+        "military": "當兵／軍營／營區",
+        "night_shift": "夜班／值班／警衛",
+        "mountain": "山路／山區／登山",
+        "rental": "租屋處／老公寓／套房",
+        "hospital": "醫院／診所／照護",
+        "store": "超商／店面／打工",
+        "old_house": "老家／鄉下老宅／三合院",
+        "school": "校園／教室／社團",
+        "hotel": "飯店／旅館／民宿",
+        "road": "深夜開車／騎車／夜路",
+        "funeral": "喪事／靈堂／塔位／告別式",
+        "temple": "廟宇／宮壇／儀式／收驚",
+        "office": "辦公室／公司／廠房",
+        "transport": "公車／捷運／火車／計程車",
+        "childhood_home": "童年家中／親戚家",
+        "home": "自家／現在住的家（非租屋、非童年）",
+        "ruins": "廢墟／廢棄建築／探險",
+        "stairwell": "電梯／樓梯間／頂樓",
+        "abroad": "國外旅行／出差",
+        "water": "海邊／溪邊／水域",
+        "other": "其他"
+      },
+      "aliases": {
+        "學校": "school", "校園": "school", "教室": "school", "社團": "school", "補習班": "school",
+        "宿舍": "dorm", "女宿": "dorm", "男宿": "dorm",
+        "當兵": "military", "軍中": "military", "軍營": "military", "部隊": "military", "營區": "military",
+        "夜班": "night_shift", "值班": "night_shift", "警衛": "night_shift", "保全": "night_shift",
+        "山": "mountain", "山上": "mountain", "登山": "mountain", "山路": "mountain",
+        "租屋": "rental", "套房": "rental", "雅房": "rental", "公寓": "rental",
+        "醫院": "hospital", "急診": "hospital", "病房": "hospital", "診所": "hospital",
+        "超商": "store", "便利商店": "store", "打工": "store", "店面": "store",
+        "老家": "old_house", "三合院": "old_house", "鄉下": "old_house", "古厝": "old_house",
+        "飯店": "hotel", "旅館": "hotel", "民宿": "hotel", "汽車旅館": "hotel",
+        "夜路": "road", "開車": "road", "騎車": "road", "公路": "road",
+        "喪事": "funeral", "靈堂": "funeral", "殯儀館": "funeral", "告別式": "funeral", "塔位": "funeral",
+        "廟": "temple", "宮廟": "temple", "宮壇": "temple", "收驚": "temple",
+        "公司": "office", "辦公室": "office", "工廠": "office", "職場": "office",
+        "公車": "transport", "捷運": "transport", "火車": "transport", "計程車": "transport",
+        "小時候": "childhood_home", "童年": "childhood_home", "親戚家": "childhood_home", "外婆家": "childhood_home",
+        "自家": "home", "家裡": "home", "自己家": "home",
+        "廢墟": "ruins", "廢屋": "ruins", "探險": "ruins",
+        "電梯": "stairwell", "樓梯": "stairwell", "頂樓": "stairwell",
+        "國外": "abroad", "出國": "abroad", "出差": "abroad",
+        "海邊": "water", "溪邊": "water", "河邊": "water", "水庫": "water"
+      }
+    },
+    {
+      "key": "mechanisms",
+      "label": "恐怖機制",
+      "fixed_label": "主要機制",
+      "flag": "mechanism",
+      "multi": true,
+      "max_items": 3,
+      "description": "依重要性排序；第一個是最可怕那一幕為什麼可怕",
+      "values": {
+        "identity_swap": "身份錯置：那個人不是人，或不是本人",
+        "time_slip": "時間錯亂：時序對不上、多出或少掉一段時間",
+        "escalation": "逐步失控：小異常一路升級",
+        "taboo": "犯禁忌後的報應",
+        "retro_reveal": "事後才知道：事後才拼出真相才發毛",
+        "witness_mismatch": "見證不一致：別人看到的和我不一樣",
+        "repetition": "重複／循環：同一件事一再發生",
+        "presence": "在場感：有東西在，但看不到",
+        "benign": "善意／報恩／守護型",
+        "possession": "附身／精神異常／卡到",
+        "object": "物件作祟：照片、娃娃、衣物、手機",
+        "dream": "夢境滲入現實",
+        "sound_only": "只有聲音，沒有影像",
+        "dead_contact": "亡者來電／訊息／託夢：已故者主動聯絡",
+        "proxy_sighting": "透過第三者看見：自己沒感覺，通靈的親友描述得很具體"
+      },
+      "aliases": {
+        "不是人": "identity_swap", "不是本人": "identity_swap", "身份": "identity_swap",
+        "時間": "time_slip", "失控": "escalation", "升級": "escalation",
+        "禁忌": "taboo", "報應": "taboo", "事後": "retro_reveal",
+        "對不上": "witness_mismatch", "見證": "witness_mismatch",
+        "循環": "repetition", "重複": "repetition", "在場": "presence", "感覺": "presence",
+        "善意": "benign", "守護": "benign", "報恩": "benign",
+        "附身": "possession", "卡到": "possession", "煞到": "possession",
+        "物件": "object", "娃娃": "object", "照片": "object",
+        "夢": "dream", "託夢": "dead_contact", "聲音": "sound_only",
+        "亡者": "dead_contact", "來電": "dead_contact", "通靈": "proxy_sighting", "陰陽眼": "proxy_sighting"
+      }
+    },
+    {
+      "key": "ending",
+      "label": "結尾型態",
+      "fixed_label": "結尾",
+      "flag": "ending",
+      "multi": false,
+      "description": "結尾型態",
+      "values": {
+        "open": "開放：沒有解釋，就這樣結束",
+        "explained": "有解釋：事後被人點破或查到前因",
+        "twist": "反轉：最後一兩句把前面翻掉",
+        "fade": "淡出：搬走、不再去、慢慢沒事"
+      },
+      "aliases": {
+        "開放": "open", "開放結局": "open", "開放式": "open", "沒解釋": "open", "沒有解釋": "open",
+        "解釋": "explained", "有解釋": "explained", "解答": "explained",
+        "反轉": "twist", "翻轉": "twist", "逆轉": "twist",
+        "淡出": "fade", "搬走": "fade", "沒事": "fade"
+      },
+      "plan_notes": {
+        "twist": "注意：結尾是反轉時，揭露段只寫敘事者當下看到的表面事件，真相留給最後一兩句翻；兩段不要搶同一個高潮。",
+        "explained": "注意：結尾是有解釋時，解釋要從別人嘴裡說出來（長輩、廟公、鄰居），不是敘事者自己推理。"
+      }
+    }
+  ],
+  "pair": ["setting", "mechanisms"],
+  "example_axis": "setting",
+  "example_match_axis": "mechanisms",
+  "cap": {
+    "key": "ghost_explicitness",
+    "label": "鬼的露出上限",
+    "short": "鬼露出",
+    "flag": "ghost",
+    "min": 0,
+    "max": 3,
+    "description": "0 完全沒正面寫鬼；1 只有間接跡象；2 有一瞬間看見；3 清楚描述外觀或互動",
+    "levels": {"0": "不露面", "1": "只有跡象", "2": "一瞬間看見", "3": "可以清楚看見"},
+    "words": {
+      "不露面": 0, "完全不出現": 0, "看不到": 0, "沒有鬼": 0,
+      "間接": 1, "只有跡象": 1, "聲音": 1, "暗示": 1,
+      "一瞬間": 2, "一閃": 2, "瞥見": 2, "黑影": 2,
+      "清楚": 3, "正面": 3, "直接": 3, "看得很清楚": 3
+    }
+  },
+  "beats": {
+    "normal": "正常生活鋪陳",
+    "anomaly": "第一個小異常",
+    "denial": "合理化／否認",
+    "escalation": "升級",
+    "reveal": "揭露／最可怕的一刻",
+    "aftermath": "餘波"
+  },
+  "anchors": {
+    "key": "realism_anchors",
+    "label": "錨點提示",
+    "description": "讓它像真的細節，每個 15 字內",
+    "max_items": 6,
+    "max_chars": 15,
+    "plan_hint": "同場景高分故事用過的細節類型，當提示，不當抄本"
+  },
+  "moment": {
+    "key": "scariest_moment",
+    "label": "最可怕的一刻",
+    "description": "最可怕的一刻，用自己的話一句講完，40 字內",
+    "max_chars": 40
+  },
+  "premise": {
+    "key": "one_line_premise",
+    "label": "一句話前提",
+    "description": "一句話前提，45 字內，不抄原文",
+    "max_chars": 45,
+    "plan_hint": "只看結構，不看文字，不要重講同一件事"
+  },
+  "voice_markers": {
+    "first_person": "第一人稱親身經歷",
+    "friend_of_friend": "朋友的朋友／家人的事",
+    "disclaimer": "開頭免責：飄點微弱、文筆不好",
+    "ptt_jargon": "鄉民用語、注音文、XD",
+    "ai_polished": "自承用 AI 潤飾",
+    "location_specific": "有具體地點（縣市、路名、幾樓）",
+    "time_specific": "有具體時間（幾點、季節、年份）",
+    "procedure_detail": "有日常程序細節（值班流程、宿舍規定）",
+    "dialogue": "有對話",
+    "self_doubt": "作者自己也懷疑是不是想太多",
+    "translated": "翻譯或轉述外國（日本、韓國等）的故事，不是台灣在地經驗"
+  },
+  "length": {
+    "presets": {"極短": [400, 700], "短": [800, 1200], "中": [1500, 2500], "長": [3000, 4500], "超長": [5000, 8000]},
+    "aliases": {"極短篇": "極短", "短篇": "短", "中篇": "中", "中等": "中", "長篇": "長", "很長": "超長"},
+    "min": 300,
+    "max": 12000,
+    "sample_clamp": [800, 4000]
+  },
+  "rule_sets": {
+    "v2": {"dir": "", "styles": "styles"},
+    "restrained": {"dir": "restrained/", "styles": "v1/styles"},
+    "v1": {"dir": "v1/", "styles": "v1/styles"}
+  },
+  "tastes": {
+    "直接": {"rules": "v2", "summary": "照 PTT 讀者的資料：最可怕那一幕寫出看到什麼，語氣篤定（預設）", "aliases": ["具體", "爆文", "ptt", "資料", "v2", "預設"]},
+    "留白": {"rules": "restrained", "summary": "克制：鬼的露出上限內也留白，靠旁人反應撐，可以留一點不確定", "aliases": ["克制", "含蓄", "細膩", "隱晦", "restrained"]}
+  },
+  "styles": [
+    {"key": "ptt", "label": "PTT 鄉民", "aliases": ["鄉民", "預設", "批踢踢", "口語", "經驗文"], "summary": "PTT marvel 板 [經驗] 文的鄉民口吻，口語、粗糙、有免責開頭"},
+    {"key": "minimal", "label": "簡約", "aliases": ["簡潔", "極簡", "白描", "冷"], "summary": "短句白描，形容詞極少，留白多，不解釋情緒"},
+    {"key": "humor", "label": "幽默", "aliases": ["搞笑", "好笑", "吐槽", "自嘲"], "summary": "自嘲吐槽的輕鬆口吻，前段好笑，越接近揭露越收，最後一定是毛的"},
+    {"key": "oral", "label": "口述", "aliases": ["講故事", "說書", "節目", "podcast", "微疼", "聽眾"], "summary": "像在節目或宵夜攤上講給一群人聽，有跟聽眾的互動和停頓"},
+    {"key": "literary", "label": "文學", "aliases": ["文青", "細膩", "文藝", "散文"], "summary": "散文式的細膩描寫，有意象和節制的抒情，但事件本身仍是真實經驗的規模"},
+    {"key": "report", "label": "紀錄", "aliases": ["日誌", "報告", "冷靜", "紀錄體", "值班日誌"], "summary": "像值班日誌或事件紀錄，有時間戳記，語氣冷靜，情緒只從細節漏出來"},
+    {"key": "elder", "label": "長輩講古", "aliases": ["講古", "阿嬤", "阿公", "長輩", "台語"], "summary": "轉述長輩講的往事，夾台語和舊時代細節，長輩的語氣篤定，敘事者半信半疑"}
+  ],
+  "verdict": {
+    "dims": {
+      "realism": "真實感：錨點夠不夠具體、日常",
+      "slow_burn": "鋪陳：有沒有正常段和否認段，還是一開始就在鬧",
+      "ghost_restraint": "鬼的處理，照評分規則打分",
+      "ending": "結尾餘味：收太乾淨或加道德教訓扣分",
+      "voice": "像不像 PTT 真人發文；AI 腔扣分"
+    },
+    "cap_dim": "ghost_restraint"
+  },
+  "signal": {
+    "positive_name": "毛率",
+    "negative_name": "虛率",
+    "positive": "毛毛|好毛|很毛|超毛|有夠毛|真毛|太毛|毛到|毛起來|發毛|毛骨|雞皮|疙瘩|起雞|頭皮發麻|頭皮麻|寒毛|背脊|背涼|發涼|冷汗|毛喔|毛啊|毛欸|毛耶|毛ㄟ|毛的|好恐|太恐|可怕|恐怖|嚇死|嚇到|嚇人|不敢|睡不著|怕怕|好怕|驚悚",
+    "negative": "虛|唬爛|豪洨|假的|編的|編故事|騙人|騙鬼|太扯|很扯|小說|創作文|業配|釣魚|不信|腦補|幻覺|吃藥|看醫生",
+    "min_comments": 10
+  }
+}

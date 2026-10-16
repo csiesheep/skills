@@ -1,11 +1,12 @@
-"""兩兩比較的評審：給兩篇，問哪篇推文多（popular）、哪篇比較毛（scary）。先用真實文章的配對量準確率。
+"""兩兩比較的評審：給兩篇，問哪篇推文多（popular）、哪篇在類型想要的那件事上比較強（scary，鬼故事是「比較毛」，
+別的類型照它的 pairwise_judge.md 定義；欄位名沿用）。先用真實文章的配對量準確率。
 
 兩組真實配對：
-- pop：經驗文同年前 10%（高）vs 對照組後 30%（低），量 popular 的準確率
-- scary：推文百分位都在 0.5 以上、推文至少 30 則的經驗文，毛率前四分之一 vs 後四分之一，量 scary 的準確率
+- pop：預設標籤的文同年前 10%（高）vs 對照組後 30%（低），量 popular 的準確率
+- scary：推文百分位都在 0.5 以上、推文至少 30 則的文，第二訊號前四分之一 vs 後四分之一，量 scary 的準確率
 每對 A、B 對調各判一次，抵銷位置偏好。
 
-py -m storypipe.pairwise --pop 40 --scary 30
+py -m storypipe.pairwise --pop 40 --scary 30 [--annotated data/annotated.jsonl]
 """
 from __future__ import annotations
 
@@ -20,7 +21,8 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 from .annotate import load_prompt
-from .llm import make_backend
+from .genre import GENRE
+from .llm import DEFAULT_MODELS, make_backend
 from .scare import push_index, rates
 from .stats import load_units
 
@@ -34,32 +36,33 @@ class PairJudgment(BaseModel):
     reason: str = Field(description="一句話講判斷的關鍵差別，60 字內")
 
 
-def judge_pair(backend, story_a: str, story_b: str, model: str = "claude-opus-5-5") -> PairJudgment:
+def judge_pair(backend, story_a: str, story_b: str, model: str | None = None) -> PairJudgment:
     user = f"A：\n{story_a}\n\n----\n\nB：\n{story_b}"
-    return backend.structured(load_prompt("pairwise_judge.md"), user, PairJudgment, model, max_tokens=3000, effort="high")
+    return backend.structured(load_prompt("pairwise_judge.md"), user, PairJudgment, model or DEFAULT_MODELS["judge"], max_tokens=3000, effort="high")
 
 
-def build_pairs(n_pop: int, n_scary: int, seed: int) -> list[dict]:
-    rows, _ = load_units(Path("data/annotated.opus55.v2.jsonl"), Path("data/corpus.jsonl"))
+def build_pairs(n_pop: int, n_scary: int, seed: int, annotated: Path = Path("data/annotated.jsonl"), corpus_path: Path = Path("data/corpus.jsonl")) -> tuple[list[dict], dict]:
+    rows, _ = load_units(annotated, corpus_path)
     corpus = {}
-    for line in Path("data/corpus.jsonl").read_text(encoding="utf-8").splitlines():
+    for line in corpus_path.read_text(encoding="utf-8").splitlines():
         if line.strip():
             u = json.loads(line)
             corpus[u["id"]] = u
     P = push_index()
-    ok = lambda r: 600 <= r["length_chars"] <= 4000 and not corpus[r["id"]]["series_key"]  # noqa: E731
+    ok = lambda r: 600 <= r["length_chars"] <= 4000 and not corpus[r["id"]].get("series_key")  # noqa: E731
     rng = random.Random(seed)
+    tag = GENRE.source.default_tag
 
-    hi = [r for r in rows if r["source"] == "經驗" and r["pct"] is not None and r["pct"] >= 0.9 and ok(r)]
-    lo = [r for r in rows if r["source"] == "經驗對照" and r["pct"] is not None and r["pct"] <= 0.3 and ok(r)]
+    hi = [r for r in rows if r["source"] == tag and r["pct"] is not None and r["pct"] >= 0.9 and ok(r)]
+    lo = [r for r in rows if r["source"] == tag + "對照" and r["pct"] is not None and r["pct"] <= 0.3 and ok(r)]
     pairs = [{"kind": "pop", "good": g["id"], "bad": b["id"], "good_pct": g["pct"], "bad_pct": b["pct"]}
-             for g, b in zip(rng.sample(hi, n_pop), rng.sample(lo, n_pop))]
+             for g, b in zip(rng.sample(hi, min(n_pop, len(hi))), rng.sample(lo, min(n_pop, len(lo))))]
 
     cand = []
     for r in rows:
-        if r["source"] != "經驗" or r["pct"] is None or r["pct"] < 0.5 or not ok(r):
+        if r["source"] != tag or r["pct"] is None or r["pct"] < 0.5 or not ok(r):
             continue
-        s, d, n = rates([p for part in corpus[r["id"]]["parts"] for p in P.get(part["id"], [])])
+        s, d, n = rates([p for part in corpus[r["id"]].get("parts", [{"id": r["id"]}]) for p in P.get(part["id"], [])])
         if n >= 30:
             cand.append((s, r))
     cand.sort(key=lambda x: x[0])
@@ -80,8 +83,10 @@ def main() -> None:
     ap.add_argument("--seed", type=int, default=11)
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--backend", default="cli")
+    ap.add_argument("--annotated", default="data/annotated.jsonl")
+    ap.add_argument("--corpus", default="data/corpus.jsonl")
     a = ap.parse_args()
-    pairs, corpus = build_pairs(a.pop, a.scary, a.seed)
+    pairs, corpus = build_pairs(a.pop, a.scary, a.seed, Path(a.annotated), Path(a.corpus))
     done = set()
     if OUT.exists():
         for line in OUT.read_text(encoding="utf-8").splitlines():

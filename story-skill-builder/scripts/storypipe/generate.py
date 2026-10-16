@@ -6,8 +6,9 @@ import random
 from pathlib import Path
 
 from .annotate import load_prompt
+from .genre import GENRE
 from .llm import DEFAULT_MODELS, Backend
-from .taxonomy import BEATS, BEAT_LABELS, ENDINGS, MECHANISMS, SETTINGS, BeatShare, Plan, Verdict
+from .taxonomy import BEAT_LABELS, BEATS, VERDICT_DIMS, Plan, Verdict
 
 
 # ---------------------------------------------------------------------------
@@ -39,56 +40,62 @@ def _as_list(x: str | list[str] | None) -> list[str] | None:
 def make_plan(
     weights: dict,
     rng: random.Random,
-    setting: str | list[str] | None = None,
-    mechanism: str | list[str] | None = None,
-    ending: str | list[str] | None = None,
-    ghost_max: int | None = None,
+    cap_max: int | None = None,
     target_chars: int | None = None,
     length_range: tuple[int, int] | None = None,
-    style: str = "ptt",
+    style: str | None = None,
     style_note: str = "",
     notes: list[str] | None = None,
-    rules: str = "v2",
+    rules: str | None = None,
+    **choices: str | list[str] | None,
 ) -> Plan:
-    """setting、mechanism、ending 可以給一個或多個 key；給多個就只在這些裡面依權重抽。
+    """每個軸可以用它的 key 或 flag 當關鍵字參數限定值（一個或多個）；給多個就只在這些裡面依權重抽。
     長度：target_chars 給定值；length_range 給範圍（在範圍內隨機）；都沒給就用高分組的字數分布。"""
-    from .options import MAX_CHARS, MIN_CHARS, STYLES
+    from .options import STYLES
 
-    settings_only, mech_only, ending_only = _as_list(setting), _as_list(mechanism), _as_list(ending)
-    fixed = [name for name, v in (("場景", settings_only), ("主要機制", mech_only), ("結尾", ending_only)) if v]
+    ln = GENRE.length
+    style = style or GENRE.default_style
+    rules = rules or GENRE.default_rules
+    only: dict[str, list[str] | None] = {}
+    for k, v in choices.items():
+        only[GENRE.axis(k).key] = _as_list(v)
+    fixed = [ax.fixed_name for ax in GENRE.axes if only.get(ax.key)]
 
-    setting = _weighted_pick(rng, weights["settings"], only=settings_only)
-
-    pair_opts = {k.split("|")[1]: v for k, v in weights.get("pairs", {}).items() if k.split("|")[0] == setting}
-    if mech_only:
-        primary = _weighted_pick(rng, weights["mechanisms_primary"], only=mech_only)
-    elif pair_opts and rng.random() < 0.7:
-        primary = _weighted_pick(rng, pair_opts)
-    else:
-        primary = _weighted_pick(rng, weights["mechanisms_primary"])
-    mechanisms = [primary]
-    if rng.random() < 0.5:
-        try:
-            mechanisms.append(_weighted_pick(rng, weights["mechanisms_any"], exclude={primary}))
-        except ValueError:
-            pass
-
-    ending = _weighted_pick(rng, weights["endings"], only=ending_only)
+    chosen: dict[str, list[str]] = {}
+    for ax in GENRE.axes:
+        entry = weights["axes"][ax.key]
+        o = only.get(ax.key)
+        primary = None
+        if not o and GENRE.pair and ax.key == GENRE.pair[1] and GENRE.pair[0] in chosen:
+            first = chosen[GENRE.pair[0]][0]
+            pair_opts = {k.split("|", 1)[1]: v for k, v in weights.get("pairs", {}).items() if k.split("|", 1)[0] == first}
+            if pair_opts and rng.random() < 0.7:
+                primary = _weighted_pick(rng, pair_opts)
+        if primary is None:
+            primary = _weighted_pick(rng, entry["table"], only=o)
+        vals = [primary]
+        if ax.multi and ax.max_items > 1 and rng.random() < 0.5:
+            try:
+                vals.append(_weighted_pick(rng, entry.get("any") or entry["table"], exclude={primary}))
+            except ValueError:
+                pass
+        chosen[ax.key] = vals
 
     base = weights["beats_top"]
-    noisy = {b: max(0.0, base[b] * rng.uniform(0.8, 1.2)) for b in BEATS}
-    beats = BeatShare(**noisy).normalized()
+    noisy = {b: max(0.0, base.get(b, 0.0) * rng.uniform(0.8, 1.2)) for b in BEATS}
+    total = sum(noisy.values()) or 1.0
+    beats = {b: v / total for b, v in noisy.items()}
 
-    if ghost_max is None:
-        dist = weights["ghost_explicitness"]["dist_top"]
+    if cap_max is None:
+        dist = weights["cap"]["dist_top"]
         levels = [int(k) for k in dist]
-        counts = [dist[str(l)] + 0.5 for l in levels]  # +0.5 讓沒出現過的等級還是有一點機率
-        ghost_max = rng.choices(levels, weights=counts, k=1)[0]
+        counts = [dist[str(lv)] + 0.5 for lv in levels]  # +0.5 讓沒出現過的等級還是有一點機率
+        cap_max = rng.choices(levels, weights=counts, k=1)[0]
     else:
-        fixed.append("鬼露出上限")
+        fixed.append(GENRE.cap.label)
 
     if target_chars is not None:
-        target_chars = max(MIN_CHARS, min(int(target_chars), MAX_CHARS))
+        target_chars = max(ln.min, min(int(target_chars), ln.max))
         fixed.append("長度")
     elif length_range is not None:
         lo, hi = length_range
@@ -97,33 +104,30 @@ def make_plan(
     else:
         lt = weights["length_top"]
         lo, hi = int(lt["p25"]), int(lt["p75"])
-        target_chars = rng.randint(min(lo, hi), max(lo, hi)) if hi > lo else int(lt["p50"] or 1500)
-        target_chars = max(800, min(target_chars, 4000))
+        target_chars = rng.randint(min(lo, hi), max(lo, hi)) if hi > lo else int(lt["p50"] or ln.sample_clamp[0])
+        target_chars = max(ln.sample_clamp[0], min(target_chars, ln.sample_clamp[1]))
 
     examples = weights.get("examples", [])
-    same_setting = [e for e in examples if e["setting"] == setting]
-    anchor_pool = [a for e in (same_setting or examples) for a in e["realism_anchors"]]
+    ex_ax, match_ax = GENRE.example_axis, GENRE.example_match_axis
+    same = [e for e in examples if (e["axes"].get(ex_ax) or [None])[0] == chosen[ex_ax][0]]
+    anchor_pool = [a for e in (same or examples) for a in e["anchors"]]
     rng.shuffle(anchor_pool)
     anchor_hints = list(dict.fromkeys(anchor_pool))[:8]
 
-    same_mech = [e for e in examples if primary in e["mechanisms"]]
-    pool = same_mech or examples
-    structural = [e["one_line_premise"] for e in rng.sample(pool, k=min(3, len(pool)))]
+    same_match = [e for e in examples if chosen[match_ax][0] in e["axes"].get(match_ax, [])]
+    pool = same_match or examples
+    structural = [e["premise"] for e in rng.sample(pool, k=min(3, len(pool)))]
 
     st = STYLES[style]
-    if style != "ptt" or style_note:
+    if style != GENRE.default_style or style_note:
         fixed.append("風格")
     if notes:
         fixed.append("額外要求")
     return Plan(
-        setting=setting,
-        setting_label=SETTINGS[setting],
-        mechanisms=mechanisms,
-        mechanism_labels=[MECHANISMS[m] for m in mechanisms],
-        ending=ending,
-        ending_label=ENDINGS[ending],
+        axes=chosen,
+        axis_labels={k: [GENRE.axis(k).label_of(v) for v in vs] for k, vs in chosen.items()},
+        cap=cap_max,
         beats=beats,
-        ghost_explicitness=ghost_max,
         target_chars=target_chars,
         anchor_hints=anchor_hints,
         structural_examples=structural,
@@ -141,28 +145,26 @@ def render_plan(plan: Plan, target_chars: int | None = None) -> str:
     from .options import STYLES
 
     tc = target_chars or plan.target_chars
-    beats_txt = "、".join(f"{BEAT_LABELS[b]} {int(getattr(plan.beats, b) * tc)} 字" for b in BEATS)
-    lines = [
-        f"場景：{plan.setting_label}",
-        f"恐怖機制：{'；'.join(plan.mechanism_labels)}",
-        f"結尾型態：{plan.ending_label}",
-        f"鬼的露出上限 ghost_explicitness：{plan.ghost_explicitness}",
+    beats_txt = "、".join(f"{BEAT_LABELS[b]} {int(plan.beats.get(b, 0.0) * tc)} 字" for b in BEATS)
+    lines = [f"{ax.label}：{'；'.join(plan.axis_labels[ax.key])}" for ax in GENRE.axes]
+    lines += [
+        f"{GENRE.cap.label} {GENRE.cap.key}：{plan.cap}",
         f"target_chars：{tc}（誤差兩成內）",
         f"節拍字數分配（大約）：{beats_txt}",
         f"風格：{plan.style_label}（{STYLES[plan.style].summary}）" + (f"；補充：{plan.style_note}" if plan.style_note else ""),
-        "錨點提示（同場景高分故事用過的細節類型，當提示，不當抄本）：" + "、".join(plan.anchor_hints),
-        "結構範例（只看結構，不看文字，不要重講同一件事）：",
+        f"{GENRE.anchors.label}（{GENRE.anchors.plan_hint}）：" + "、".join(plan.anchor_hints),
+        f"結構範例（{GENRE.premise.plan_hint}）：",
         *[f"  - {s}" for s in plan.structural_examples],
     ]
     if plan.user_notes:
-        lines.append("使用者的額外要求（一定要做到；跟上面衝突時以這裡為準，但鬼的克制和不抄襲的規則不變）：")
+        lines.append("使用者的額外要求（一定要做到；跟上面衝突時以這裡為準，但露出上限和不抄襲的規則不變）：")
         lines += [f"  - {n}" for n in plan.user_notes]
     if plan.fixed:
         lines.append("使用者指定的欄位：" + "、".join(plan.fixed))
-    if plan.ending == "twist":
-        lines.append("注意：結尾是反轉時，揭露段只寫敘事者當下看到的表面事件，真相留給最後一兩句翻；兩段不要搶同一個高潮。")
-    if plan.ending == "explained":
-        lines.append("注意：結尾是有解釋時，解釋要從別人嘴裡說出來（長輩、廟公、鄰居），不是敘事者自己推理。")
+    for ax in GENRE.axes:
+        for v in plan.axes[ax.key]:
+            if v in ax.plan_notes:
+                lines.append(ax.plan_notes[v])
     return "\n".join(lines)
 
 
@@ -171,12 +173,13 @@ def render_plan(plan: Plan, target_chars: int | None = None) -> str:
 # ---------------------------------------------------------------------------
 
 
-RULE_DIRS = {"v2": "", "v1": "v1/", "restrained": "restrained/"}
-
-
-def rules_prompt(name: str, rules: str = "v2") -> str:
-    """v2（直接）讀 prompts/，restrained（留白）讀 prompts/restrained/，v1（2026-10-14 前的舊規則）讀 prompts/v1/。"""
-    return load_prompt(RULE_DIRS.get(rules, "") + name)
+def rules_prompt(name: str, rules: str | None = None) -> str:
+    """依 genre.json 的 rule_sets 找規則檔：每套規則一個子目錄（根目錄是 ""）。"""
+    key = rules or GENRE.default_rules
+    rs = GENRE.rule_sets.get(key)
+    if rs is None:
+        raise ValueError(f"沒有規則版本 {key}；有：" + "、".join(GENRE.rule_sets))
+    return load_prompt(rs.dir + name)
 
 
 def writer_system(plan: Plan) -> str:
@@ -238,10 +241,8 @@ def generate(
     for r in range(1, max_rounds + 1):
         verdict = judge_story(backend, plan, story, models["judge"])
         rounds.append({"round": r, "story": story, "chars": count_chars(story), "verdict": verdict.model_dump()})
-        log(
-            f"round {r}: {count_chars(story)} 字 overall={verdict.overall} realism={verdict.realism} slow_burn={verdict.slow_burn} "
-            f"ghost={verdict.ghost_restraint} ending={verdict.ending} voice={verdict.voice} passes={verdict.passes}"
-        )
+        dims = " ".join(f"{k}={getattr(verdict, k)}" for k in VERDICT_DIMS)
+        log(f"round {r}: {count_chars(story)} 字 overall={verdict.overall} {dims} passes={verdict.passes}")
         for n in verdict.fix_notes:
             log(f"  - {n}")
         if verdict.passes or r == max_rounds:
@@ -267,11 +268,12 @@ def save_result(result: dict, out_dir: Path, stem: str) -> tuple[Path, Path]:
     json_path.write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8")
     v = result["final_verdict"]
     p = result["plan"]
+    axes_txt = " / ".join((p.get("axes", {}).get(ax.key) or ["?"])[0] for ax in GENRE.axes)
+    dims = " ".join(f"{k} {v.get(k)}" for k in VERDICT_DIMS)
     header = (
-        f"<!-- seed {result['seed']} | {p.get('setting')} / {p.get('ending')} / {p.get('style', 'ptt')} | "
+        f"<!-- seed {result['seed']} | {axes_txt} / {p.get('style', '')} | "
         f"target {p.get('target_chars')} 字, actual {result.get('final_chars')} 字 | round {result['final_round']} | "
-        f"overall {v['overall']} | realism {v['realism']} slow_burn {v['slow_burn']} ghost {v['ghost_restraint']} "
-        f"ending {v['ending']} voice {v['voice']} -->\n\n"
+        f"overall {v['overall']} | {dims} -->\n\n"
     )
     md_path.write_text(header + result["final"] + "\n", encoding="utf-8")
     return md_path, json_path
