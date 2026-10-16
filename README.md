@@ -27,6 +27,7 @@ trigger on the phrases listed in its frontmatter.
 | [`h3-multiframe-video`](h3-multiframe-video/SKILL.md) | Same engine, but pictures are pinned to seconds of the output (side at 2 s, back at 4 s...) and H3 fills the motion between them. |
 | [`h3-character-replacement`](h3-character-replacement/SKILL.md) | A short clip plus a picture of a new character in; the same clip out with the subject redrawn as that character, keeping motion, timing and audio. SAM3 masks the subject, MiniMax-H3 reference-to-video does the rest. Consent-gated. |
 | [`ghost-story`](ghost-story/SKILL.md) | A Taiwanese ghost story in the voice of a PTT marvel (飄板) 經驗 post, from a skeleton sampled out of 9,395 annotated marvel posts. Setting, mechanism, ending, length, narration style and taste (直接 or 留白) are options in plain Chinese; Claude writes it, reviews it against a rubric, and revises. |
+| [`ghost-comic`](ghost-comic/SKILL.md) | A ghost story turned into black-and-white manga pages (right to left, vertical Chinese lettering) with Qwen Image 2.1 on a local ComfyUI: storyboard file, owner-picked style and character/scene designs, panels drawn against them with fixed scene layout and character heights, pages laid out by script with screen bezels, flashbacks and a PDF. |
 | [`story-skill-builder`](story-skill-builder/SKILL.md) | Building a generator skill for one kind of short text (鬼故事, 笑話, 心靈雞湯…) from a corpus whose readers left a signal: scrape, label structure with Claude, weight by reception, derive rules from the high/low contrast, calibrate a pairwise judge, blind-test with the owner, package. The pipeline behind `ghost-story`, with gates where the owner decides. |
 
 ### agent-team-delivery
@@ -164,4 +165,36 @@ gate at the end of each phase (axes approved, counts seen, cost agreed, judge ca
 taste chosen) and the numbers ghost-story set for them. Every genre-specific word lives in
 that genre's `genre.json` and prompts, never in the code; the tests run a second, three-axis
 joke genre through the whole chain to keep it that way.
+
+### ghost-comic
+
+A story in, manga pages out: `board.json` describes every page (rows, stacked columns, insets),
+every panel (prompt, reference images, lettering) and the fixed scene layout and character
+heights; `manga.py` draws sheets and panels with Qwen Image 2.1 on the local ComfyUI and lays
+out right-to-left pages with vertical lettering, bubble shapes that say where a voice comes
+from (said in the room, through a screen or phone, narration), screen bezels with a
+picture-in-picture, faded flashbacks, a PDF. The owner decides at three gates before any panel
+is drawn: style (three examples of one panel), character and scene designs (three versions
+each), and a wireframe of every page with the real lettering. Learned on the first run
+(7 pages, 33 panels, about 81 GPU minutes):
+
+- a two-figure character sheet used as a reference draws two of the same person; references
+  are cropped to one view and turned grayscale
+- lighting only stays consistent when each story beat is drawn against an approved panel in
+  that lighting state, not a daytime scene sheet
+- prompts describe positions and what is visible; "halfway through sitting down" put the hero
+  on the coffee table and "his reflection" put him in front of the laptop
+- character size has to be written down: the ghost came out larger than the hero until her
+  height and "her head is no bigger than his" were in every prompt
+- the strongest device is the same framing three times empty and a fourth time with the ghost,
+  seen only inside the other person's screen
+
+After the second comic (6 pages, 32 panels, about 61 GPU minutes) the pitfalls became tools:
+`lint` checks prompts against the failure table before any GPU time (crossed arms in a
+full-body shot, a reference the prompt never mentions, a full-body sheet in a close-up, words
+that draw walls, signs or photographic light) and `panels` refuses to draw on errors; `refs`
+adds head and bust crops, which stopped a standing sheet from keeping a seated friend standing;
+panels name their `scene` and `light` instead of having them inferred from references; and
+`review` writes a brief for a fresh subagent that opens every candidate and counts heads,
+hands and feet, because the four-handed club leader got past the one who wrote the prompts.
 

@@ -1,0 +1,944 @@
+{
+ "title": "一個人在家開視訊",
+ "story": "example_story.md",
+ "direction": "rtl",
+ "page": [
+  1200,
+  1700
+ ],
+ "margin": 56,
+ "gutter": [
+  18,
+  24
+ ],
+ "style_options": {
+  "A": {
+   "name": "少年漫畫線稿",
+   "panel": "Black and white shonen manga panel. Clean confident ink outlines of uniform weight, characters drawn with simple shapes, backgrounds simplified to ruler-drawn lines with very little detail, flat solid blacks, a few flat screentone areas, no texture, no photographic shading, no gradients. Night scenes use large flat black areas for darkness. No text, no letters, no speech bubbles, no sound effects, no watermark.",
+   "sheet": "Character design reference sheet in black and white shonen manga style: clean confident ink outlines of uniform weight, simple shapes, flat solid blacks, minimal screentone, no texture, no photographic shading, no gradients, plain white background, no text, no labels, no watermark."
+  },
+  "B": {
+   "name": "粗筆觸恐怖",
+   "panel": "Black and white horror manga panel. Rough expressive pen work, dense cross-hatching and scratchy hatching lines for shadow, large areas of solid black, backgrounds suggested with loose hatching rather than drawn in detail, no photographic texture, no gradients. No text, no letters, no speech bubbles, no sound effects, no watermark.",
+   "sheet": "Character design reference sheet in black and white horror manga style: rough expressive pen work, light cross-hatching, plain white background, no text, no labels, no watermark."
+  },
+  "C": {
+   "name": "極簡高反差",
+   "panel": "Black and white minimalist manga panel. Stark high contrast: only pure black and pure white, no grey tones, no screentone, bold silhouettes and large flat black shapes, backgrounds reduced to a few simple shapes, thick lines, lots of empty white. No text, no letters, no speech bubbles, no sound effects, no watermark.",
+   "sheet": "Character design reference sheet in black and white minimalist manga style: only pure black and white, bold silhouettes, thick lines, plain white background, no text, no labels, no watermark."
+  }
+ },
+ "characters": {
+  "me": {
+   "name": "我",
+   "views": "The same character is drawn twice side by side: full body front view on the left, full body three-quarter view on the right, same height, standing upright, neutral expression.",
+   "desc": "A 19-year-old Taiwanese university guy, thin, with a huge messy bird's-nest of black hair sticking out in every direction and one tall cowlick standing straight up on top, very thick straight black eyebrows, sleepy droopy half-closed eyes, a narrow chin, wearing an oversized plain grey hoodie, black basketball shorts and plastic flip-flops.",
+   "features": "鳥窩頭＋翹毛、超粗眉、下垂眼",
+   "keywords": [
+    "bird's-nest",
+    "cowlick",
+    "thick eyebrows"
+   ]
+  },
+  "fang": {
+   "name": "小芳",
+   "views": "The same character is drawn twice side by side: full body front view on the left, full body three-quarter view on the right, same height, standing upright, neutral expression.",
+   "desc": "A 21-year-old Taiwanese university woman with a noticeably long narrow face and a long pointed chin, very small narrow eyes like short thin lines, thin eyebrows, her black hair pulled up into a tight round bun on top of her head with two loose strands at the temples, wearing a loose horizontal-striped long-sleeve T-shirt and wide pants.",
+   "features": "長臉尖下巴、細線眼、頭頂包包頭",
+   "keywords": [
+    "long narrow face",
+    "narrow eyes",
+    "bun"
+   ]
+  },
+  "mom": {
+   "name": "媽媽",
+   "views": "The same character is drawn twice side by side: full body front view on the left, full body three-quarter view on the right, same height, standing upright, neutral expression.",
+   "desc": "A 52-year-old Taiwanese mother with a round face, a big round bulbous nose, short tight curly permed black hair, thin-rimmed reading glasses pushed up on top of her head, wearing a plain black blouse and black trousers for a funeral, holding a mobile phone.",
+   "features": "大圓鼻、小捲燙髮、老花眼鏡推在頭上",
+   "keywords": [
+    "round nose",
+    "curly perm",
+    "glasses"
+   ]
+  },
+  "ama": {
+   "name": "陳阿嬤",
+   "views": "The same character is drawn twice side by side: full body front view on the left, full body three-quarter view on the right, same height, standing hunched, neutral expression.",
+   "desc": "A tiny hunched Taiwanese grandmother in her late eighties, very short cropped white hair like a buzz cut, a small deeply wrinkled face with sunken cheeks, very large protruding ears, a few chin whiskers, wearing a loose faded two-piece pajama set with a small flower print, barefoot, her hands clasped behind her back.",
+   "features": "白色短髮、大耳朵、碎花睡衣、手背在後",
+   "keywords": [
+    "cropped white hair",
+    "large ears",
+    "flower-print"
+   ]
+  },
+  "dog": {
+   "name": "狗",
+   "views": "The same dog is drawn twice side by side: standing side view on the left, sitting front view on the right.",
+   "desc": "A medium-size Taiwanese mixed-breed dog drawn with very few simple clean lines and almost no fur texture, like a dog in a shonen manga: the short dark coat is one flat tone, a white chest patch, four white socks, a curled tail, upright pointed ears and a narrow muzzle.",
+   "features": "線條簡化：深色平塗、白胸口、白襪子、捲尾巴",
+   "ref_crop": "left",
+   "animal": true
+  }
+ },
+ "scenes": {
+  "room": "Background art in this style, no people: the living room of an old Taiwanese apartment at night, seen from a low coffee table at the eye level of a seated person. A worn three-seat sofa in the middle facing the camera. Directly behind the sofa, the open entrance of a narrow hallway leads straight away from the camera; at its far end a closed bathroom door with a frosted glass panel, a pair of slippers on the floor in front of it. On the right wall, a large old flat-screen TV on a low cabinet. On the left, a window with an iron security grille, black night outside. A floor lamp in the corner is the only light; flat black shadows in the corners and in the hallway.",
+  "hall": "Background art in this style, no people: a short narrow hallway in an old Taiwanese apartment at night, seen from the living room, looking straight down it: plain walls, a light switch on the left wall near the entrance, and at the far end a closed bathroom door with a frosted glass panel, a pair of slippers on the floor in front of it. The hallway light is off: the far end is in flat black shadow."
+ },
+ "consistency": {
+  "scene": {
+   "room": "Scene consistency: the living room never changes. A three-seat sofa in the middle faces the camera; directly behind it the narrow hallway runs straight back to the closed bathroom door with a frosted glass panel and a pair of slippers in front of it; the floor lamp stands to the left behind the sofa; the window with an iron grille is on the left wall; the large flat-screen TV sits on a low cabinet against the right wall; the low coffee table is in front of the sofa. Same furniture, same proportions, same lighting as the reference image.",
+   "hall": "Scene consistency: the hallway never changes. Plain walls, a light switch on the left wall near the entrance, the closed bathroom door with a frosted glass panel at the far end, a pair of slippers in front of it, the same length and width as the reference image."
+  },
+  "scale": {
+   "me": "Character scale: the young man is about 175 cm tall and thin; seated, his knees are level with the sofa seat front and the coffee table is below his knees.",
+   "fang": "Character scale: the young woman is about 165 cm tall, slim, with a noticeably long head and neck.",
+   "mom": "Character scale: the mother is about 155 cm tall and plump.",
+   "ama": "Character scale: the old woman is tiny, about 140 cm tall, a head and a half shorter than the young man; her head is no bigger than his head.",
+   "dog": "Character scale: the dog is medium-size; standing, its back reaches the young man's knee."
+  }
+ },
+ "pages": [
+  {
+   "rows": [
+    {
+     "h": 0.22,
+     "cells": [
+      {
+       "id": "p1",
+       "refs": [],
+       "prompt": "Wide establishing shot at night: an old five-story concrete apartment building on a narrow street in New Taipei, rusty iron security grilles on every window, air-conditioner units, scooters parked in a row in the arcade below, a single street lamp. Every window is dark except one on the third floor, glowing. No signs, no text anywhere.",
+       "text": [
+        {
+         "kind": "title",
+         "text": "一個人在家\n開視訊",
+         "pos": "tr",
+         "per_col": 5,
+         "scale": 0.9
+        },
+        {
+         "kind": "narration",
+         "text": "新北三重，一棟老公寓。",
+         "pos": "bl"
+        }
+       ],
+       "w": 1.0,
+       "label": "外景：老公寓，三樓一扇窗亮著"
+      }
+     ]
+    },
+    {
+     "h": 0.48,
+     "cells": [
+      {
+       "id": "p2",
+       "refs": [
+        "me:bust",
+        "dog",
+        "panel:p7"
+       ],
+       "prompt": "Medium shot, introducing the main character. Same room, camera angle and lighting as <image3>: late at night, only the floor lamp is on, the walls, ceiling and window are solid flat black, a pool of white lamplight falls on the sofa, and the hallway opening behind the sofa is solid black. The young man from <image1> sits on the sofa hunched over a laptop on the low coffee table, his face clearly visible and lit by the screen, closer to the camera than in <image3>. The dog from <image2> sleeps on the rug by his feet. Keep his messy bird's-nest hair with the tall cowlick, very thick eyebrows, droopy eyes and grey hoodie exactly as in <image1>, and the dog's dark coat and white chest as in <image2>. Only one person in the frame.",
+       "text": [
+        {
+         "kind": "narration",
+         "text": "我，大學生，住在三樓。去年十月，爸媽回嘉義參加親戚的告別式，家裡只剩我跟狗。",
+         "pos": "tr",
+         "per_col": 10
+        },
+        {
+         "kind": "narration",
+         "text": "那天晚上十一點多，我在客廳開筆電，跟同學小芳視訊趕小組報告。",
+         "pos": "bl",
+         "per_col": 10
+        }
+       ],
+       "w": 1.0,
+       "label": "主角登場：沙發上開筆電，狗睡腳邊",
+       "pass": 2,
+       "scene": "room"
+      }
+     ]
+    },
+    {
+     "h": 0.3,
+     "cells": [
+      {
+       "id": "p3",
+       "refs": [
+        "fang:bust"
+       ],
+       "screen": true,
+       "prompt": "Webcam view of a video call, introducing a character: the young woman from <image1> sits at a desk in her small dim bedroom at night, facing the camera at eye level, head and shoulders filling most of the frame, talking and gesturing with a pen, a desk lamp lighting one side of her face. Keep her long narrow face, long pointed chin, tiny narrow eyes and the tight bun on top of her head exactly as in <image1>. Only one person in the frame.",
+       "text": [
+        {
+         "kind": "tag",
+         "text": "小芳",
+         "pos": "tr"
+        },
+        {
+         "kind": "narration",
+         "text": "大學同學。大家都知道她「看得到」，但她很少講，我們也不問。",
+         "pos": "tl",
+         "per_col": 9
+        }
+       ],
+       "w": 0.64,
+       "label": "小芳登場（視訊畫面）"
+      },
+      {
+       "id": "p4",
+       "refs": [
+        "fang:head"
+       ],
+       "screen": true,
+       "prompt": "Extreme close-up from a webcam: only the eyes and the bridge of the nose of the young woman from <image1> fill the frame; her tiny narrow eyes have stopped and slid to one side, looking past the camera at something behind the viewer. Fine screentone, tense. Only one person in the frame.",
+       "text": [
+        {
+         "kind": "narration",
+         "text": "講到一半，她突然停下來。",
+         "pos": "tr"
+        },
+        {
+         "kind": "narration",
+         "text": "眼睛沒看我，看我後面。",
+         "pos": "bl"
+        }
+       ],
+       "w": 0.36,
+       "label": "小芳眼睛特寫，眼神飄到後面"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "rows": [
+    {
+     "h": 0.26,
+     "cells": [
+      {
+       "id": "p5",
+       "refs": [
+        "fang:head"
+       ],
+       "screen": true,
+       "prompt": "Webcam view: the young woman from <image1>, head and shoulders, leaning slightly toward the camera, eyebrows raised, looking just over the camera rather than into it, lips parted as she asks a question. Keep her long narrow face, tiny narrow eyes and top bun exactly as in <image1>. Only one person in the frame: head and shoulders only, as seen by her laptop's webcam, not a full body.",
+       "text": [
+        {
+         "kind": "screen",
+         "text": "你家有人喔？",
+         "pos": "tr"
+        }
+       ],
+       "w": 0.5,
+       "label": "小芳：你家有人喔？"
+      },
+      {
+       "id": "p6",
+       "refs": [
+        "me:head",
+        "scene:room"
+       ],
+       "prompt": "Medium close-up from the laptop's webcam position: the young man from <image1> on the sofa in the room from <image2>, relaxed, scratching his messy hair, half-smiling as he answers; behind him the dark hallway. Keep his bird's-nest hair, thick eyebrows, droopy eyes and grey hoodie exactly as in <image1>. It is late at night: only the floor lamp is on, and flat black shadows fill the corners, the window and the far end of the hallway. Only one person in the frame.",
+       "text": [
+        {
+         "kind": "speech",
+         "text": "沒有啊，爸媽回嘉義了。",
+         "pos": "tr"
+        },
+        {
+         "kind": "speech",
+         "text": "狗在睡。",
+         "pos": "bl"
+        }
+       ],
+       "w": 0.5,
+       "label": "主角抓頭，輕鬆回答",
+       "scene": "room"
+      }
+     ]
+    },
+    {
+     "h": 0.74,
+     "cells": [
+      {
+       "w": 0.62,
+       "stack": [
+        {
+         "id": "p7",
+         "refs": [
+          "me:bust",
+          "scene:room"
+         ],
+         "prompt": "Wide shot from the laptop's webcam position, the same angle as <image2>: the young man from <image1> sits on the sofa looking at the camera, small in the frame; behind him the narrow hallway opening is completely dark, the bathroom door at its end barely visible. Lots of empty black space around him. Keep his hair and clothes exactly as in <image1>. It is late at night: only the floor lamp is on, and flat black shadows fill the corners, the window and the far end of the hallway. Only one person in the frame.",
+         "text": [
+          {
+           "kind": "screen",
+           "text": "你後面那個廁所門，",
+           "pos": "tr"
+          },
+          {
+           "kind": "screen",
+           "text": "剛剛是不是開著？",
+           "pos": "tl"
+          }
+         ],
+         "h": 0.54,
+         "label": "鏡頭看主角，身後走廊一片黑",
+         "scene": "room"
+        },
+        {
+         "id": "p9",
+         "refs": [
+          "me:bust"
+         ],
+         "prompt": "Clean line art: the young man from <image1> sits on a sofa and twists around to look back over his shoulder toward the hallway behind him, one arm on the sofa back. The room around him is solid flat black; he is drawn in clean white line art, lit only by the laptop screen in front of him. Keep his bird's-nest hair with the tall cowlick, very thick eyebrows and grey hoodie exactly as in <image1>. Only one person in the frame.",
+         "text": [
+          {
+           "kind": "narration",
+           "text": "我回頭看。",
+           "pos": "tr"
+          }
+         ],
+         "h": 0.46,
+         "label": "主角回頭看"
+        }
+       ]
+      },
+      {
+       "id": "p8",
+       "refs": [
+        "scene:hall"
+       ],
+       "prompt": "Tall vertical composition. The hallway from <image1>, the same angle: the bathroom door at the end is closed, the hallway light is off, a pair of plastic slippers on the floor in front of the door. Nobody there. Dim, still. It is late at night.",
+       "text": [
+        {
+         "kind": "narration",
+         "text": "廁所門關著，走廊的燈也關著。",
+         "pos": "tr"
+        }
+       ],
+       "w": 0.38,
+       "label": "走廊：門關著、燈關著（長格）",
+       "scene": "hall"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "rows": [
+    {
+     "h": 0.3,
+     "cells": [
+      {
+       "id": "p9t",
+       "refs": [
+        "me:bust"
+       ],
+       "prompt": "Clean line art, side view: the young man from <image1> sits on a sofa, half turned back toward a laptop on the coffee table, pointing with his thumb at a large flat-screen TV on a low cabinet beside him; the TV screen is solid black with a thin white reflection streak. The room is solid flat black; he is drawn in clean white line art lit by the laptop. Keep his bird's-nest hair, very thick eyebrows and grey hoodie exactly as in <image1>. Only one person in the frame.",
+       "text": [
+        {
+         "kind": "speech",
+         "text": "是不是你那邊畫面延遲？",
+         "pos": "tr"
+        },
+        {
+         "kind": "speech",
+         "text": "不然就是電視反光，我們家電視很會反光。",
+         "pos": "bl"
+        }
+       ],
+       "w": 0.6,
+       "label": "主角指電視：反光啦"
+      },
+      {
+       "id": "p10",
+       "refs": [
+        "fang:head"
+       ],
+       "screen": true,
+       "prompt": "Webcam view: the young woman from <image1>, head and shoulders, not smiling now, chin down, her tiny narrow eyes fixed on a point just past the camera. Keep her long narrow face and top bun exactly as in <image1>. Only one person in the frame: head and shoulders only, as seen by her laptop's webcam, not a full body.",
+       "text": [
+        {
+         "kind": "screen",
+         "text": "可能喔……",
+         "pos": "tr"
+        },
+        {
+         "kind": "screen",
+         "text": "你把你後面那盞燈開一下好不好。",
+         "pos": "bl"
+        }
+       ],
+       "w": 0.4,
+       "label": "小芳不笑了：開燈"
+      }
+     ]
+    },
+    {
+     "h": 0.3,
+     "cells": [
+      {
+       "id": "p11",
+       "refs": [],
+       "prompt": "Close-up of a young man's hand in a grey hoodie sleeve pressing an old white plastic light switch on a plain apartment wall at night; the hallway beyond is dark.",
+       "sfx": [
+        {
+         "text": "喀",
+         "at": [
+          0.7,
+          0.3
+         ],
+         "size": 0.3,
+         "angle": -12
+        }
+       ],
+       "w": 0.26,
+       "label": "手按開關「喀」"
+      },
+      {
+       "id": "p12",
+       "refs": [
+        "me",
+        "scene:hall"
+       ],
+       "prompt": "The hallway from <image2>, the same angle, now lit by the ceiling light: the bathroom door at the end is closed, slippers in front of it. In the foreground, the young man from <image1> walks back toward the camera, glancing over his shoulder at the hallway. Keep his bird's-nest hair, thick eyebrows and grey hoodie exactly as in <image1>. It is late at night. Only one person in the frame.",
+       "text": [
+        {
+         "kind": "narration",
+         "text": "我起來把走廊的燈打開，再坐回來。",
+         "pos": "tr"
+        }
+       ],
+       "w": 0.48,
+       "label": "走廊燈亮，主角走回來",
+       "scene": "hall"
+      },
+      {
+       "id": "p13",
+       "refs": [
+        "fang:head"
+       ],
+       "screen": true,
+       "prompt": "Tall narrow vertical composition. Tight webcam close-up of the young woman from <image1>: her face fills the frame, mouth set in a hard line, her tiny narrow eyes not blinking. Keep her long narrow face and top bun exactly as in <image1>. Only one person in the frame: head and shoulders only, as seen by her laptop's webcam, not a full body.",
+       "text": [
+        {
+         "kind": "screen",
+         "text": "不是。",
+         "pos": "tr"
+        }
+       ],
+       "w": 0.26,
+       "label": "小芳特寫：不是。"
+      }
+     ]
+    },
+    {
+     "h": 0.4,
+     "cells": [
+      {
+       "id": "p14",
+       "refs": [
+        "me:bust",
+        "panel:p19"
+       ],
+       "prompt": "Wide shot from the laptop's webcam position. Same room, camera angle and lighting as <image2>: late at night, only the floor lamp is on, the walls, ceiling and window are solid flat black, a pool of white lamplight falls on the sofa, and the hallway light is on, so the hallway behind the sofa is a bright white rectangle with the closed bathroom door at its end. The young man from <image1> is standing on the floor between the sofa and the coffee table, the coffee table in the foreground between him and the camera. His knees are bent in a half squat, his bottom just above the sofa cushion, about to sit down but frozen, hands hovering at his sides, eyes wide, staring straight at the camera. He is not on the table and not on the sofa back. Keep his bird's-nest hair, very thick eyebrows and grey hoodie exactly as in <image1>. Only one person in the frame. He is the same size in the frame as the young man in <image2>.",
+       "text": [
+        {
+         "kind": "screen",
+         "text": "你先不要坐那邊。",
+         "pos": "tr"
+        },
+        {
+         "kind": "screen",
+         "text": "把筆電轉過去，照一下走廊。",
+         "pos": "bl"
+        }
+       ],
+       "w": 1.0,
+       "label": "主角半蹲僵住（大格）",
+       "pass": 2,
+       "scene": "room"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "rows": [
+    {
+     "h": 0.36,
+     "cells": [
+      {
+       "id": "p15",
+       "refs": [
+        "scene:hall"
+       ],
+       "prompt": "The hallway from <image1>, the same angle, now lit by the ceiling light: the bathroom door at the end is closed, a pair of plastic slippers on the floor in front of it. Nobody there. Flat, quiet, ordinary. It is late at night.",
+       "text": [
+        {
+         "kind": "narration",
+         "text": "走廊就是走廊。",
+         "pos": "tr"
+        },
+        {
+         "kind": "narration",
+         "text": "廁所門關著，我媽的拖鞋在門口。",
+         "pos": "bl"
+        }
+       ],
+       "w": 1.0,
+       "label": "走廊：什麼都沒有（同構圖）",
+       "scene": "hall"
+      }
+     ]
+    },
+    {
+     "h": 0.64,
+     "cells": [
+      {
+       "w": 0.4,
+       "stack": [
+        {
+         "id": "p16",
+         "refs": [
+          "dog"
+         ],
+         "prompt": "Low angle close to the floor in a dim living room: the dog from <image1> has woken up and sits upright on a rug, ears forward, staring fixedly at a dark hallway opening beyond the frame, not barking, body tense. Keep its dark short fur, white socks and white chest patch exactly as in <image1>.",
+         "text": [
+          {
+           "kind": "narration",
+           "text": "狗醒了，坐起來看走廊。",
+           "pos": "tr"
+          },
+          {
+           "kind": "narration",
+           "text": "沒叫。",
+           "pos": "bl"
+          }
+         ],
+         "h": 0.5,
+         "label": "狗坐起來盯走廊"
+        },
+        {
+         "id": "p17",
+         "refs": [
+          "fang:head"
+         ],
+         "screen": true,
+         "prompt": "Webcam view: the young woman from <image1>, head and shoulders, her face gone pale, one hand pressed over her mouth, her tiny narrow eyes wide open for the first time, staring at her screen. Keep her long narrow face and top bun exactly as in <image1>. Only one person in the frame: head and shoulders only, as seen by her laptop's webcam, not a full body.",
+         "text": [
+          {
+           "kind": "narration",
+           "text": "我把筆電轉回來。",
+           "pos": "tr"
+          }
+         ],
+         "h": 0.5,
+         "label": "小芳臉色發白，手摀嘴"
+        }
+       ]
+      },
+      {
+       "w": 0.6,
+       "stack": [
+        {
+         "id": "p18",
+         "refs": [
+          "fang:head"
+         ],
+         "screen": true,
+         "prompt": "Extreme webcam close-up of only the eyes of the young woman from <image1>: her tiny narrow eyes trembling, the pupils small, a bead of sweat at her temple. Only her eyes are in the frame; nobody else.",
+         "text": [
+          {
+           "kind": "screen",
+           "text": "你真的……",
+           "pos": "tr"
+          },
+          {
+           "kind": "screen",
+           "text": "沒看到？",
+           "pos": "bl"
+          }
+         ],
+         "h": 0.38,
+         "label": "小芳眼睛發抖"
+        },
+        {
+         "id": "p19",
+         "refs": [
+          "me:bust",
+          "scene:room"
+         ],
+         "prompt": "From the laptop's webcam position, the same angle as <image2>: the young man from <image1> sits on the sofa leaning toward the camera, puzzled, one eyebrow raised; behind him the hallway is lit, the bathroom door at its end closed. Keep his bird's-nest hair, thick eyebrows and grey hoodie exactly as in <image1>. It is late at night: only the floor lamp is on, and flat black shadows fill the corners, the window and the far end of the hallway. Only one person in the frame.",
+         "text": [
+          {
+           "kind": "speech",
+           "text": "沒有啊……",
+           "pos": "tr"
+          },
+          {
+           "kind": "speech",
+           "text": "你看到什麼？",
+           "pos": "bl"
+          }
+         ],
+         "h": 0.62,
+         "label": "主角一臉疑惑",
+         "scene": "room"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "rows": [
+    {
+     "h": 0.34,
+     "cells": [
+      {
+       "id": "p20",
+       "refs": [
+        "ama",
+        "panel:p15"
+       ],
+       "n": 3,
+       "screen": true,
+       "pip": "p5",
+       "pass": 2,
+       "prompt": "Keep the same camera angle, hallway, lighting and composition as <image2>. Add only this: the old woman from <image1> stands in front of the closed bathroom door at the end of the hallway, very short and hunched, hands clasped behind her back, her head turned to look straight into the camera. Keep her cropped white hair, large ears, wrinkled face and flower-print pajamas exactly as in <image1>. Only one person in the frame.",
+       "text": [
+        {
+         "kind": "screen",
+         "text": "有一個阿嬤站在廁所門口。很矮，頭髮很短，穿碎花的睡衣，兩隻手背在後面。",
+         "pos": "tr",
+         "per_col": 9
+        },
+        {
+         "kind": "screen",
+         "text": "你轉筆電的時候，她也跟著轉頭看鏡頭。",
+         "pos": "tl",
+         "per_col": 9
+        }
+       ],
+       "w": 1.0,
+       "label": "小芳的螢幕：阿嬤站在廁所門口（同構圖）",
+       "scene": "hall"
+      }
+     ]
+    },
+    {
+     "h": 0.66,
+     "cells": [
+      {
+       "id": "p21",
+       "refs": [
+        "ama",
+        "panel:p19"
+       ],
+       "n": 3,
+       "screen": true,
+       "pip": "p5",
+       "pass": 2,
+       "prompt": "Keep the same camera angle, room, lighting and the young man exactly as in <image2>. Add only this: behind him, the old woman from <image1> leans forward over the back of the sofa above his shoulder, smaller than him in the frame and partly hidden behind his head. Her face is in deep flat black shadow: only the outline of her very large ears and cropped white hair and a faint glint of two eyes can be seen, no other facial features. Her flower-print pajama sleeve shows at the edge of the lamplight. He has not noticed her. The old woman is human-sized and smaller than him: her head is no bigger than his head, and she stays behind the sofa back, never closer to the camera than he is. He is the same size and in the same place as in <image2>. Only one person in the frame.",
+       "text": [
+        {
+         "kind": "screen",
+         "text": "她現在站你後面，彎下來看你的螢幕。",
+         "pos": "tr"
+        },
+        {
+         "kind": "screen",
+         "text": "我看得到她的臉。很近。",
+         "pos": "tl"
+        }
+       ],
+       "w": 1.0,
+       "label": "揭露（大格）：阿嬤彎腰在主角身後",
+       "scene": "room"
+      }
+     ]
+    }
+   ],
+   "insets": [
+    {
+     "id": "p22",
+     "box": [
+      0.04,
+      0.73,
+      0.4,
+      0.97
+     ],
+     "refs": [
+      "ama:head"
+     ],
+     "prompt": "Extreme close-up of the deeply wrinkled lips and chin of the old woman from <image1>, moving as if murmuring, a few sparse teeth, chin whiskers, fine screentone. Only one person in the frame.",
+     "text": [
+      {
+       "kind": "screen",
+       "text": "嘴一直在動，像在念什麼。沒有聲音。",
+       "pos": "tr",
+       "per_col": 6,
+       "scale": 0.85
+      }
+     ],
+     "label": "嘴唇特寫（插格）"
+    }
+   ]
+  },
+  {
+   "rows": [
+    {
+     "h": 0.32,
+     "cells": [
+      {
+       "id": "p23",
+       "refs": [
+        "fang:head"
+       ],
+       "screen": true,
+       "prompt": "Webcam view: the young woman from <image1> leans hard toward the camera, face very close and slightly distorted by the lens, urgent, one hand reaching toward the keyboard as if to end the call. Keep her long narrow face, tiny narrow eyes and top bun exactly as in <image1>. Only one person in the frame: head and shoulders only, as seen by her laptop's webcam, not a full body.",
+       "text": [
+        {
+         "kind": "screen",
+         "text": "你先去超商。",
+         "pos": "tr"
+        },
+        {
+         "kind": "screen",
+         "text": "現在就去。",
+         "pos": "bl"
+        }
+       ],
+       "w": 0.64,
+       "label": "小芳：現在就去超商"
+      },
+      {
+       "id": "p24",
+       "refs": [],
+       "prompt": "Clean line art. Close-up: the black screen of a laptop that has just been switched off fills the whole frame. In the glossy black glass, a faint white reflection of a young man's face with a messy bird's-nest of hair and a tall cowlick, very thick eyebrows and droopy eyes, staring at the screen. Only the screen and its bezel are in the picture; nobody outside the screen.",
+       "text": [
+        {
+         "kind": "narration",
+         "text": "她把視訊掛了。",
+         "pos": "tr"
+        }
+       ],
+       "w": 0.36,
+       "label": "黑螢幕映出主角"
+      }
+     ]
+    },
+    {
+     "h": 0.68,
+     "cells": [
+      {
+       "id": "p25",
+       "refs": [
+        "me:bust",
+        "dog"
+       ],
+       "prompt": "Tall vertical composition. Early dawn, inside a small generic convenience store: the young man from <image1> sits on a stool at the window counter, exhausted, hood up, holding the dog from <image2> in his arms, a paper cup of coffee in front of him; outside the glass the street is pale and empty. No logos, no signs, no text anywhere. Keep his bird's-nest hair poking out of the hood, thick eyebrows and droopy eyes exactly as in <image1>, and the dog as in <image2>. Only one person in the frame.",
+       "text": [
+        {
+         "kind": "narration",
+         "text": "我抓了狗就出門，在超商坐到天亮。",
+         "pos": "tr"
+        }
+       ],
+       "w": 0.42,
+       "label": "天亮，超商窗邊抱著狗（長格）"
+      },
+      {
+       "w": 0.58,
+       "stack": [
+        {
+         "id": "p26",
+         "refs": [
+          "mom"
+         ],
+         "prompt": "Morning in the courtyard of an old rural house in Chiayi during a funeral: a plain white tent with folding chairs in the background, no writing on anything. The woman from <image1> holds a mobile phone to her ear, standing still, her face falling, eyes looking down. Keep her round face, big round nose, short tight curly perm and the reading glasses pushed up on her head exactly as in <image1>. Only one person in the frame.",
+         "text": [
+          {
+           "kind": "narration",
+           "text": "早上打給我媽。講完，她很久沒講話。",
+           "pos": "tr"
+          },
+          {
+           "kind": "speech",
+           "text": "她穿碎花的？",
+           "pos": "bl"
+          }
+         ],
+         "h": 0.5,
+         "label": "媽媽在嘉義接電話"
+        },
+        {
+         "id": "p27",
+         "refs": [
+          "me"
+         ],
+         "prompt": "Inside a convenience store by the window in the morning: the young man from <image1>, hood down, holds a phone to his ear, tired, staring down at the counter. No logos, no text anywhere. Keep his bird's-nest hair, thick eyebrows and droopy eyes exactly as in <image1>. Only one person in the frame.",
+         "text": [
+          {
+           "kind": "speech",
+           "text": "小芳是這樣講的。",
+           "pos": "tr"
+          }
+         ],
+         "h": 0.5,
+         "label": "主角在超商講電話"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "rows": [
+    {
+     "h": 0.38,
+     "cells": [
+      {
+       "id": "p28",
+       "refs": [
+        "ama:bust",
+        "mom:bust",
+        "scene:room"
+       ],
+       "flashback": true,
+       "prompt": "A memory scene in the living room from <image3>, the same angle, early evening, warm and soft: the old woman from <image1>, alive, sits small on the sofa with her hands in her lap, watching a television off-frame to the right with a faint smile; the woman from <image2> sets a plate of cut guava on the coffee table beside her. Keep the old woman's cropped white hair, large ears and flower-print pajamas exactly as in <image1>, and the woman's big round nose and curly perm exactly as in <image2>. Soft, light screentone. Exactly two people in the frame.",
+       "text": [
+        {
+         "kind": "phone",
+         "text": "隔壁的陳阿嬤上個月走的，就是窗戶對著我們客廳那戶。",
+         "pos": "tr"
+        },
+        {
+         "kind": "phone",
+         "text": "她家電視壞掉以後，每天晚上都來我們家看八點檔。",
+         "pos": "bl"
+        }
+       ],
+       "w": 1.0,
+       "label": "回憶：阿嬤生前在我家看電視",
+       "scene": "room",
+       "cast": [
+        "ama",
+        "mom"
+       ]
+      }
+     ]
+    },
+    {
+     "h": 0.62,
+     "cells": [
+      {
+       "w": 0.42,
+       "stack": [
+        {
+         "id": "p29",
+         "refs": [
+          "mom:head"
+         ],
+         "prompt": "Close-up of the woman from <image1> holding a phone to her ear, eyes lowered, lips pressed together, morning light. Keep her big round nose, curly perm and the reading glasses on her head exactly as in <image1>. Only one person in the frame.",
+         "text": [
+          {
+           "kind": "speech",
+           "text": "最後住院那兩個禮拜，一直問我怎麼都沒人去看她。",
+           "pos": "tr"
+          }
+         ],
+         "h": 0.5,
+         "label": "媽媽特寫"
+        },
+        {
+         "id": "p30",
+         "refs": [
+          "ama:head"
+         ],
+         "prompt": "Close-up of two middle-aged hands holding a neatly folded flower-print pajama top with the same pattern as the pajamas in <image1>, against a dark background, soft light.",
+         "text": [
+          {
+           "kind": "phone",
+           "text": "那件睡衣是我拿給她的。",
+           "pos": "tr"
+          },
+          {
+           "kind": "phone",
+           "text": "她走的時候身上穿的也是那件。",
+           "pos": "bl"
+          }
+         ],
+         "h": 0.5,
+         "label": "手裡摺好的碎花睡衣",
+         "cast": []
+        }
+       ]
+      },
+      {
+       "w": 0.58,
+       "stack": [
+        {
+         "id": "p31",
+         "refs": [
+          "me"
+         ],
+         "prompt": "Convenience store in the morning: the young man from <image1> with the phone at his ear, looking out of the window at nothing, small in the frame. No logos, no text anywhere. Keep his bird's-nest hair and thick eyebrows exactly as in <image1>. Only one person in the frame.",
+         "text": [
+          {
+           "kind": "speech",
+           "text": "她嘴巴一直在念什麼？",
+           "pos": "tr"
+          },
+          {
+           "kind": "phone",
+           "text": "……不知道。",
+           "pos": "bl"
+          }
+         ],
+         "h": 0.36,
+         "label": "主角望著窗外"
+        },
+        {
+         "id": "p32",
+         "refs": [
+          "me:bust",
+          "dog",
+          "panel:p19"
+         ],
+         "prompt": "Wide shot, a few weeks later. Same room, camera angle and lighting as <image3>: late at night, only the floor lamp is on, the walls, ceiling and window solid flat black, the hallway light on behind the sofa, a bright white rectangle with the closed bathroom door. The young man from <image1> sits alone in the middle of the sofa, looking down at the phone in his hands; the dog from <image2> sleeps curled against his leg on the sofa; a faint glow on the right side of his face from a television that is on off-frame. Keep his bird's-nest hair, very thick eyebrows and grey hoodie exactly as in <image1>, and the dog's dark coat as in <image2>. Only one person in the frame. He is the same size in the frame as the young man in <image3>.",
+         "text": [
+          {
+           "kind": "narration",
+           "text": "現在我一個人在家，客廳電視都開著。",
+           "pos": "tr"
+          },
+          {
+           "kind": "narration",
+           "text": "不管有沒有在看。",
+           "pos": "bl"
+          }
+         ],
+         "h": 0.64,
+         "label": "現在：一個人在家，電視開著（較大格）",
+         "pass": 2,
+         "scene": "room"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "lights": {
+  "night_lamp": "Late at night: only the floor lamp is on; the walls, ceiling and window are solid flat black, a pool of white lamplight falls on the sofa.",
+  "morning": "Bright morning: the sky and the background are plain white with crisp shadows; no black background."
+ }
+}
