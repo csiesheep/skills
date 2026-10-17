@@ -1,6 +1,6 @@
 # 畫格子的 prompt：規則和踩過的坑
 
-模型是本機 ComfyUI 上的 Qwen Image 2.1（int8），編碼器 qwen3vl 8B，15 步、CFG 1、euler/simple。參考圖從 `images.image_1..n` 進去，prompt 裡用 `<image1>`、`<image2>` 指它們。以下每一條都是〈一個人在家開視訊〉實際發生過的事。
+模型是本機 ComfyUI 上的 Qwen Image 2.1（int8），編碼器 qwen3vl 8B，15 步、CFG 1、euler/simple。參考圖從 `images.image_1..n` 進去，prompt 裡用 `<image1>`、`<image2>` 指它們。以下每一條都是實際發生過的事，大多來自〈一個人在家開視訊〉，括號裡註明的來自後兩本。
 
 ## 每格 prompt 的組成
 
@@ -14,7 +14,7 @@
 
 ## 坑和修法
 
-這張表裡能用字面判斷的，`manga.py lint` 都會檢查（`panels` 也會先跑，有錯就不畫）：全身構圖抱胸、沒在 prompt 裡提到的參考圖、特寫和坐著的格子用全身參考、wall of、招牌海報、dim 和 lit by、顏色字、halfway、reflection、單人格沒寫 Only one person、角色特徵沒重複、`panel:` 參考的輪次、不存在的 scene 或 light。判斷不了的（同一人畫兩次、手的數量、大小）留給獨立檢查（qa_checklist.md）。
+這張表裡能用字面判斷的，`manga.py lint` 都會檢查（`panels` 也會先跑，有錯就不畫）：全身構圖抱胸、沒在 prompt 裡提到的參考圖、特寫和坐著的格子用全身參考、頭部裁切配上害怕或不笑的表情、坐在沙發或椅子上又帶場景參考、wall of、招牌海報、dim 和 lit by、顏色字、halfway、reflection、單人格沒寫 Only one person、角色特徵沒重複、角色第一次出場那格沒有名字、`panel:` 參考的輪次、不存在的 scene 或 light。排版時 `plan` 和 `pages` 會警告同一格裡互相蓋住的文字框。判斷不了的（同一人畫兩次、手的數量、大小）留給獨立檢查（qa_checklist.md）；讀者看不看得懂留給讀者檢查（reader_check.md）。
 
 | 發生了什麼 | 原因 | 修法 |
 |---|---|---|
@@ -40,9 +40,14 @@
 | A 畫風的早上、白天格子背景變全黑 | 線稿畫風預設愛用平塗黑 | 白天格子加 `Bright morning: the sky and the background are plain white; no black background` |
 | 學長雙手抱胸，兩隻手又從身體兩側垂下來，一共四隻手（擁有者抓到的） | 抱胸加全身構圖，模型把垂手的姿勢也畫上去 | 抱胸的格子取到腰部為止（waist-up），寫 `each hand tucked under the opposite upper arm; he has exactly two arms and two hands, and nothing hangs at his sides`；挑圖時數手 |
 | 揭露的黑影比箭竹矮 | 沒寫比例 | `so tall that its head and shoulders rise clearly above the tops of the bamboo`；最後一格同位置換成主角時寫 `the bamboo rises well above his head` |
+| 嚇到的那格，老二還在咧嘴笑（〈跟外甥玩捉迷藏〉，5 張有 4 張）；媽媽該低頭抿嘴，兩張都直視鏡頭微笑 | 頭部裁切就是角色卡上那張臉，表情一起帶進來 | 換成 `:bust`，表情寫成五官動作：`eyebrows raised and pulled together, eyes wide open, a drop of cold sweat ... Nobody smiles`；重畫 3 張全對。`lint` 會警告頭部裁切配上害怕、哭、不笑的字 |
+| 舅舅坐沙發的格子，3 張有 2 張坐到茶几上（上一本也有一次） | 帶了客廳場景卡，模型把人放在卡的正中間，那裡是茶几 | 坐著的格子不帶場景參考，用文字寫座位：`facing a long wooden sofa ... He sits deep on the sofa, his back against its backrest; a low glass coffee table stands empty in the foreground`；重畫 3 張都坐在沙發上。`lint` 會警告 |
+| 「同一個鏡頭」的揭露格，深色衫櫥 3 張全變成白色，小寶睜眼看鏡頭 | 同構圖編輯只鎖了鏡位，物件的顏色和人的狀態沒寫 | 每個要保持的東西都寫出來：`The wardrobe keeps its very dark, almost black wood and small brass handles exactly as in <image2>`、`eyes closed, drawn as two soft curved lines`；重畫 4 張的衫櫥全對 |
+| 兩人對話的格子，由右往左讀時先讀到回答（p11、p15） | 先說話的人被畫在左邊 | prompt 寫明先說話的人站在右邊；圖已經畫好、畫面裡沒有字的話，格子設 `mirror: true` 左右翻轉 |
 
 ## 時間（RTX 3090）
 
 - 一張圖 1024 上下：沒有參考圖約 23 到 36 秒，有一到兩張參考圖約 47 到 115 秒。
 - 角色卡、場景卡 1536×1024，一次出 3 版約 2 分鐘。
 - 〈一個人在家開視訊〉7 頁 33 格，連同畫風比較、角色和場景各 3 版、重畫，GPU 共約 81 分鐘：畫風比較 5.5 分鐘、卡 28 分鐘、格子 47 分鐘。照這份規則一次寫對的話，格子大約可以省下一半。
+- 〈跟外甥玩捉迷藏〉7 頁 28 格，每格都交給獨立檢查，被退回重畫 24 次：GPU 共約 100 分鐘，畫風 3.6 分鐘、卡 22 分鐘、格子 74 分鐘（167 張圖）。檢查員共跑 8 批，每批 4 到 30 分鐘，可以跟 GPU 同時跑。

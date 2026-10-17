@@ -198,3 +198,18 @@ panels name their `scene` and `light` instead of having them inferred from refer
 `review` writes a brief for a fresh subagent that opens every candidate and counts heads,
 hands and feet, because the four-handed club leader got past the one who wrote the prompts.
 
+The third comic (7 pages, 28 panels, about 100 GPU minutes, every candidate checked) showed
+that a panel can be drawn right and still be read wrong: the owner took an unnamed grandmother
+for the dead aunt she was talking about. So `review --read` now hands a fresh subagent nothing
+but the page images; it retells the story, names every character and says who speaks each
+line, and the answers are compared with the story before the owner sees anything. Run blind on
+the comic as first delivered, a reader could not tell who the old woman was until a later panel
+named her, could not say who asked about the door (an off-panel hand with its sleeve under the
+bubble), read a retort before the answer it was meant to follow, and noticed a caption
+repeated on page 1. `lint` warns when a character is first drawn without a name, when a head crop is
+asked for a frightened face (the sheet's grin came along) and when a seated character carries
+a scene sheet (he landed on the coffee table); `plan` and `pages` warn about lettering that
+covers lettering; panels can be mirrored or shrunk on their own background for lettering
+without editing files; `review --new` lists only redrawn candidates and every brief names the
+picked panels a candidate has to match; `status` says what is picked and how much GPU it took.
+

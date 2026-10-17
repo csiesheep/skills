@@ -17,8 +17,10 @@ Read before writing a board:
 - `references/prompting.md`: what each panel prompt contains, and a table of failures seen with
   their fixes. Most panel redraws come from ignoring a row of that table.
 - `references/board_format.md`: every field of `board.json`.
-- `references/qa_checklist.md`: what the independent checker looks for in every candidate, and how
-  it reports.
+- `references/qa_checklist.md`: what the independent checker looks for in every candidate, how
+  strict to be, and how it reports.
+- `references/reader_check.md`: what a first-time reader of the finished pages is asked, given
+  to a fresh subagent with nothing but the page images.
 
 ## Requirements
 
@@ -42,7 +44,10 @@ style was wrong and the sheets were picked for them.
    the same features in `desc` and in every panel prompt), scenes, the `consistency` block
    (fixed room layout, fixed heights), the `lights` states, pages, panel labels and lettering.
    Give every panel its `scene` and `light` explicitly, and a `cast` when a character is drawn
-   from words alone. If the story came from
+   from words alone. Name every speaking character in the panel where they are first drawn (a
+   `tag` or a caption; `intro` points at another panel on the same page, `ghost: true` exempts
+   the ghost), and draw anyone the dialogue needs the reader to recognise (a dead aunt as an
+   old photo on the altar). If the story came from
    ghost-story, carry its skeleton over: the mechanism sets the device (proxy_sighting means the
    ghost appears only inside the other person's screen), and the ghost cap sets how much of the
    ghost is drawn (paneling.md). Then run `py -X utf8 "<skill dir>/scripts/manga.py" check`.
@@ -60,14 +65,16 @@ style was wrong and the sheets were picked for them.
    Use `me:head` for close-ups and `me:bust` for seated or waist-up panels: a full-body standing
    sheet makes the model draw the character standing.
 4. **Gate 3: layout.** `manga.py plan` renders every page as numbered placeholders with the real
-   lettering. Send `out/plan.png`; changing a panel's size, order or line now costs nothing.
+   lettering, and prints `WARN lettering` for boxes in one panel that cover each other; move them
+   first. Send `out/plan.png`; changing a panel's size, order or line now costs nothing.
 After the three gates, quality is yours: the owner's words were 由你來檢查. Check every panel
 before the owner sees it, and report what failed and how it was fixed as a table, not
 candidate-by-candidate questions.
 
 5. **Panels.** `manga.py lint` first: the prompting.md table as checks (a crossed-arms full-body
-   shot, a reference never mentioned, a full-body sheet in a close-up, words that draw walls,
-   signs or photographic light). `panels` runs it too and refuses to draw on errors. Then
+   shot, a reference never mentioned, a full-body sheet in a close-up, a head crop for a scared
+   or crying face, a seated character with a scene reference, a character unnamed where first
+   drawn, words that draw walls, signs or photographic light). `panels` runs it too and refuses to draw on errors. Then
    `manga.py panels` (pass 1, 2 candidates each, `n` in the board overrides). If the first few
    results of a batch share one flaw, stop the batch and fix the cause before it spends the GPU
    on the rest.
@@ -78,23 +85,43 @@ candidate-by-candidate questions.
    returns pass or fail per image with a suggested pick. You wrote the prompts and will see what
    you meant to draw: the four-handed 學長 passed your own look and was caught by the owner. Pick
    only among candidates the checker passed and that you agree with (`manga.py choose p5=2 ...`);
-   rewrite and redraw the rest with `--only`, and check the redraws the same way. Then
-   `manga.py panels --pass 2` (and 3) for panels that use other panels as references, and check
-   again.
+   rewrite and redraw the rest with `--only`, and check the redraws the same way with
+   `review <ids> --new`, which lists only candidates no earlier brief did. The brief also lists
+   the picked panels a candidate has to match (its `panel:` references, `continuity`, the
+   nearest picked panel of the same scene). Then `manga.py panels --pass 2` (and 3) for panels
+   that use other panels as references, and check again. Run the checker on one batch while the
+   GPU draws the next; neither waits for the other.
 7. **Pages.** `manga.py pages` writes `out/pages/page_NN.png`, `out/comic.pdf` and
-   `out/overview.jpg`. Look at every page yourself before sending: text over a face, a reading
-   order that jumps, a room whose light changes without a reason. Send the pages and the PDF, then
-   list the weak panels honestly with what a redraw would change.
-8. **Fix round.** Map each note of the owner's to a panel id (if they name a page that does not
+   `out/overview.jpg`, and prints `WARN lettering` like `plan`. Look at every page yourself:
+   text over a face, a bubble beside someone who is not speaking, a reading order that jumps, a
+   crop that cuts off what matters (`focus`), a room whose light changes without a reason.
+   Lettering fixes cost no GPU: `mirror` when the first speaker stands on the left, `zoom` to
+   free room beside a close-up on a flat background.
+8. **Reader check.** `manga.py review --read` writes `out/review/read.md` (the page images in
+   reading order, nothing else) and `read_key.md` (who everyone is, where they first appear,
+   every line in order). Give a fresh subagent `read.md` and `references/reader_check.md` only:
+   it retells the story, names every character, says who speaks each line and where it got
+   stuck. Compare with `read_key.md` and the story; fix every mismatch before the owner sees the
+   pages. Every panel of the third comic had passed the checker, and the owner still read the
+   unnamed 阿嬤 as the 細姑 she was talking about. A blind reader of that version could not
+   place her either, and also found an unattributable line, a retort read too early and a
+   caption repeated on page 1. Never tell the reader what problems you suspect: the first
+   reader was given this very example in its instructions and duly found it.
+   Then send the pages and the PDF, and list the weak panels honestly with what a redraw would
+   change.
+9. **Fix round.** Map each note of the owner's to a panel id (if they name a page that does not
    contain what they describe, say which panel you think they mean), rewrite the prompt, redraw
    with `n: 3`, re-lay out only the pages that changed (`pages --pages 3,5`), send them. When the
    note names a kind of defect (extra hands, the wrong lighting), sweep every picked panel for the
-   same defect before replying, and add a row to prompting.md.
+   same defect before replying, and add a row to prompting.md. A character added in a fix round
+   (細姑's photo) still gets 3 or 4 versions for the owner to pick, with the checker's notes.
 
-When the owner asks to see progress mid-run, lay out what is picked so far (`pages --pages 1,2`;
-unpicked panels show as labelled placeholders) instead of saying it is not ready.
+When the owner asks to see progress mid-run, `manga.py status` gives the numbers (picked per
+page, what is missing and how many candidates it has, GPU minutes) and `pages --pages 1,2` lays
+out what is picked so far, unpicked panels as labelled placeholders; send that instead of saying
+it is not ready.
 
-Time on an RTX 3090: a panel with references takes 47 to 115 s per image and one without takes 23 to 36 s, with 2 to 3 candidates per panel. The first comic (33 panels, every gate and redraw) took about 81 minutes of GPU time, the second (32 panels) about 61. State the estimate before each long run.
+Time on an RTX 3090: a panel with references takes 47 to 115 s per image and one without takes 23 to 36 s, with 2 to 3 candidates per panel. The first comic (33 panels, every gate and redraw) took about 81 minutes of GPU time, the second (32 panels) about 61, the third (28 panels, every candidate independently checked, 24 redraws) about 100, with 8 checker batches of 4 to 30 minutes each running beside the GPU. State the estimate before each long run.
 
 ## Rules
 
@@ -130,3 +157,10 @@ Time on an RTX 3090: a panel with references takes 47 to 115 s per image and one
   put tents into a view from inside a tent and blacked out daytime backgrounds.
 - The writer of the prompts is a poor checker of the images. An independent pass that counts
   heads, hands and feet catches what a glance does not.
+- A panel can be drawn right and still be read wrong. Checking panel by panel does not show
+  that an old woman was never named, or that a bubble sits beside the wrong person; a reader who
+  has only the pages does.
+- A reference brings its expression as well as its pose: a head crop of a grinning sheet kept
+  the boy grinning in a scared panel. A scene sheet puts a seated character in its middle, on
+  the coffee table. Same-framing edits keep the camera, not the colour of the wardrobe; write
+  down everything that has to stay.

@@ -10,10 +10,13 @@
     py -X utf8 manga.py lint                          # the pitfall table as checks; `panels` runs it and stops on errors
     py -X utf8 manga.py panels                        # pass 1 (2 candidates each, "n" overrides)
     py -X utf8 manga.py review --page 3               # brief for an independent checker (references/qa_checklist.md)
+    py -X utf8 manga.py review p5 p10 --new           # only candidates no earlier brief listed (redraws)
     py -X utf8 manga.py contact p5 p10                # candidates side by side, for picking
     py -X utf8 manga.py choose p5=2 p10=1 ...
     py -X utf8 manga.py panels --pass 2               # panels that use other panels as references
     py -X utf8 manga.py pages                         # lettering, layout, PDF, overview
+    py -X utf8 manga.py review --read                 # brief for a first-time reader of the pages (references/reader_check.md)
+    py -X utf8 manga.py status                        # picked per page, what is missing, GPU minutes so far
 
 Files in the work folder: board.json (the storyboard, see references/board_format.md), choices.json
 (written by `choose`), out/ (everything generated). Lettering is drawn here, vertical, never by the model.
@@ -28,7 +31,7 @@ import re
 import sys
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageOps
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import comfy  # noqa: E402
@@ -294,6 +297,16 @@ _FLAT = re.compile(r"\b(solid flat black|flat black|clean (white )?line art)\b",
 _HEADSHOT = re.compile(r"(close-up|head-and-shoulders|head and shoulders|bust shot)", re.I)
 _ONE = re.compile(r"\b(only one person|the only person|exactly one person|nobody else)\b", re.I)
 _TWO = re.compile(r"\bexactly two people\b", re.I)
+_NOT_SMILING = re.compile(r"\b(scared|frightened|afraid|terrified|fear|cry|cries|crying|tears|sobbing|unsmiling|no smiles?|"
+                          r"nobody smiles|frown|frowns|frowning|grim|pale|tight-lipped|lips pressed|mouth tight|mouth pulled down)\b", re.I)
+_SITS_ON = re.compile(r"\b(sits?|sitting|seated)\b[^.]{0,60}?\b(sofa|couch|armchair|chair|bench|stool|bed)\b", re.I)
+
+
+def character_names(board: dict, cid: str) -> list[str]:
+    """What the lettering may call a character: the parts of its `name` (「我（舅舅）」 is 我 and 舅舅) and its `aliases`."""
+    ci = board["characters"][cid]
+    parts = re.split(r"[（）()、/／\s]+", ci.get("name", ""))
+    return [n for n in dict.fromkeys(parts + list(ci.get("aliases", []))) if n]
 
 
 def _risky_hits(rx: re.Pattern, text: str) -> list[str]:
@@ -361,10 +374,46 @@ def lint(board: dict, only: list[str] | None = None) -> list[tuple[str, str, str
         if _HEADSHOT.search(prompt) and any(r.startswith("scene:") for r in refs):
             say("warn", "a close-up with a scene reference: the sheet's furniture comes in behind the character even when the "
                         "prompt says not to (a second table behind 阿凱, six times); leave the scene out and describe the background")
+        if _NOT_SMILING.search(prompt):
+            for r in refs:
+                cr = char_ref(board, r)
+                if cr and cr[1] == "head":
+                    say("warn", f"{r}: a head crop brings the sheet's face along, smile included (老二 grinned in 4 of 5 "
+                                f"scared panels); use {cr[0]}:bust and spell the expression out")
+        if _SITS_ON.search(prompt) and any(r.startswith("scene:") for r in refs):
+            say("warn", "seated on furniture with a scene reference: the character lands in the middle of the sheet, on the "
+                        "coffee table (2 of 3 in 〈跟外甥玩捉迷藏〉, and in the first comic); leave the scene out and describe "
+                        "the seat and its backrest")
+        if "zoom" in cell and not 0.2 <= cell["zoom"] <= 1:
+            say("error", f"zoom {cell['zoom']} is outside 0.2..1 (it shrinks the picture onto its own background colour)")
         for cid in cast(board, cell):
             kws = board["characters"][cid].get("keywords", [])
             if kws and not any(k.lower() in prompt.lower() for k in kws):
                 say("warn", f"{cid}: none of its features ({', '.join(kws)}) is repeated in the prompt")
+    # name a character where they first appear: 阿嬤 never was, and her bust beside 「那應該是恁細姑」 read as 細姑.
+    # `intro` points at another panel on the same page that names them (小寶 is drawn in p2, his tag is in p4)
+    where = {c["id"]: (pi, c) for pi, c, _ in all_panels(board)}
+    lettering = lambda c: " ".join(e.get("text", "") for e in c.get("text", []))  # noqa: E731
+    seen: set[str] = set()
+    for pi, cell, _ in all_panels(board):
+        if cell.get("fill"):
+            continue
+        new = [c for c in cast(board, cell) if c not in seen]
+        seen.update(new)
+        if only and cell["id"] not in only:
+            continue
+        for cid in new:
+            if board["characters"][cid].get("ghost"):  # nobody is supposed to know who the ghost is yet
+                continue
+            names = character_names(board, cid)
+            intro = board["characters"][cid].get("intro")
+            at = where.get(intro, (None, None)) if intro else (pi, cell)
+            if intro and at[0] is None:
+                out.append((cell["id"], "error", f"{cid}: intro panel {intro!r} is not on the board"))
+            elif names and (at[0] != pi or not any(n in lettering(at[1]) for n in names)):
+                out.append((cell["id"], "warn", f"{cid}: first drawn here, but nothing on this page names them "
+                                                f"({' / '.join(names)}); add a caption or tag here, or set `intro` to the "
+                                                f"panel on this page that does (an unnamed 阿嬤 was read as 細姑)"))
     return out
 
 
@@ -597,11 +646,72 @@ def cmd_lint(a) -> None:
     raise SystemExit(1 if print_lint(lint(load_board(), a.only)) else 0)
 
 
+_BRIEF_PATH = re.compile(r"^\s+- ((?:[A-Za-z]:[\\/]|/).*\.png)\s*$", re.M)  # candidate lines: a bare path
+
+
+def reviewed_paths(skip: str | None = None) -> set[str]:
+    """Every candidate path an earlier brief in out/review listed (the brief named `skip` is about to be rewritten)."""
+    seen: set[str] = set()
+    for f in (OUT / "review").glob("*.md"):
+        if f.stem != skip:
+            seen.update(_BRIEF_PATH.findall(f.read_text(encoding="utf-8")))
+    return seen
+
+
+def continuity_panels(b: dict, ch: dict, cell: dict, limit: int = 3) -> list[dict]:
+    """Picked panels a candidate must match: its `continuity` list and `panel:` references first, then the nearest
+    picked panels of the same scene. p21's wardrobe came out white next to p14's dark one; the checker needs p14 open."""
+    order = [c for _, c, _ in all_panels(b) if not c.get("fill")]
+    pos = {c["id"]: k for k, c in enumerate(order)}
+    want = list(cell.get("continuity", [])) + [r.split(":", 1)[1] for r in cell.get("refs", []) if r.startswith("panel:")]
+    mine = set(panel_scenes(b, cell))
+    if mine:
+        near = sorted((c for c in order if c["id"] != cell["id"] and mine & set(panel_scenes(b, c))),
+                      key=lambda c: abs(pos[c["id"]] - pos[cell["id"]]))
+        want += [c["id"] for c in near]
+    picked = [i for i in dict.fromkeys(want) if i in ch["panels"] and i != cell["id"]]
+    return [find_panel(b, i) for i in picked[:limit]]
+
+
+def read_brief(b: dict) -> None:
+    """A brief for a first-time reader (references/reader_check.md): the page images in reading order and nothing else;
+    beside it a key for the one who compares: who each character is, where they first appear, every line in order."""
+    pages = sorted((OUT / "pages").glob("page_*.png"))
+    if not pages:
+        raise SystemExit("no pages yet: run `pages` first")
+    rtl = b.get("direction", "rtl") == "rtl"
+    dest = OUT / "review"
+    dest.mkdir(parents=True, exist_ok=True)
+    L = ["# 讀者檢查", "", "照 reader_check.md 讀完下面每一頁再回答。只開這些頁面，不要開資料夾裡的其他檔案。", "",
+         f"- 閱讀方向：{'格子由右往左、由上往下；直書文字一欄一欄由右往左' if rtl else '格子由左往右、由上往下'}",
+         "- 頁面："] + [f"  - {p}" for p in pages]
+    (dest / "read.md").write_text("\n".join(L) + "\n", encoding="utf-8")
+    K = ["# 讀者檢查的對照表（不要交給讀者）", "", f"- 故事：{b.get('story', '')}", "", "## 角色", ""]
+    first: dict[str, tuple[int, str]] = {}
+    for pi, cell, _ in all_panels(b):
+        for cid in cast(b, cell):
+            first.setdefault(cid, (pi, cell["id"]))
+    for cid, ci in b.get("characters", {}).items():
+        where = f"第 {first[cid][0]} 頁 {first[cid][1]} 第一次出現" if cid in first else "沒畫出來"
+        K.append(f"- {ci.get('name', cid)}：{ci.get('features', '')}；{where}")
+    K += ["", "## 每個框（閱讀順序）", ""]
+    for pi, cell, _ in all_panels(b):
+        for e in cell.get("text", []):
+            K.append(f"- 第 {pi} 頁 {cell['id']} {e['kind']} {e.get('pos', 'tr')}：「{e['text']}」")
+    K += ["", "比對：讀者講的劇情和故事一樣嗎？每個角色都認對了嗎？每句台詞的說話的人都對嗎？結尾的轉折看懂了嗎？", ""]
+    (dest / "read_key.md").write_text("\n".join(K), encoding="utf-8")
+    print(dest / "read.md")
+    print(dest / "read_key.md")
+
+
 def cmd_review(a) -> None:
     """A brief for an independent checker (references/qa_checklist.md): for each panel, what must be in it and every
     candidate's path. The checker is a fresh subagent: the one who wrote the prompts sees what was meant, not what is there."""
     b = load_board()
     ch = load_choices()
+    if getattr(a, "read", False):
+        read_brief(b)
+        return
     ids = list(a.ids or [])
     if a.page:
         ids += [c["id"] for c, _ in page_cells(b, b["pages"][a.page - 1])]
@@ -610,12 +720,22 @@ def cmd_review(a) -> None:
     ids = list(dict.fromkeys(i for i in ids if not find_panel(b, i).get("fill")))
     if not ids:
         raise SystemExit("nothing to review")
+    name = a.name or (f"page{a.page}" if a.page else ("unpicked" if a.unpicked else "_".join(ids[:4])))
+    found = {pid: candidates(OUT / "panels", pid) for pid in ids}
+    if getattr(a, "new", False):  # redraws only: the checker re-judged old, already failed candidates until told not to
+        seen = reviewed_paths(skip=name)
+        found = {pid: [f for f in fs if str(f) not in seen] for pid, fs in found.items()}
+        for pid in [p for p, fs in found.items() if not fs]:
+            print(f"{pid}: no candidates newer than the earlier briefs, left out")
+        ids = [p for p in ids if found[p]]
+        if not ids:
+            raise SystemExit("nothing new to review")
     scale = b.get("consistency", {}).get("scale", {})
     L = [f"# 格子檢查：{', '.join(ids)}", "",
          "照 qa_checklist.md 逐張檢查下面每一張候選圖，每張都要開原圖看，不要看縮圖。", ""]
     for pid in ids:
         cell = find_panel(b, pid)
-        files = candidates(OUT / "panels", pid)
+        files = found[pid]
         heads, everyone = people(b, cell), cast(b, cell)
         L += [f"## {pid}：{cell.get('label', '')}", ""]
         L.append(f"- 人數：剛好 {len(heads)} 人" + ("（" + "、".join(b['characters'][c].get('name', c) for c in heads) + "）" if heads else "，畫面上不該有人"))
@@ -630,12 +750,15 @@ def cmd_review(a) -> None:
         for sid in panel_scenes(b, cell):
             L.append(f"- 場景：{b.get('consistency', {}).get('scene', {}).get(sid, sid)}")
         L.append(f"- 畫面要的是：{cell['prompt']}")
+        match = continuity_panels(b, ch, cell)
+        if match:
+            L.append("- 要跟這些已選定的格子接得上（同一個場景、道具、光線，開原圖比對）：")
+            L += [f"  - {m['id']}（{m.get('label', '')}）：{OUT / 'panels' / ch['panels'][m['id']]}" for m in match]
         L.append("- 候選：")
         L += [f"  - {f}" for f in files] or ["  - （還沒畫）"]
         L.append("")
     dest = OUT / "review"
     dest.mkdir(parents=True, exist_ok=True)
-    name = a.name or (f"page{a.page}" if a.page else ("unpicked" if a.unpicked else "_".join(ids[:4])))
     p = dest / f"{name}.md"
     p.write_text("\n".join(L), encoding="utf-8")
     print(p)
@@ -733,7 +856,7 @@ def text_block(entry: dict, size: int, max_h: float | None = None) -> Image.Imag
     return tile
 
 
-def draw_entry(page: Image.Image, entry: dict, cell_box, base: int) -> None:
+def draw_entry(page: Image.Image, entry: dict, cell_box, base: int) -> list[int]:
     """One text item. The bubble shape says where the voice comes from: speech (round) is said in the room,
     voice (round, white on black) comes from someone unseen, screen / phone (square, double outline) comes
     through a device, narration is a plain box, title and tag are white on black."""
@@ -762,7 +885,7 @@ def draw_entry(page: Image.Image, entry: dict, cell_box, base: int) -> None:
         white = Image.new("RGBA", tile.size, (255, 255, 255, 255))
         white.putalpha(tile.split()[3])
         page.paste(white, (bx + pad_x, by + pad_y), white)
-        return
+        return box
     elif kind in ("screen", "phone"):
         d.rounded_rectangle(box, radius=round(size * 0.35), fill="white", outline="black", width=3)
         g = 5
@@ -772,10 +895,11 @@ def draw_entry(page: Image.Image, entry: dict, cell_box, base: int) -> None:
         white = Image.new("RGBA", tile.size, (255, 255, 255, 255))
         white.putalpha(tile.split()[3])
         page.paste(white, (bx + pad_x, by + pad_y), white)
-        return
+        return box
     else:
         d.rectangle(box, fill="white", outline="black", width=2)
     page.paste(tile, (bx + pad_x, by + pad_y), tile)
+    return box
 
 
 def draw_sfx(page: Image.Image, sfx: dict, cell_box) -> None:
@@ -828,6 +952,34 @@ def placeholder(page: Image.Image, cell: dict, box, label: str | None = None) ->
         d.text((x0 + 20, cy + i * 38), l, fill="#444", font=f)
 
 
+def panel_source(cell: dict, ch: dict) -> Image.Image:
+    """The picked candidate as the page uses it, in black and white. `mirror` flips it (the first speaker belongs on the
+    right of a right-to-left page); `zoom` below 1 shrinks it onto its own background colour, anchored at `zoom_at`, to
+    free room for lettering beside a close-up. Both are layout only: the candidate file is never changed."""
+    src = Image.open(OUT / "panels" / ch["panels"][cell["id"]]).convert("RGB")
+    if cell.get("mirror"):
+        src = ImageOps.mirror(src)
+    z = cell.get("zoom", 1.0)
+    if z < 1:
+        W, H = src.size
+        corners = sorted((src.getpixel(p) for p in ((0, 0), (W - 1, 0), (0, H - 1), (W - 1, H - 1))), key=sum)
+        small = src.resize((round(W * z), round(H * z)), Image.LANCZOS)
+        canvas = Image.new("RGB", (W, H), corners[1])
+        ax, ay = cell.get("zoom_at", (0.5, 0.5))
+        canvas.paste(small, (round((W - small.width) * ax), round((H - small.height) * ay)))
+        src = canvas
+    return src.convert("L").convert("RGB")  # pages stay black and white
+
+
+def overlap(a, b) -> float:
+    """Intersection of two boxes as a share of the smaller one."""
+    w = min(a[2], b[2]) - max(a[0], b[0])
+    h = min(a[3], b[3]) - max(a[1], b[1])
+    if w <= 0 or h <= 0:
+        return 0.0
+    return w * h / min((a[2] - a[0]) * (a[3] - a[1]), (b[2] - b[0]) * (b[3] - b[1]))
+
+
 def place_panel(page: Image.Image, cell: dict, box, ch: dict) -> None:
     x0, y0, x1, y1 = box
     w, h = x1 - x0, y1 - y0
@@ -838,7 +990,7 @@ def place_panel(page: Image.Image, cell: dict, box, ch: dict) -> None:
     if cell["id"] not in ch["panels"]:
         placeholder(page, cell, box)
         return
-    src = Image.open(OUT / "panels" / ch["panels"][cell["id"]]).convert("L").convert("RGB")  # pages stay black and white
+    src = panel_source(cell, ch)
     focus = tuple(cell.get("focus", (0.5, 0.5)))
     if cell.get("screen"):  # seen through a device: bezel, camera dot, optional picture-in-picture
         t = max(10, round(min(w, h) * 0.035))
@@ -865,7 +1017,9 @@ def place_panel(page: Image.Image, cell: dict, box, ch: dict) -> None:
         d.rectangle([x0, y0, x1 - 1, y1 - 1], outline="black", width=4)
 
 
-def render_page(b: dict, page: dict, pi: int, ch: dict, wireframe: bool = False) -> Image.Image:
+def render_page(b: dict, page: dict, pi: int, ch: dict, wireframe: bool = False, issues: list[str] | None = None) -> Image.Image:
+    """One page. Lettering boxes of one panel that cover each other go into `issues`: p6's count was hidden under its
+    narration box and nobody saw it until the pages were out."""
     W, H = b["page"]
     im = Image.new("RGB", (W, H), "white")
     base = round(W / 40)
@@ -878,8 +1032,14 @@ def render_page(b: dict, page: dict, pi: int, ch: dict, wireframe: bool = False)
             place_panel(im, cell, box, ch)
         for s in cell.get("sfx", []):
             draw_sfx(im, s, box)
+        drawn = []
         for e in cell.get("text", []):
-            draw_entry(im, e, box, base)
+            bx = draw_entry(im, e, box, base)
+            for pe, pb in drawn:
+                if issues is not None and overlap(pb, bx) > 0.05:
+                    issues.append(f"page {pi} {cell['id']}: 「{e['text'][:8]}」 ({e.get('pos', 'tr')}) covers "
+                                  f"「{pe['text'][:8]}」 ({pe.get('pos', 'tr')}); move one or shorten it")
+            drawn.append((e, bx))
     ImageDraw.Draw(im).text((W // 2 - 8, H - 40), str(pi), fill="#888", font=ImageFont.truetype(font_path("plain"), 20))
     return im
 
@@ -897,13 +1057,20 @@ def spread(pages: list[Image.Image], per_row: int, height: int, rtl: bool = True
     return sheet
 
 
+def print_lettering(issues: list[str]) -> None:
+    for m in issues:
+        print(f"WARN   lettering: {m}")
+
+
 def cmd_plan(a) -> None:
     """Gate 3: every page as a wireframe, each panel labelled in reading order, with the real lettering."""
     b = load_board()
     OUT.mkdir(parents=True, exist_ok=True)
-    pages = [render_page(b, page, pi, {"panels": {}}, wireframe=True) for pi, page in enumerate(b["pages"], 1)]
+    issues: list[str] = []
+    pages = [render_page(b, page, pi, {"panels": {}}, wireframe=True, issues=issues) for pi, page in enumerate(b["pages"], 1)]
     spread(pages, 4, 1000, b.get("direction", "rtl") == "rtl").save(OUT / "plan.png")
     print(OUT / "plan.png")
+    print_lettering(issues)
 
 
 def cmd_pages(a) -> None:
@@ -911,20 +1078,49 @@ def cmd_pages(a) -> None:
     ch = load_choices()
     dest = OUT / "pages"
     dest.mkdir(parents=True, exist_ok=True)
-    pages = []
+    pages, issues = [], []
     for pi, page in enumerate(b["pages"], 1):
         if a.pages and pi not in a.pages:
             continue
-        im = render_page(b, page, pi, ch)
+        im = render_page(b, page, pi, ch, issues=issues)
         p = dest / f"page_{pi:02d}.png"
         im.save(p)
         pages.append(im)
         print(p)
+    print_lettering(issues)
     if a.pages:
         return
     pages[0].save(OUT / "comic.pdf", save_all=True, append_images=pages[1:], resolution=150)
     spread(pages, len(pages), 850, b.get("direction", "rtl") == "rtl").save(OUT / "overview.jpg", quality=85)
     print(OUT / "comic.pdf", OUT / "overview.jpg")
+
+
+def cmd_status(a) -> None:
+    """Where the run stands: picks per page, the panels still missing (with how many candidates each has), how many
+    review briefs exist, and GPU minutes from out/log.jsonl by kind."""
+    b, ch = load_board(), load_choices()
+    total = picked = 0
+    for pi, page in enumerate(b["pages"], 1):
+        ids = [c["id"] for c, _ in page_cells(b, page) if not c.get("fill")]
+        got = [i for i in ids if i in ch["panels"]]
+        total, picked = total + len(ids), picked + len(got)
+        missing = [f"{i}({len(candidates(OUT / 'panels', i))})" for i in ids if i not in ch["panels"]]
+        print(f"page {pi}: {len(got)}/{len(ids)} picked" + (f"; missing {' '.join(missing)}" if missing else ""))
+    print(f"all: {picked}/{total} picked; style {ch.get('style', '-')}; {len(ch['sheets'])} sheets chosen")
+    briefs = sorted((OUT / "review").glob("*.md")) if (OUT / "review").exists() else []
+    print(f"review briefs: {len(briefs)}" + (f" (latest {max(briefs, key=lambda f: f.stat().st_mtime).name})" if briefs else ""))
+    mins: dict[str, float] = {}
+    images = 0
+    if (OUT / "log.jsonl").exists():
+        for line in (OUT / "log.jsonl").read_text(encoding="utf-8").splitlines():
+            try:
+                r = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            mins[r.get("kind", "?")] = mins.get(r.get("kind", "?"), 0.0) + r.get("wall_s", 0) / 60
+            images += len(r.get("files", []))
+    print("GPU: " + (", ".join(f"{k} {v:.1f} min" for k, v in mins.items()) + f"; total {sum(mins.values()):.1f} min, "
+                     f"{images} images" if mins else "nothing drawn yet"))
 
 
 def main() -> None:
@@ -949,6 +1145,8 @@ def main() -> None:
     rv.add_argument("--page", type=int, default=None)
     rv.add_argument("--unpicked", action="store_true")
     rv.add_argument("--name", default=None)
+    rv.add_argument("--new", action="store_true", help="only candidates that no earlier brief in out/review listed")
+    rv.add_argument("--read", action="store_true", help="a first-time reader's brief for the laid-out pages")
     for x in (s, p):
         x.add_argument("--seed", type=int, default=0)
         x.add_argument("--only", type=lambda v: v.split(","), default=None)
@@ -963,13 +1161,14 @@ def main() -> None:
     ct.add_argument("--width", type=int, default=520)
     pg = sub.add_parser("pages")
     pg.add_argument("--pages", type=lambda v: [int(x) for x in v.split(",")], default=None)
+    sub.add_parser("status")
     a = ap.parse_args()
     set_work(Path(a.work))
     global BOARD
     BOARD = a.board
     {"check": cmd_check, "styles": cmd_styles, "sheets": cmd_sheets, "choose": cmd_choose, "refs": cmd_refs,
      "lint": cmd_lint, "review": cmd_review,
-     "plan": cmd_plan, "panels": cmd_panels, "contact": cmd_contact, "pages": cmd_pages}[a.cmd](a)
+     "plan": cmd_plan, "panels": cmd_panels, "contact": cmd_contact, "pages": cmd_pages, "status": cmd_status}[a.cmd](a)
 
 
 if __name__ == "__main__":

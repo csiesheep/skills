@@ -313,5 +313,175 @@ class ReviewTest(unittest.TestCase):
             shutil.rmtree(td, ignore_errors=True)
 
 
+def _tiny(cells_by_page, **chars):
+    """A board of one row per page, for rules that need control over who appears where."""
+    return {"page": [1200, 1700], "margin": 56, "gutter": [18, 24], "direction": "rtl",
+            "characters": {k: dict({"keywords": []}, **v) for k, v in chars.items()},
+            "scenes": {"room": "A living room. Nobody in it."},
+            "consistency": {"scene": {"room": "Scene consistency: the living room never changes."}}, "lights": {},
+            "pages": [{"rows": [{"h": 1.0, "cells": [dict({"w": 1 / len(cs), "refs": [], "prompt": "x", "text": []}, **c) for c in cs]}]}
+                      for cs in cells_by_page]}
+
+
+class LintThirdComicTest(unittest.TestCase):
+    """Rules from 〈跟外甥玩捉迷藏〉."""
+
+    def _hits(self, board, needle, pid=None):
+        return [(p, lvl) for p, lvl, m in manga.lint(board) if needle in m and (pid is None or p == pid)]
+
+    def test_head_crop_with_a_frightened_face(self):
+        b = _tiny([[{"id": "p1", "refs": ["er:head"], "prompt": "The boy from <image1>, faces gone pale, staring. Only one person in the frame."}]],
+                  er={"name": "老二"})
+        self.assertEqual(self._hits(b, "head crop"), [("p1", "warn")])
+        b["pages"][0]["rows"][0]["cells"][0]["refs"] = ["er:bust"]
+        self.assertEqual(self._hits(b, "head crop"), [])
+        b["pages"][0]["rows"][0]["cells"][0].update(refs=["er:head"], prompt="The boy from <image1> grins. Only one person in the frame.")
+        self.assertEqual(self._hits(b, "head crop"), [])
+
+    def test_seated_with_a_scene_reference(self):
+        b = _tiny([[{"id": "p1", "refs": ["me:bust", "scene:room"], "prompt": "In the room from <image2>: the man from <image1> sits on the sofa. Only one person in the frame."}]],
+                  me={"name": "我"})
+        self.assertEqual(self._hits(b, "seated on furniture"), [("p1", "warn")])
+        c = b["pages"][0]["rows"][0]["cells"][0]
+        c.update(refs=["me:bust"], prompt="The man from <image1> sits deep on a long wooden sofa, its backrest behind him. Only one person in the frame.")
+        self.assertEqual(self._hits(b, "seated on furniture"), [])
+
+    def test_first_appearance_must_be_named(self):
+        ama = {"id": "p2", "refs": ["ama:bust"], "prompt": "The grandmother from <image1>. Only one person in the frame.",
+               "text": [{"kind": "speech", "text": "那應該是恁細姑……", "pos": "tr"}]}
+        later = {"id": "p3", "refs": [], "prompt": "x", "text": [{"kind": "narration", "text": "隔天我媽跟我講了阿嬤沒講的部分。", "pos": "tr"}]}
+        b = _tiny([[{"id": "p1"}], [ama, later]], ama={"name": "阿嬤"})
+        self.assertEqual(self._hits(b, "first drawn"), [("p2", "warn")])  # named later on the same page is not enough
+        ama["text"].insert(0, {"kind": "narration", "text": "阿嬤聽完愣了很久，說：", "pos": "tr"})
+        self.assertEqual(self._hits(b, "first drawn"), [])
+        ama["text"].pop(0)
+        b["characters"]["ama"]["intro"] = "p3"  # a panel on the same page that names her
+        self.assertEqual(self._hits(b, "first drawn"), [])
+        b["characters"]["ama"]["intro"] = "p1"  # on another page: still unnamed where she is drawn
+        self.assertEqual(self._hits(b, "first drawn"), [("p2", "warn")])
+        b["characters"]["ama"]["intro"] = "p9"
+        self.assertEqual(self._hits(b, "intro panel"), [("p2", "error")])
+        b["characters"]["ama"] = {"name": "阿嬤", "keywords": [], "ghost": True}  # the ghost stays unnamed on purpose
+        self.assertEqual(self._hits(b, "first drawn"), [])
+        b["characters"]["ama"] = {"name": "外婆", "aliases": ["阿嬤"], "keywords": []}
+        b["characters"]["ama"]["intro"] = "p3"
+        self.assertEqual(self._hits(b, "first drawn"), [])
+        self.assertEqual(manga.character_names({"characters": {"me": {"name": "我（舅舅）"}}}, "me"), ["我", "舅舅"])
+
+    def test_zoom_range(self):
+        b = _tiny([[{"id": "p1", "zoom": 1.5}]])
+        self.assertEqual(self._hits(b, "zoom"), [("p1", "error")])
+
+
+class LayoutToolsTest(unittest.TestCase):
+    def setUp(self):
+        self.td = Path(tempfile.mkdtemp())
+        manga.set_work(self.td)
+        (manga.OUT / "panels").mkdir(parents=True)
+
+    def tearDown(self):
+        manga.set_work(Path.cwd())
+        shutil.rmtree(self.td, ignore_errors=True)
+
+    def test_mirror_and_zoom(self):
+        im = Image.new("RGB", (100, 80), "black")
+        ImageDraw.Draw(im).rectangle([50, 0, 99, 79], fill="white")  # right half white
+        im.save(manga.OUT / "panels" / "p1_1.png")
+        ch = {"panels": {"p1": "p1_1.png"}}
+        self.assertEqual(manga.panel_source({"id": "p1"}, ch).getpixel((90, 40)), (255, 255, 255))
+        self.assertEqual(manga.panel_source({"id": "p1", "mirror": True}, ch).getpixel((90, 40)), (0, 0, 0))
+        z = manga.panel_source({"id": "p1", "zoom": 0.5, "zoom_at": [1, 1]}, ch)
+        self.assertEqual(z.size, (100, 80))
+        self.assertEqual(z.getpixel((10, 10)), (0, 0, 0))  # the freed corner takes the background colour
+        self.assertEqual(z.getpixel((95, 75)), (255, 255, 255))  # the picture, shrunk into the bottom-right corner
+        self.assertEqual(Image.open(manga.OUT / "panels" / "p1_1.png").getpixel((90, 40)), (255, 255, 255))  # file untouched
+
+    def test_lettering_that_covers_lettering_is_reported(self):
+        b = _tiny([[{"id": "p1", "text": [{"kind": "speech", "text": "……九十九、一百！", "pos": "tl"},
+                                           {"kind": "narration", "text": "老二數到五十就偷看。", "pos": "tl"}]}]])
+        issues = []
+        manga.render_page(b, b["pages"][0], 1, {"panels": {}}, wireframe=True, issues=issues)
+        self.assertEqual(len(issues), 1)
+        self.assertIn("p1", issues[0])
+        b["pages"][0]["rows"][0]["cells"][0]["text"][0]["pos"] = "tr"
+        issues = []
+        manga.render_page(b, b["pages"][0], 1, {"panels": {}}, wireframe=True, issues=issues)
+        self.assertEqual(issues, [])
+        issues = []
+        for pi, page in enumerate(BOARD["pages"], 1):  # the example board letters cleanly
+            manga.render_page(BOARD, page, pi, {"panels": {}}, wireframe=True, issues=issues)
+        self.assertEqual(issues, [])
+
+
+class ReviewThirdComicTest(unittest.TestCase):
+    def setUp(self):
+        self.td = Path(tempfile.mkdtemp())
+        shutil.copy(SKILL / "assets" / "example_board.json", self.td / "board.json")
+        manga.set_work(self.td)
+        (manga.OUT / "panels").mkdir(parents=True)
+        self.ns = lambda **k: type("A", (), dict({"ids": [], "page": None, "unpicked": False, "name": None, "new": False, "read": False}, **k))  # noqa: E731
+
+    def tearDown(self):
+        manga.set_work(Path.cwd())
+        shutil.rmtree(self.td, ignore_errors=True)
+
+    def _png(self, name):
+        Image.new("RGB", (64, 64), "white").save(manga.OUT / "panels" / name)
+
+    def test_new_lists_only_unreviewed_candidates(self):
+        self._png("p25_1.png")
+        self._png("p25_2.png")
+        manga.cmd_review(self.ns(ids=["p25"], name="first"))
+        self._png("p25_3.png")
+        manga.cmd_review(self.ns(ids=["p25"], name="redraw", new=True))
+        md = (manga.OUT / "review" / "redraw.md").read_text(encoding="utf-8")
+        self.assertIn("p25_3.png", md)
+        self.assertNotIn("p25_1.png", md)
+        with self.assertRaises(SystemExit):  # nothing newer than the two briefs
+            manga.cmd_review(self.ns(ids=["p25"], name="again", new=True))
+
+    def test_brief_shows_picked_panels_to_match(self):
+        self._png("p6_1.png")
+        self._png("p7_1.png")
+        manga.save_choices({"panels": {"p6": "p6_1.png"}})
+        manga.cmd_review(self.ns(ids=["p7"], name="t"))  # p6 and p7 are both in the room
+        md = (manga.OUT / "review" / "t.md").read_text(encoding="utf-8")
+        self.assertIn("要跟這些已選定的格子接得上", md)
+        self.assertIn("p6_1.png", md)
+        b = manga.load_board()
+        self.assertEqual([c["id"] for c in manga.continuity_panels(b, manga.load_choices(), manga.find_panel(b, "p8"))], [])  # the hall
+
+    def test_reader_brief_has_pages_and_no_story(self):
+        with self.assertRaises(SystemExit):
+            manga.cmd_review(self.ns(read=True))  # no pages yet
+        (manga.OUT / "pages").mkdir()
+        for k in (1, 2):
+            Image.new("RGB", (60, 85), "white").save(manga.OUT / "pages" / f"page_0{k}.png")
+        manga.cmd_review(self.ns(read=True))
+        read = (manga.OUT / "review" / "read.md").read_text(encoding="utf-8")
+        self.assertIn("page_01.png", read)
+        self.assertIn("page_02.png", read)
+        self.assertIn("由右往左", read)
+        self.assertNotIn("小芳", read)  # the reader gets no names, no story
+        key = (manga.OUT / "review" / "read_key.md").read_text(encoding="utf-8")
+        self.assertIn("小芳", key)
+        self.assertIn("一個人在家", key)  # the title's lettering, in reading order
+
+    def test_status(self):
+        import contextlib
+        import io
+        self._png("p25_1.png")
+        manga.save_choices({"panels": {"p1": "p1_1.png"}, "style": "A"})
+        manga.log({"kind": "panels", "id": "p1", "wall_s": 90, "files": ["p1_1.png", "p1_2.png"]})
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            manga.cmd_status(self.ns())
+        out = buf.getvalue()
+        self.assertIn("page 1: 1/", out)
+        self.assertIn("p25(1)", out)
+        self.assertIn("panels 1.5 min", out)
+        self.assertIn("2 images", out)
+
+
 if __name__ == "__main__":
     unittest.main()
