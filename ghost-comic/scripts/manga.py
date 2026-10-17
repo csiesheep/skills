@@ -1037,8 +1037,8 @@ def render_page(b: dict, page: dict, pi: int, ch: dict, wireframe: bool = False,
             bx = draw_entry(im, e, box, base)
             for pe, pb in drawn:
                 if issues is not None and overlap(pb, bx) > 0.05:
-                    issues.append(f"page {pi} {cell['id']}: 「{e['text'][:8]}」 ({e.get('pos', 'tr')}) covers "
-                                  f"「{pe['text'][:8]}」 ({pe.get('pos', 'tr')}); move one or shorten it")
+                    issues.append(f"page {pi} {cell['id']}: 「{e['text'].replace(chr(10), '')[:8]}」 ({e.get('pos', 'tr')}) covers "
+                                  f"「{pe['text'].replace(chr(10), '')[:8]}」 ({pe.get('pos', 'tr')}); move one or shorten it")
             drawn.append((e, bx))
     ImageDraw.Draw(im).text((W // 2 - 8, H - 40), str(pi), fill="#888", font=ImageFont.truetype(font_path("plain"), 20))
     return im
