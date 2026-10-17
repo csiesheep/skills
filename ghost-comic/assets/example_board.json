@@ -53,6 +53,9 @@
   },
   "mom": {
    "name": "媽媽",
+   "aliases": [
+    "我媽"
+   ],
    "views": "The same character is drawn twice side by side: full body front view on the left, full body three-quarter view on the right, same height, standing upright, neutral expression.",
    "desc": "A 52-year-old Taiwanese mother with a round face, a big round bulbous nose, short tight curly permed black hair, thin-rimmed reading glasses pushed up on top of her head, wearing a plain black blouse and black trousers for a funeral, holding a mobile phone.",
    "features": "大圓鼻、小捲燙髮、老花眼鏡推在頭上",
@@ -64,6 +67,7 @@
   },
   "ama": {
    "name": "陳阿嬤",
+   "ghost": true,
    "views": "The same character is drawn twice side by side: full body front view on the left, full body three-quarter view on the right, same height, standing hunched, neutral expression.",
    "desc": "A tiny hunched Taiwanese grandmother in her late eighties, very short cropped white hair like a buzz cut, a small deeply wrinkled face with sunken cheeks, very large protruding ears, a few chin whiskers, wearing a loose faded two-piece pajama set with a small flower print, barefoot, her hands clasped behind her back.",
    "features": "白色短髮、大耳朵、碎花睡衣、手背在後",
