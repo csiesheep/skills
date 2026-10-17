@@ -107,8 +107,11 @@ candidate-by-candidate questions.
    place her either, and also found an unattributable line, a retort read too early and a
    caption repeated on page 1. Never tell the reader what problems you suspect: the first
    reader was given this very example in its instructions and duly found it.
-   Then send the pages and the PDF, and list the weak panels honestly with what a redraw would
-   change.
+   After fixing, give the new pages to another fresh reader, and repeat until a reader gets the
+   story, every character and every speaker right. The reader after the first fix round found
+   two more: a caption describing an action the picture does not show, and a kinship word read
+   from the wrong person's side. Then send the pages and the PDF, and list the weak panels
+   honestly with what a redraw would change.
 9. **Fix round.** Map each note of the owner's to a panel id (if they name a page that does not
    contain what they describe, say which panel you think they mean), rewrite the prompt, redraw
    with `n: 3`, re-lay out only the pages that changed (`pages --pages 3,5`), send them. When the
