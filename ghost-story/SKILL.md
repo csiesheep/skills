@@ -73,15 +73,25 @@ are legitimate.
    簡約, read `minimal_restrained.md` instead of `minimal.md`). These are the full rules;
    the skeleton is the brief.
 3. **Write the story** in Traditional Chinese with Taiwanese usage. First line is the title,
-   then the body, nothing else, no Markdown. The title is `[經驗] 四到十二個字` unless the
+   then the body, nothing else, no Markdown. The title is `[經驗] 四到十二個字`, plain like a topic
+   (麵攤的阿伯、重修微積分的學長), not 「XX那YY」 (那晚、那張、那個禮拜): 3% of real top titles
+   have 那, four in ten of our drafts did. That holds unless the
    style file says otherwise (口述、文學、長輩講古 may use a plain title); the tag is part of
    the voice, and becomes `[創作]` only if the user says they will post it. Treat the anchor
    hints as kinds of detail to invent your own instances of, and the structural examples as
    shapes, never as events to retell. Hit the beat proportions roughly; never skip the denial
    beat, even in a short story.
 4. **Review it.** Save the draft to a file, count with
-   `python "<skill dir>/scripts/ghost_plan.py" count <file>`, then score it with
-   `references/review_rubric.md`.
+   `python "<skill dir>/scripts/ghost_plan.py" count <file>`, then check how it looks on the page
+   with `ghost_plan.py surface <file>`: line length, lines that stop mid-sentence, how much
+   sentence length varies, quotes, ellipses, ? and !, digits, each against real top posts
+   (`assets/surface.json`, 957 posts, numbers only), and three habits real posts rarely have: a
+   disclaimer opening, a quoted line as the last line, 那 in the title. For the default PTT
+   style, at most one 必改
+   and three 建議; a real top post's median is one and two, the first generated drafts had three
+   to five 必改 each, and the owner picked out every one of them in a blind read. Fix those by
+   re-breaking lines and changing numerals in place, not by a rewrite, then score it with
+   `references/review_rubric.md`. Other styles (文學、紀錄、長輩講古) may ignore the line breaks.
    - **Fails** (length off by more than 20%, an extra requirement missed, or below the pass
      rule): rewrite the whole story from your fix notes and review again. Two rewrites at most.
    - **Passes but the notes name something concrete and cheap** (a continuity slip, a reaction
