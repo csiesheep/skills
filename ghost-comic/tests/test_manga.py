@@ -717,6 +717,26 @@ class SixthComicTest(unittest.TestCase):
         with self.assertRaises(SystemExit):
             manga.cmd_crop(type("A", (), {"candidate": "p3_1", "box": "0,150,100,160"}))  # runs off the bottom
 
+    def test_scene_brief_lines_up_a_room(self):
+        b = _tiny([[{"id": "p1", "scene": "room", "label": "房間"}, {"id": "p2", "scene": "room", "mirror": True}],
+                   [{"id": "p3"}, {"id": "p4", "scene": "room"}]])
+        (self.td / "board.json").write_text(json.dumps(b, ensure_ascii=False), encoding="utf-8")
+        for n in ("p1_1.png", "p2_1.png", "p3_1.png"):
+            Image.new("RGB", (64, 48), "white").save(manga.OUT / "panels" / n)
+        manga.save_choices({"panels": {"p1": "p1_1.png", "p2": "p2_1.png", "p3": "p3_1.png"}})
+        ns = lambda **k: type("A", (), dict({"ids": [], "page": None, "unpicked": False, "name": None, "new": False,  # noqa: E731
+                                              "read": False, "cast": None, "scene": None}, **k))
+        manga.cmd_review(ns(scene=["room"]))
+        md = (manga.OUT / "review" / "scene_room.md").read_text(encoding="utf-8")
+        self.assertIn("the living room never changes", md)  # the fixed layout from consistency.scene
+        self.assertIn("p1_1.png", md)
+        self.assertIn("p2（頁面上左右翻轉（mirror））", md)
+        self.assertNotIn("p3_1.png", md)  # not set in the room
+        self.assertTrue((manga.OUT / "review" / "scene_room.png").exists())
+        self.assertEqual(manga.reviewed_paths(), set())
+        with self.assertRaises(SystemExit):
+            manga.cmd_review(ns(scene=["attic"]))
+
     def test_lint_gaze_wide_close_up_and_seen_by(self):
         b = _tiny([[{"id": "p1", "cast": ["a", "b"], "prompt": "A father and his son sit by a bed. Exactly two people in the frame."}]],
                   a={"name": "我爸"}, b={"name": "我"})

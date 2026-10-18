@@ -48,6 +48,11 @@ style was wrong and the sheets were picked for them.
    for the story: characters with at least two memorable features each (`features` in Chinese,
    the same features in `desc` and in every panel prompt), scenes, the `consistency` block
    (fixed room layout, fixed heights), the `lights` states, pages, panel labels and lettering.
+   Write each room's layout as a floor plan, not a mood: which wall the window and the door are
+   in, where each piece of furniture stands against which wall, which way the objects the story
+   turns face. Check it against the story's own geometry (a knock "right next to my head" puts
+   the window by the head of the bed). In the sixth comic the room was described loosely, and
+   the window, the bed and the dresser moved from panel to panel until the owner pointed at it.
    Give every panel its `scene` and `light` explicitly, and a `cast` when a character is drawn
    from words alone. Name every speaking character in the panel where they are first drawn (a
    `tag` or a caption; `intro` points at another panel on the same page, `ghost: true` exempts
@@ -114,6 +119,11 @@ candidate-by-candidate questions.
    阿嬤's close-up, drawn from words, was not her face, and the boy's hair was black on one page
    and white on the next. Both had passed, and the owner found both; run blind on those panels,
    the cast check caught both, and a bangle on the wrong wrist in three more.
+   `manga.py review --scene all` does the same for places: every picked panel set in a room,
+   against its fixed layout, for the checklist's 場景跨格檢查. Redraw the room's wide shot first
+   from the plan and make the later views of that room same-framing edits of a picked panel
+   (the night view of the lit room is the day view with the light changed), so the layout is
+   carried by a picture rather than redrawn from words each time.
 7. **Pages.** `manga.py pages` writes `out/pages/page_NN.png`, `out/comic.pdf` and
    `out/overview.jpg`, and prints `WARN lettering` like `plan`. Look at every page yourself:
    text over a face, a bubble beside someone who is not speaking, a reading order that jumps, a

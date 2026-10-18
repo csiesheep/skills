@@ -977,6 +977,53 @@ def cast_brief(b: dict, ch: dict, cids: list[str]) -> None:
         print(dest / f"cast_{cid}.md")
 
 
+def contact_sheet(tiles: list[tuple[str, Image.Image]], path: Path, th: int = 300, per_row: int = 5) -> None:
+    font = ImageFont.truetype(font_path("bold"), 26)
+    tiles = [(t, im.resize((max(1, round(im.width * th / im.height)), th))) for t, im in tiles]
+    lines = [tiles[i:i + per_row] for i in range(0, len(tiles), per_row)]
+    sheet = Image.new("RGB", (max(sum(im.width + 10 for _, im in r) for r in lines), len(lines) * (th + 40)), "#888")
+    d = ImageDraw.Draw(sheet)
+    for ri, r in enumerate(lines):
+        x = 0
+        for t, im in r:
+            sheet.paste(im, (x, ri * (th + 40) + 36))
+            d.text((x + 4, ri * (th + 40) + 2), t, fill="white", font=font)
+            x += im.width + 10
+    sheet.save(path)
+
+
+def scene_brief(b: dict, ch: dict, sids: list[str]) -> None:
+    """One room across every picked panel set in it, against its fixed layout (consistency.scene): where the window, the
+    bed, the door and the furniture are, and which way things face. In the sixth comic the window, the bed and the photo
+    frame moved from panel to panel and every panel had passed on its own; the owner saw it on the pages."""
+    layouts = b.get("consistency", {}).get("scene", {})
+    if sids == ["all"]:
+        sids = list(layouts)
+    dest = OUT / "review"
+    dest.mkdir(parents=True, exist_ok=True)
+    for sid in sids:
+        if sid not in layouts:
+            raise SystemExit(f"no fixed layout for scene {sid!r} in consistency.scene")
+        rows = [(pi, c) for pi, c, _ in all_panels(b) if not c.get("fill") and c["id"] in ch["panels"] and sid in panel_scenes(b, c)]
+        if not rows:
+            print(f"{sid}: no picked panel is set there, left out")
+            continue
+        L = [f"# 場景跨格檢查：{sid}", "",
+             "照 qa_checklist.md 的「場景跨格檢查」，把這個場景的每一格都跟下面的固定格局、也跟彼此比對。每一格都要開原圖看；"
+             "總覽圖只用來找哪幾格不一樣。",
+             f"要放大或裁切時可以寫小程式，但程式和輸出只放在 {dest / 'work' / f'scene_{sid}'}，不要動 out/ 裡其他任何檔案。", "",
+             f"- 固定格局：{layouts[sid]}", f"- 總覽圖：{dest / f'scene_{sid}.png'}", "- 每一格（閱讀順序）："]
+        for pi, c in rows:
+            note = "，".join(x for x in (c.get("label", ""), "頁面上左右翻轉（mirror）" if c.get("mirror") else "") if x)
+            L.append(f"  - 第 {pi} 頁 {c['id']}（{note}）：{OUT / 'panels' / ch['panels'][c['id']]}")
+            L.append(f"    畫面要的是：{c['prompt']}")
+        L.append("")
+        (dest / f"scene_{sid}.md").write_text("\n".join(L), encoding="utf-8")
+        contact_sheet([(c["id"], Image.open(OUT / "panels" / ch["panels"][c["id"]]).convert("RGB")) for _, c in rows],
+                      dest / f"scene_{sid}.png")
+        print(dest / f"scene_{sid}.md")
+
+
 def read_brief(b: dict) -> None:
     """A brief for a first-time reader (references/reader_check.md): the page images in reading order and nothing else;
     beside it a key for the one who compares: who each character is, where they first appear, every line in order."""
@@ -1015,6 +1062,9 @@ def cmd_review(a) -> None:
     ch = load_choices()
     if getattr(a, "read", False):
         read_brief(b)
+        return
+    if getattr(a, "scene", None):
+        scene_brief(b, ch, a.scene)
         return
     if getattr(a, "cast", None):
         cast_brief(b, ch, a.cast)
@@ -1561,6 +1611,8 @@ def main() -> None:
     rv.add_argument("--name", default=None)
     rv.add_argument("--new", action="store_true", help="only candidates that no earlier brief in out/review listed")
     rv.add_argument("--read", action="store_true", help="a first-time reader's brief for the laid-out pages")
+    rv.add_argument("--scene", type=lambda v: v.split(","), default=None,
+                    help="scene ids (or 'all'): every picked panel set there, against its fixed layout")
     rv.add_argument("--cast", type=lambda v: v.split(","), default=None,
                     help="character ids (or 'all'): every picked panel of each, side by side with the sheet")
     rp = sub.add_parser("repaint")
