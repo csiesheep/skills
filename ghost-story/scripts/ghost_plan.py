@@ -7,6 +7,8 @@
                             [--note 主角是護理師 ...] [--seed N] [--json]
   python ghost_plan.py options          列出所有可用的值
   python ghost_plan.py count FILE       數字數（不算第一行標題和空白）
+  python ghost_plan.py post FILE [--mode attach|chain|ig]
+                                        轉成可以發的貼文：標題改 [創作]、加 AI 標示、照平台字數上限切
 """
 from __future__ import annotations
 
@@ -290,6 +292,71 @@ def count_chars(text: str) -> int:
     return sum(1 for ch in body if not ch.isspace())
 
 
+DISCLOSURE = "（AI 輔助創作，故事純屬虛構）"
+_TAG = re.compile(r"^\s*\[(經驗|真實|翻譯|創作)\]\s*")
+_SENT = re.compile(r"(?<=[。！？…])(?![」』）])|(?<=[」』）])")
+
+
+def post_title(title: str) -> str:
+    """A generated story is fiction: a marvel [經驗] tag says it happened, so posts use [創作]."""
+    return "[創作] " + _TAG.sub("", title).strip()
+
+
+def _pieces(body: str, room: int) -> list[str]:
+    """Paragraphs, then sentences, then hard cuts: every piece fits in `room` characters."""
+    out = []
+    for para in body.split("\n"):
+        if len(para) <= room:
+            out.append(para)
+            continue
+        for s in (x for x in _SENT.split(para) if x):
+            while len(s) > room:
+                out.append(s[:room])
+                s = s[room:]
+            out.append(s)
+    return out
+
+
+def _pack(pieces: list[str], room: int) -> list[str]:
+    """Pieces joined by line breaks into chunks of at most `room` characters."""
+    chunks, cur = [], ""
+    for p in pieces:
+        joined = (cur + "\n" + p) if cur else p
+        if len(joined) <= room:
+            cur = joined
+            continue
+        if cur.strip():
+            chunks.append(cur.strip("\n"))
+        cur = p
+    if cur.strip():
+        chunks.append(cur.strip("\n"))
+    return chunks
+
+
+def make_posts(text: str, mode: str = "attach", limit: int = 500) -> dict:
+    """attach: one post (title, disclosure, the opening up to the limit, cut at a paragraph or sentence) plus the
+    whole story as a text attachment. chain: the story in numbered posts of at most `limit` characters, cut at
+    paragraphs or sentences. ig: one caption within Instagram's 2,200 characters with the opening and the disclosure."""
+    title, _, body = text.strip().partition("\n")
+    head = f"{post_title(title)}\n{DISCLOSURE}\n\n"
+    body = body.strip("\n")
+    if mode == "chain":
+        room = limit - len(" (99/99)")
+        first = _pack(_pieces(body, room - len(head)), room - len(head))
+        rest = _pack(_pieces("\n".join(first[1:]), room), room) if len(first) > 1 else []
+        chunks = [head + first[0]] + rest
+        n = len(chunks)
+        return {"posts": [f"{c} ({i}/{n})" if n > 1 else c for i, c in enumerate(chunks, 1)], "attachment": None}
+    if mode == "ig":
+        tail = "\n\n（全文看輪播）\n\n#鬼故事 #靈異 #怪談 #創作"
+        room = 2200 - len(head) - len(tail)
+        return {"posts": [head + _pack(_pieces(body, room), room)[0] + tail], "attachment": None}
+    more = "……（全文在附件）"
+    room = limit - len(head) - len(more)
+    return {"posts": [head + _pack(_pieces(body, room), room)[0] + more],
+            "attachment": f"{post_title(title)}\n{DISCLOSURE}\n\n{body}"}
+
+
 def describe() -> str:
     L = ["場景（--setting，可多個，用逗號分開）："] + [f"  {k:<15} {v}" for k, v in SETTINGS.items()]
     L += ["", "主要機制（--mechanism）："] + [f"  {k:<15} {v}" for k, v in MECHANISMS.items()]
@@ -320,12 +387,23 @@ def main(argv=None) -> int:
     sub.add_parser("options")
     c = sub.add_parser("count")
     c.add_argument("file")
+    po = sub.add_parser("post")
+    po.add_argument("file")
+    po.add_argument("--mode", choices=["attach", "chain", "ig"], default="attach")
+    po.add_argument("--limit", type=int, default=500, help="Threads 單篇上限")
     a = ap.parse_args(argv)
     if a.cmd == "options":
         print(describe())
         return 0
     if a.cmd == "count":
         print(count_chars(Path(a.file).read_text(encoding="utf-8")))
+        return 0
+    if a.cmd == "post":
+        r = make_posts(Path(a.file).read_text(encoding="utf-8"), a.mode, a.limit)
+        for i, p in enumerate(r["posts"], 1):
+            print(f"===== 第 {i} 則（{len(p)} 字）=====\n{p}\n")
+        if r["attachment"]:
+            print(f"===== 文字附件（{len(r['attachment'])} 字）=====\n{r['attachment']}")
         return 0
     if a.cmd != "plan":
         ap.print_help()

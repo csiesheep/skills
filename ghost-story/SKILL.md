@@ -123,7 +123,11 @@ are legitimate.
 
 - **It is fiction.** A marvel `[經驗]` post is supposed to be a real experience. If the user
   wants to post a generated story, tell them to use `[創作]` and say it was written with AI;
-  don't help present it as something that happened.
+  don't help present it as something that happened. `ghost_plan.py post <file>` does both and
+  cuts the story for the platform: `--mode attach` (default) is one Threads post of 500
+  characters ending on a sentence, with the whole story as a text attachment; `--mode chain`
+  is numbered Threads posts of 500 at most, cut between paragraphs or sentences; `--mode ig` is
+  an Instagram caption within 2,200.
 - **No real targets.** Keep places at the level the rules allow (縣市、區、路段、某國中)
   and never name a real person, a real business, or a specific temple or hospital as haunted.
 - **Don't copy.** The pool is paraphrase on purpose. Don't reconstruct a known marvel post,
