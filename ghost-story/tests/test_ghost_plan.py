@@ -53,5 +53,37 @@ class PostTest(unittest.TestCase):
         self.assertIn("#鬼故事", cap)
 
 
+TIDY = "[經驗] 工整\n" + "\n\n".join(
+    "我那天晚上十二點才下班，回到宿舍的時候整層樓都很安靜，學長說：「你回來啦。」我點點頭就進房間了。" for _ in range(12))
+PTT = "[經驗] 亂\n那天大概凌晨3點吧\n" + """我剛下班回宿舍 整層樓安靜到很怪
+平常這時間隔壁都還在打電動的
+走廊的燈一盞一盞亮過去
+我還想說是誰比我晚回來
+
+學長從走廊那頭探頭出來說你回來啦
+我說對啊
+他就把門關了。
+
+""" * 4 + "後來我才想起來...\n他不是上禮拜就搬走了嗎！\n"
+
+
+class SurfaceTest(unittest.TestCase):
+    def test_tidy_draft_is_flagged_and_ptt_layout_is_not(self):
+        table = __import__("json").loads(ghost_plan.SURFACE.read_text(encoding="utf-8"))
+        self.assertGreater(table["n"], 500)
+        tidy, ptt = ghost_plan.surface(TIDY), ghost_plan.surface(PTT)
+        self.assertGreater(tidy["line_chars"], 40)
+        self.assertLess(ptt["line_chars"], 25)
+        self.assertEqual(tidy["open_lines"], 0)
+        self.assertGreater(ptt["open_lines"], 30)
+        self.assertGreater(tidy["quotes"], ptt["quotes"])
+        self.assertGreater(ptt["digits"], 0)
+        self.assertGreater(ptt["ellipses"], 0)
+        must = lambda t: [m for m in ghost_plan.surface_report(t, table) if m.startswith("必改")]  # noqa: E731
+        self.assertGreaterEqual(len(must(TIDY)), 2)
+        self.assertLessEqual(len(must(PTT)), 1)
+        self.assertTrue(any("手動斷行" in m for m in must(TIDY)))
+
+
 if __name__ == "__main__":
     unittest.main()

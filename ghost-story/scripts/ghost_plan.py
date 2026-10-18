@@ -7,6 +7,7 @@
                             [--note 主角是護理師 ...] [--seed N] [--json]
   python ghost_plan.py options          列出所有可用的值
   python ghost_plan.py count FILE       數字數（不算第一行標題和空白）
+  python ghost_plan.py surface FILE     版面和標點跟熱門文比（斷行、句長、引號、數字），超出範圍的列出來
   python ghost_plan.py post FILE [--mode attach|chain|ig]
                                         轉成可以發的貼文：標題改 [創作]、加 AI 標示、照平台字數上限切
 """
@@ -292,6 +293,59 @@ def count_chars(text: str) -> int:
     return sum(1 for ch in body if not ch.isspace())
 
 
+SURFACE = HERE.parent / "assets" / "surface.json"
+_LINE_END = re.compile(r"[，。！？」』…、：；.!?)）~～]$")
+SURFACE_ADVICE = {  # (too few, too many)
+    "line_chars": ("一行太短，像在寫詩；把短行接起來", "手動斷行：一行 15 到 30 字，在停頓的地方就換行，不用等句子講完"),
+    "open_lines": ("換行就是停頓：斷在句子中間的行，行尾不用再打逗號", "幾乎每行都斷在句中，讀起來太碎；有些行講完一句再換"),
+    "sentence_spread": ("句子長短要亂：有一口氣用逗號接到底的長句，也有兩三個字的短句", "長句太多，拆幾句短的出來"),
+    "quotes": ("至少讓旁人的一兩句反應用他們自己的話說出來", "引號對話太多：大部分改成轉述（學姊說她……），只留最關鍵的一兩句用「」"),
+    "ellipses": ("講到一半、不想講下去的地方用「...」", "「...」太多，留在真的講不下去的地方"),
+    "marks": ("反應和自問自答用問號、驚嘆號（蛤？、真的假的！）", "問號驚嘆號太多，像在喊"),
+    "digits": ("時間、年紀、樓層、年份用阿拉伯數字（3點、25歲、7樓、2015年）", "數字太多，像在寫報告"),
+}
+
+
+def surface(text: str) -> dict[str, float]:
+    """How the body looks on the page, the numbers a reader notices before reading a word. Real top marvel posts
+    break lines by hand (about 23 characters a line, more than half the lines ending mid-sentence), vary sentence
+    length wildly, report most speech instead of quoting it, and write times as digits; the first generated stories
+    wrote one paragraph per line in even sentences and the owner spotted every one of them."""
+    body = text.split("\n", 1)[1] if "\n" in text else text
+    lines = [l.strip() for l in body.splitlines() if l.strip()]
+    chars = sum(len(l) for l in lines) or 1
+    sents = [len(s) for s in re.split(r"[。！？!?]", body) if s.strip()]
+    mean = sum(sents) / len(sents) if sents else 0
+    spread = (sum((s - mean) ** 2 for s in sents) / len(sents)) ** 0.5 if sents else 0
+    lens = sorted(len(l) for l in lines) or [0]
+    k = 1000 / chars
+    return {
+        "line_chars": lens[len(lens) // 2],
+        "open_lines": 100 * sum(1 for l in lines if not _LINE_END.search(l)) / max(1, len(lines)),
+        "sentence_spread": spread,
+        "quotes": body.count("「") * k,
+        "ellipses": len(re.findall(r"\.\.\.|…|。。", body)) * k,
+        "marks": len(re.findall(r"[？！?!]", body)) * k,
+        "digits": len(re.findall(r"\d", body)) * k,
+    }
+
+
+def surface_report(text: str, table: dict) -> list[str]:
+    """One line per measure off the real top posts (table: assets/surface.json): 必改 outside their middle 80%,
+    建議 outside their middle half. Real posts vary a lot, so a single measure at an edge is fine; a draft at the edge
+    of all of them at once (no ellipsis, no digits, few marks, every line a paragraph) is what reads as generated."""
+    out = []
+    for name, v in surface(text).items():
+        r = table["features"][name]
+        for lo, hi, level in (("p10", "p90", "必改"), ("p25", "p75", "建議")):
+            if v < r[lo] or v > r[hi]:
+                low = v < r[lo]
+                out.append(f"{level} {name} {v:.1f}（熱門文中間 {r[lo]:.1f} 到 {r[hi]:.1f}，{'太少' if low else '太多'}）："
+                           f"{SURFACE_ADVICE[name][0 if low else 1]}")
+                break
+    return out
+
+
 DISCLOSURE = "（AI 輔助創作，故事純屬虛構）"
 _TAG = re.compile(r"^\s*\[(經驗|真實|翻譯|創作)\]\s*")
 _SENT = re.compile(r"(?<=[。！？…])(?![」』）])|(?<=[」』）])")
@@ -387,6 +441,8 @@ def main(argv=None) -> int:
     sub.add_parser("options")
     c = sub.add_parser("count")
     c.add_argument("file")
+    su = sub.add_parser("surface")
+    su.add_argument("file")
     po = sub.add_parser("post")
     po.add_argument("file")
     po.add_argument("--mode", choices=["attach", "chain", "ig"], default="attach")
@@ -397,6 +453,15 @@ def main(argv=None) -> int:
         return 0
     if a.cmd == "count":
         print(count_chars(Path(a.file).read_text(encoding="utf-8")))
+        return 0
+    if a.cmd == "surface":
+        text = Path(a.file).read_text(encoding="utf-8")
+        table = json.loads(SURFACE.read_text(encoding="utf-8"))
+        for name, v in surface(text).items():
+            r = table["features"][name]
+            print(f"{name:<16} {v:6.1f}   熱門文 {r['p10']:.1f} / {r['p50']:.1f} / {r['p90']:.1f}")
+        issues = surface_report(text, table)
+        print("\n" + ("\n".join("- " + m for m in issues) if issues else "都在熱門文的範圍內"))
         return 0
     if a.cmd == "post":
         r = make_posts(Path(a.file).read_text(encoding="utf-8"), a.mode, a.limit)

@@ -80,8 +80,14 @@ are legitimate.
    shapes, never as events to retell. Hit the beat proportions roughly; never skip the denial
    beat, even in a short story.
 4. **Review it.** Save the draft to a file, count with
-   `python "<skill dir>/scripts/ghost_plan.py" count <file>`, then score it with
-   `references/review_rubric.md`.
+   `python "<skill dir>/scripts/ghost_plan.py" count <file>`, then check how it looks on the page
+   with `ghost_plan.py surface <file>`: line length, lines that stop mid-sentence, how much
+   sentence length varies, quotes, ellipses, ? and !, digits, each against real top posts
+   (`assets/surface.json`, 957 posts, numbers only). For the default PTT style, at most one 必改
+   and three 建議; a real top post's median is one and two, the first generated drafts had three
+   to five 必改 each, and the owner picked out every one of them in a blind read. Fix those by
+   re-breaking lines and changing numerals in place, not by a rewrite, then score it with
+   `references/review_rubric.md`. Other styles (文學、紀錄、長輩講古) may ignore the line breaks.
    - **Fails** (length off by more than 20%, an extra requirement missed, or below the pass
      rule): rewrite the whole story from your fix notes and review again. Two rewrites at most.
    - **Passes but the notes name something concrete and cheap** (a continuity slip, a reaction
