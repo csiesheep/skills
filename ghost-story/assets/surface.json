@@ -51,5 +51,10 @@
    "p75": 6.77,
    "p90": 11.84
   }
+ },
+ "tells": {
+  "opening_disclaimer": 0.192,
+  "quote_ending": 0.071,
+  "title_na": 0.032
  }
 }

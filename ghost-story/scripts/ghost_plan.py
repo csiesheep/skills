@@ -330,6 +330,25 @@ def surface(text: str) -> dict[str, float]:
     }
 
 
+_DISCLAIMER = re.compile(r"排版|飄點|文筆")
+TELL_ADVICE = {
+    "opening_disclaimer": ("建議", "開頭的免責（手機排版、飄點微弱、文筆差）熱門文只有少數有，大多直接講事情；五篇最多一篇用"),
+    "quote_ending": ("必改", "最後一句不要是一句「」對白：停在敘事者自己的一句話、現在的狀況或一個細節；對白翻完，後面再接一兩句自己的話"),
+    "title_na": ("建議", "標題用直白的名詞（麵攤的阿伯、重修微積分的學長），不要「XX那YY」（那晚、那張、那個禮拜）"),
+}
+
+
+def tells(text: str) -> dict[str, bool]:
+    """Habits of the generated drafts that real top posts rarely have: a disclaimer in the first lines (every draft,
+    a sixth of real posts), a quoted line in the last three (nearly every draft, 7% of real posts), 那 in the title
+    (four drafts in ten, 3% of real posts). Each is fine once in a while; together they give a draft away."""
+    title, _, body = text.strip().partition("\n")
+    lines = [l for l in body.splitlines() if l.strip()]
+    return {"opening_disclaimer": bool(_DISCLAIMER.search("\n".join(lines[:3]))),
+            "quote_ending": "「" in "\n".join(lines[-3:]),
+            "title_na": "那" in re.sub(r"^\s*\[[^\]]*\]\s*", "", title)}
+
+
 def surface_report(text: str, table: dict) -> list[str]:
     """One line per measure off the real top posts (table: assets/surface.json): 必改 outside their middle 80%,
     建議 outside their middle half. Real posts vary a lot, so a single measure at an edge is fine; a draft at the edge
@@ -343,6 +362,11 @@ def surface_report(text: str, table: dict) -> list[str]:
                 out.append(f"{level} {name} {v:.1f}（熱門文中間 {r[lo]:.1f} 到 {r[hi]:.1f}，{'太少' if low else '太多'}）："
                            f"{SURFACE_ADVICE[name][0 if low else 1]}")
                 break
+    for name, hit in tells(text).items():
+        if hit:
+            level, advice = TELL_ADVICE[name]
+            rate = table.get("tells", {}).get(name)
+            out.append(f"{level} {name}（熱門文 {rate:.0%} 這樣寫）：{advice}" if rate is not None else f"{level} {name}：{advice}")
     return out
 
 

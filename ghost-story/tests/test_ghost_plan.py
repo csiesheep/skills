@@ -84,6 +84,15 @@ class SurfaceTest(unittest.TestCase):
         self.assertLessEqual(len(must(PTT)), 1)
         self.assertTrue(any("手動斷行" in m for m in must(TIDY)))
 
+    def test_habits_real_posts_rarely_have(self):
+        draft = "[經驗] 宿舍那張空床\n手機排版，飄點很弱\n那天\n我回宿舍\n室友說：\n「你床上是誰？」"
+        self.assertEqual(ghost_plan.tells(draft), {"opening_disclaimer": True, "quote_ending": True, "title_na": True})
+        plain = "[經驗] 麵攤的阿伯\n那天\n我回宿舍\n室友問我床上是誰\n我到現在還是不敢睡上鋪"
+        self.assertEqual(ghost_plan.tells(plain), {"opening_disclaimer": False, "quote_ending": False, "title_na": False})
+        table = __import__("json").loads(ghost_plan.SURFACE.read_text(encoding="utf-8"))
+        self.assertLess(table["tells"]["quote_ending"], 0.2)
+        self.assertTrue(any(m.startswith("必改 quote_ending") for m in ghost_plan.surface_report(draft, table)))
+
 
 if __name__ == "__main__":
     unittest.main()
