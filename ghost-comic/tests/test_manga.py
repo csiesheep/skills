@@ -752,6 +752,15 @@ class SixthComicTest(unittest.TestCase):
         c.update(cast=[], prompt="A window high on a wall, as seen by someone lying on his back. Nobody in the picture.")
         self.assertEqual(len(hits("as seen by someone")), 1)
 
+    def test_lint_close_shot_with_a_scene_layout(self):
+        b = _tiny([[{"id": "p1", "scene": "room", "cast": [], "prompt": "Through a gap in the curtain, a face. Nobody in the picture."}]])
+        hits = lambda: [m for p, lvl, m in manga.lint(b) if "close shot with a scene layout" in m]  # noqa: E731
+        self.assertEqual(len(hits()), 1)
+        b["pages"][0]["rows"][0]["cells"][0]["scene"] = []
+        self.assertEqual(hits(), [])
+        b["pages"][0]["rows"][0]["cells"][0].update(scene="room", prompt="Wide shot of the room from the doorway. Nobody in the picture.")
+        self.assertEqual(hits(), [])  # a view of the whole room keeps its layout
+
 
 if __name__ == "__main__":
     unittest.main()

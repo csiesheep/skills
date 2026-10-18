@@ -322,6 +322,7 @@ _WIDE = re.compile(r"\b(wide shot|establishing shot|long shot)\b", re.I)
 _GAZE = re.compile(r"\b(viewer|in profile|three-quarter|head turned|turned toward|looks? (at|down|up|toward)|"
                    r"looking (at|down|up|toward)|eyes (on|fixed|lowered)|faces? turned)\b", re.I)
 _SEEN_BY = re.compile(r"\b(as seen by|seen by someone|from the point of view of|through the eyes of)\b", re.I)
+_PART_SHOT = re.compile(r"\b(close-up|close shot|extreme close-up|through a gap|head-and-shoulders|head and shoulders)\b", re.I)
 
 
 def character_names(board: dict, cid: str) -> list[str]:
@@ -415,6 +416,12 @@ def lint(board: dict, only: list[str] | None = None) -> list[tuple[str, str, str
         if _SEEN_BY.search(prompt):
             say("warn", "'as seen by someone' draws that someone into the picture (p15, three times); describe the camera "
                         "(low angle, looking up at the window) instead of a viewer")
+        layouts = board.get("consistency", {}).get("scene", {})
+        if _PART_SHOT.search(prompt) and any(s in layouts for s in ([cell["scene"]] if isinstance(cell.get("scene"), str)
+                                                                    else cell.get("scene", []) or [])):
+            say("warn", "a close shot with a scene layout: the whole fixed layout goes into the prompt and the model draws "
+                        "the whole room (p29, 8 of 8 pulled back from a curtain gap to the room); set \"scene\": [] for a "
+                        "shot of one part of the place")
         if _NOT_SMILING.search(prompt):
             for r in refs:
                 cr = char_ref(board, r)
