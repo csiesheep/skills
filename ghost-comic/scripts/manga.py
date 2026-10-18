@@ -1103,8 +1103,12 @@ def draw_sfx(page: Image.Image, sfx: dict, cell_box) -> None:
     x0, y0, x1, y1 = cell_box
     size = round(min(x1 - x0, y1 - y0) * sfx.get("size", 0.25))
     font = ImageFont.truetype(font_path("bold"), size)
-    tile = Image.new("RGBA", (size * 2, size * 2), (0, 0, 0, 0))
-    ImageDraw.Draw(tile).text((size // 2, size // 3), sfx["text"], font=font, fill="black", stroke_width=max(4, size // 12), stroke_fill="white")
+    stroke = max(4, size // 12)
+    # the tile is as wide as the text: a fixed two-character tile cut 「唰啦」 to 「唰吋」 and the last 「叩」 of 「叩叩叩」
+    left, top, right, bottom = font.getbbox(sfx["text"], stroke_width=stroke)
+    pad = stroke + 2
+    tile = Image.new("RGBA", (right - left + 2 * pad, bottom - top + 2 * pad), (0, 0, 0, 0))
+    ImageDraw.Draw(tile).text((pad - left, pad - top), sfx["text"], font=font, fill="black", stroke_width=stroke, stroke_fill="white")
     tile = tile.rotate(sfx.get("angle", 0), resample=Image.BICUBIC, expand=True)
     cx, cy = x0 + sfx["at"][0] * (x1 - x0), y0 + sfx["at"][1] * (y1 - y0)
     page.paste(tile, (round(cx - tile.width / 2), round(cy - tile.height / 2)), tile)

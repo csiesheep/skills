@@ -639,6 +639,15 @@ class FifthComicTest(unittest.TestCase):
         self.assertEqual(len(list(dest.glob("part1_*.jpg"))), 19)  # cover and 18 pages
         self.assertEqual(len(list(dest.glob("part2_*.jpg"))), 4)  # cover, 2 pages, end card
 
+    def test_sound_effects_keep_every_character(self):
+        def ink_width(text):
+            page = Image.new("RGB", (1200, 800), "white")
+            manga.draw_sfx(page, {"text": text, "at": [0.5, 0.5], "size": 0.2, "angle": 0}, (0, 0, 1200, 800))
+            bbox = page.convert("L").point(lambda v: 255 if v < 128 else 0).getbbox()
+            return bbox[2] - bbox[0]
+        one, three = ink_width("叩"), ink_width("叩叩叩")
+        self.assertGreater(three, 2.6 * one)  # a fixed two-character tile cut the third 叩 off
+
     def test_scene_sheet_in_a_panel_with_people(self):
         b = self._board([[{"id": "p1", "refs": ["me:bust", "scene:room"],
                            "prompt": "In the room from <image2>, the nurse from <image1> walks to the bed. Only one person in the frame."}]],
