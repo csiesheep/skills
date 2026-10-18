@@ -609,6 +609,36 @@ class FifthComicTest(unittest.TestCase):
         with self.assertRaises(SystemExit):
             manga.parse_box("40,40,260,120", (200, 160))  # outside the picture
 
+    def test_instagram_export(self):
+        b = self._board([[{"id": "p1", "text": [{"kind": "title", "text": "阿嬤說\n後面", "pos": "tr"}]}]])
+        ns = lambda **k: type("A", (), dict({"ratio": "3:4", "cover": None, "handle": "@x", "tags": "#鬼故事,#創作"}, **k))  # noqa: E731
+        with self.assertRaises(SystemExit):
+            manga.cmd_export(ns())  # no pages yet
+        (manga.OUT / "pages").mkdir()
+        for k in range(1, 4):
+            Image.new("RGB", (1200, 1700), "black").save(manga.OUT / "pages" / f"page_{k:02d}.png")
+        manga.cmd_export(ns())
+        dest = manga.OUT / "export" / "ig"
+        slides = sorted(dest.glob("*.jpg"))
+        self.assertEqual([f.name for f in slides], ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg"])  # cover, 3 pages, end
+        self.assertTrue(all(Image.open(f).size == (1080, 1440) for f in slides))
+        page = Image.open(slides[1]).convert("L")
+        self.assertGreater(page.getpixel((5, 720)), 240)  # the page is whole, with white at the sides
+        self.assertLess(page.getpixel((540, 720)), 20)
+        cap = (dest / "caption.txt").read_text(encoding="utf-8")
+        self.assertIn("[創作] 阿嬤說後面", cap)
+        self.assertIn(manga.DISCLOSURE, cap)
+        self._png("p1_1.png", "white", (300, 200))
+        manga.save_choices({"panels": {"p1": "p1_1.png"}})
+        manga.cmd_export(ns(ratio="4:5", cover="p1"))
+        self.assertEqual(Image.open(dest / "01.jpg").size, (1080, 1350))
+        self.assertEqual(len(list(dest.glob("*.jpg"))), 5)  # old slides cleared
+        for k in range(4, 21):
+            Image.new("RGB", (1200, 1700), "black").save(manga.OUT / "pages" / f"page_{k:02d}.png")
+        manga.cmd_export(ns())  # 20 pages: more than one post holds
+        self.assertEqual(len(list(dest.glob("part1_*.jpg"))), 19)  # cover and 18 pages
+        self.assertEqual(len(list(dest.glob("part2_*.jpg"))), 4)  # cover, 2 pages, end card
+
     def test_scene_sheet_in_a_panel_with_people(self):
         b = self._board([[{"id": "p1", "refs": ["me:bust", "scene:room"],
                            "prompt": "In the room from <image2>, the nurse from <image1> walks to the bed. Only one person in the frame."}]],

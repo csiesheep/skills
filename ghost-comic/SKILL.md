@@ -135,6 +135,13 @@ candidate-by-candidate questions.
    same defect before replying, and add a row to prompting.md. A character added in a fix round
    (細姑's photo) still gets 3 or 4 versions for the owner to pick, with the checker's notes.
 
+10. **Publish.** `manga.py export` turns the laid-out pages into an Instagram carousel in
+   `out/export/ig/`: a cover (page 1, or `--cover <panel>` with the vertical title over one
+   picked panel; never the reveal), every page whole on a 3:4 slide (`--ratio 4:5` for the
+   older shape), an end card saying the story is fiction and drawn with AI (`--handle` adds
+   the account), and `caption.txt`. A comic of more than 18 pages is split into parts, since a
+   post holds 20 slides. Posting is the owner's: send the folder, never post for them.
+
 When the owner asks to see progress mid-run, `manga.py status` gives the numbers (picked per
 page, what is missing and how many candidates it has, GPU minutes counted from `exec_s`, which
 leaves out time spent waiting in ComfyUI's queue) and `pages --pages 1,2` lays

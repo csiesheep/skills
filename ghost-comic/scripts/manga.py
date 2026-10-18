@@ -19,6 +19,7 @@
     py -X utf8 manga.py pages                         # lettering, layout, PDF, overview
     py -X utf8 manga.py review --read                 # brief for a first-time reader of the pages (references/reader_check.md)
     py -X utf8 manga.py status                        # picked per page, what is missing, GPU minutes so far
+    py -X utf8 manga.py export --cover p27            # Instagram carousel: cover, every page on 3:4, end card, caption
 
 Files in the work folder: board.json (the storyboard, see references/board_format.md), choices.json
 (written by `choose`), out/ (everything generated). Lettering is drawn here, vertical, never by the model.
@@ -1291,6 +1292,97 @@ def cmd_pages(a) -> None:
     print(OUT / "comic.pdf", OUT / "overview.jpg")
 
 
+IG_SIZES = {"3:4": (1080, 1440), "4:5": (1080, 1350)}
+IG_MAX = 20  # slides in one Instagram post
+DISCLOSURE = "AI 輔助創作｜故事純屬虛構"
+
+
+def board_title(b: dict) -> str:
+    """The title as lettered on the pages (its line breaks kept), else the board's `title`."""
+    for _, cell, _ in all_panels(b):
+        for e in cell.get("text", []):
+            if e["kind"] == "title":
+                return e["text"]
+    return b.get("title", "")
+
+
+def fit_on(im: Image.Image, w: int, h: int, colour="white") -> Image.Image:
+    """The whole image scaled to fit inside w x h, centred on a plain background: nothing of the page is cropped."""
+    s = min(w / im.width, h / im.height)
+    small = im.convert("RGB").resize((round(im.width * s), round(im.height * s)), Image.LANCZOS)
+    canvas = Image.new("RGB", (w, h), colour)
+    canvas.paste(small, ((w - small.width) // 2, (h - small.height) // 2))
+    return canvas
+
+
+def ig_cover(b: dict, ch: dict, w: int, h: int, panel: str | None) -> Image.Image:
+    """Slide 1, which the profile grid and the feed show: one picked panel filling the slide (`--cover`, or page 1
+    as it is), the vertical title on black, and the disclosure along the bottom."""
+    if panel:
+        cell = find_panel(b, panel)
+        if panel not in ch["panels"]:
+            raise SystemExit(f"--cover {panel}: that panel has no picked candidate")
+        im = cover(panel_source(cell, ch), w, h, tuple(cell.get("focus", (0.5, 0.5))))
+        draw_entry(im, {"kind": "title", "text": board_title(b), "pos": "tr", "scale": 1.3}, (0, 0, w, h), round(w / 40))
+    else:
+        im = fit_on(Image.open(OUT / "pages" / "page_01.png"), w, h)
+    d = ImageDraw.Draw(im)
+    font = ImageFont.truetype(font_path("plain"), round(w / 38))
+    tw = d.textlength(DISCLOSURE, font=font)
+    y = h - round(w / 38) - 22
+    d.rectangle([0, y - 10, w, h], fill="white")
+    d.text(((w - tw) / 2, y), DISCLOSURE, fill="#333", font=font)
+    return im
+
+
+def ig_end(b: dict, w: int, h: int, handle: str | None) -> Image.Image:
+    """The last slide: the title, the disclosure and where to find more, on white."""
+    im = Image.new("RGB", (w, h), "white")
+    d = ImageDraw.Draw(im)
+    title = ImageFont.truetype(font_path("serif"), round(w / 16))
+    plain = ImageFont.truetype(font_path("plain"), round(w / 30))
+    lines = [(board_title(b).replace("\n", ""), title)]
+    lines += [("（完）", plain), ("", plain), ("故事和人物純屬虛構", plain), ("文字和圖由 AI 輔助創作", plain)]
+    if handle:
+        lines += [("", plain), (f"更多故事：{handle}", plain)]
+    heights = [round(f.size * 1.6) for _, f in lines]
+    y = (h - sum(heights)) // 2
+    for (text, f), lh in zip(lines, heights):
+        d.text(((w - d.textlength(text, font=f)) / 2, y), text, fill="black", font=f)
+        y += lh
+    return im
+
+
+def cmd_export(a) -> None:
+    """Instagram carousel from the laid-out pages: a cover, every page whole on a 3:4 (or 4:5) slide, an end card,
+    and a caption with the disclosure. A page of 1200 x 1700 leaves about 32 px of white at each side on 3:4. More
+    pages than fit in one post (20 slides) are split into parts."""
+    b, ch = load_board(), load_choices()
+    pages = sorted((OUT / "pages").glob("page_*.png"))
+    if not pages:
+        raise SystemExit("no pages yet: run `pages` first")
+    w, h = IG_SIZES[a.ratio]
+    dest = OUT / "export" / "ig"
+    dest.mkdir(parents=True, exist_ok=True)
+    for f in dest.glob("*"):
+        f.unlink()
+    per = IG_MAX - 2
+    parts = [pages[i:i + per] for i in range(0, len(pages), per)]
+    title = board_title(b).replace("\n", "")
+    for k, part in enumerate(parts, 1):
+        tag = f"part{k}_" if len(parts) > 1 else ""
+        slides = [ig_cover(b, ch, w, h, a.cover)] + [fit_on(Image.open(p), w, h) for p in part]
+        if k == len(parts):
+            slides.append(ig_end(b, w, h, a.handle))
+        for i, s in enumerate(slides, 1):
+            s.save(dest / f"{tag}{i:02d}.jpg", quality=92)
+        print(f"{dest / (tag + '01.jpg')} .. {tag}{len(slides):02d}.jpg ({len(slides)} slides)")
+    cap = [f"[創作] {title}" + (f"（{len(parts)} 之 1）" if len(parts) > 1 else ""), "", DISCLOSURE,
+           "漫畫由右往左、由上往下讀。", "", " ".join(a.tags.split(","))]
+    (dest / "caption.txt").write_text("\n".join(cap) + "\n", encoding="utf-8")
+    print(dest / "caption.txt")
+
+
 def cmd_status(a) -> None:
     """Where the run stands: picks per page, the panels still missing (with how many candidates each has), how many
     review briefs exist, and GPU minutes from out/log.jsonl by kind."""
@@ -1369,13 +1461,19 @@ def main() -> None:
     pg = sub.add_parser("pages")
     pg.add_argument("--pages", type=lambda v: [int(x) for x in v.split(",")], default=None)
     sub.add_parser("status")
+    ex = sub.add_parser("export")
+    ex.add_argument("--ratio", choices=sorted(IG_SIZES), default="3:4")
+    ex.add_argument("--cover", default=None, help="panel id for slide 1 (default: page 1 as it is)")
+    ex.add_argument("--handle", default=None, help="account name for the end card, e.g. @tonight_lights_on")
+    ex.add_argument("--tags", default="#鬼故事,#靈異,#怪談,#漫畫,#創作", help="comma-separated hashtags for the caption")
     a = ap.parse_args()
     set_work(Path(a.work))
     global BOARD
     BOARD = a.board
     {"check": cmd_check, "styles": cmd_styles, "sheets": cmd_sheets, "choose": cmd_choose, "refs": cmd_refs,
      "lint": cmd_lint, "review": cmd_review, "repaint": cmd_repaint,
-     "plan": cmd_plan, "panels": cmd_panels, "contact": cmd_contact, "pages": cmd_pages, "status": cmd_status}[a.cmd](a)
+     "plan": cmd_plan, "panels": cmd_panels, "contact": cmd_contact, "pages": cmd_pages, "status": cmd_status,
+     "export": cmd_export}[a.cmd](a)
 
 
 if __name__ == "__main__":
