@@ -13,7 +13,9 @@
     py -X utf8 manga.py review p5 p10 --new           # only candidates no earlier brief listed (redraws)
     py -X utf8 manga.py contact p5 p10                # candidates side by side, for picking
     py -X utf8 manga.py choose p5=2 p10=1 ...
+    py -X utf8 manga.py repaint p34_1 --box 220,70,500,330 --prompt "his hair is white"   # redraw one small area
     py -X utf8 manga.py panels --pass 2               # panels that use other panels as references
+    py -X utf8 manga.py review --cast all             # each character across every picked panel, beside the sheet
     py -X utf8 manga.py pages                         # lettering, layout, PDF, overview
     py -X utf8 manga.py review --read                 # brief for a first-time reader of the pages (references/reader_check.md)
     py -X utf8 manga.py status                        # picked per page, what is missing, GPU minutes so far
@@ -24,6 +26,7 @@ Files in the work folder: board.json (the storyboard, see references/board_forma
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import random
@@ -190,19 +193,30 @@ def candidates(folder: Path, jid: str) -> list[Path]:
     return [f for _, f in sorted(found)]
 
 
+def next_number(folder: Path, jid: str) -> int:
+    """The highest candidate number so far: a redraw must never overwrite the image already picked for the page."""
+    found = candidates(folder, jid)
+    return max(int(f.stem.rsplit("_", 1)[1]) for f in found) if found else 0
+
+
+def prompt_key(prompt: str, ref_names: list[str]) -> str:
+    """A short fingerprint of what a candidate was drawn from, so a brief can tell redraws of a rewritten prompt apart."""
+    return hashlib.sha1("\n".join([prompt] + ref_names).encode("utf-8")).hexdigest()[:10]
+
+
 def job(kind: str, jid: str, prompt: str, refs: list[Path], w: int, h: int, n: int, seed: int, dest_dir: Path) -> list[str]:
     names = [comfy.upload(p) for p in refs]
     graph = comfy.build_graph(prompt, names, w, h, seed, n, f"ghost_comic/{kind}/{jid}")
     pid, images, wall, exec_s = comfy.run(graph)
-    # number after the existing candidates: a redraw must never overwrite the image already picked for the page
-    start = len(candidates(dest_dir, jid)) and max(int(f.stem.rsplit("_", 1)[1]) for f in candidates(dest_dir, jid))
+    start = next_number(dest_dir, jid)
     files = []
     for k, img in enumerate(images, start + 1):
         dest = dest_dir / f"{jid}_{k}.png"
         comfy.fetch(img, dest)
         files.append(dest.name)
     rec = {"kind": kind, "id": jid, "prompt_id": pid, "w": w, "h": h, "n": n, "seed": seed,
-           "refs": [p.name for p in refs], "wall_s": wall, "exec_s": exec_s, "files": files}
+           "refs": [p.name for p in refs], "prompt_key": prompt_key(prompt, [p.name for p in refs]),
+           "wall_s": wall, "exec_s": exec_s, "files": files}
     log(rec)
     print(json.dumps(rec, ensure_ascii=False), flush=True)
     return files
@@ -300,6 +314,7 @@ _TWO = re.compile(r"\bexactly two people\b", re.I)
 _NOT_SMILING = re.compile(r"\b(scared|frightened|afraid|terrified|fear|cry|cries|crying|tears|sobbing|unsmiling|no smiles?|"
                           r"nobody smiles|frown|frowns|frowning|grim|pale|tight-lipped|lips pressed|mouth tight|mouth pulled down)\b", re.I)
 _SITS_ON = re.compile(r"\b(sits?|sitting|seated)\b[^.]{0,60}?\b(sofa|couch|armchair|chair|bench|stool|bed)\b", re.I)
+_WIDE = re.compile(r"\b(wide shot|establishing shot|long shot)\b", re.I)
 
 
 def character_names(board: dict, cid: str) -> list[str]:
@@ -363,17 +378,25 @@ def lint(board: dict, only: list[str] | None = None) -> list[tuple[str, str, str
         if _CROSSED.search(prompt) and not _CLOSE.search(prompt):
             say("error", "crossed arms in a full-body shot grew two extra hands; make it waist-up and say 'exactly two arms and two hands'")
         heads = people(board, cell)
-        if len(heads) == 1 and not _ONE.search(prompt):
+        count = cell.get("heads", len(heads))  # `heads` counts unnamed people too (patients in a corridor)
+        if isinstance(count, int) and count < len(heads):
+            say("error", f"heads {count} is fewer than the {len(heads)} characters drawn in it")
+        if count == 1 and not _ONE.search(prompt):
             say("warn", "one character: add 'Only one person in the frame' (character sheets carry two figures)")
-        if len(heads) == 2 and not _TWO.search(prompt):
+        if count == 2 and not _TWO.search(prompt):
             say("warn", "two characters: add 'Exactly two people in the frame'")
         for r in refs:
             cr = char_ref(board, r)
             if cr and cr[1] == "full" and cr[0] in heads and _SEATED_OR_CLOSE.search(prompt):
                 say("warn", f"{r}: a full-body standing sheet keeps the pose standing in seated and close-up panels; use {cr[0]}:head or {cr[0]}:bust")
-        if _HEADSHOT.search(prompt) and any(r.startswith("scene:") for r in refs):
+        scene_ref = any(r.startswith("scene:") for r in refs)
+        if _HEADSHOT.search(prompt) and scene_ref:
             say("warn", "a close-up with a scene reference: the sheet's furniture comes in behind the character even when the "
                         "prompt says not to (a second table behind 阿凱, six times); leave the scene out and describe the background")
+        elif scene_ref and heads and not _SITS_ON.search(prompt) and not _WIDE.search(prompt):
+            say("warn", "a scene sheet in a panel with people: they came out tiny or not at all (〈三個人〉 p2, p7), and the "
+                        "sheet's camera came along (eye level where a CCTV view was asked, 〈電梯〉 p12); keep it only for a "
+                        "wide shot from the sheet's own viewpoint (say 'wide shot'), otherwise describe the place in words")
         if _NOT_SMILING.search(prompt):
             for r in refs:
                 cr = char_ref(board, r)
@@ -642,6 +665,69 @@ def cmd_panels(a) -> None:
             a.seed or random.randrange(2**31), OUT / "panels")
 
 
+def parse_box(text: str, size: tuple[int, int]) -> tuple[int, int, int, int]:
+    """'x0,y0,x1,y1' in pixels of the candidate, or as fractions of its size when any value has a decimal point."""
+    vals = [v.strip() for v in text.split(",")]
+    if len(vals) != 4:
+        raise SystemExit(f"--box needs x0,y0,x1,y1, got {text!r}")
+    if any("." in v for v in vals):
+        box = tuple(round(float(v) * size[k % 2]) for k, v in enumerate(vals))
+    else:
+        box = tuple(int(v) for v in vals)
+    x0, y0, x1, y1 = box
+    if not (0 <= x0 < x1 <= size[0] and 0 <= y0 < y1 <= size[1]):
+        raise SystemExit(f"box {box} is not inside the {size[0]}x{size[1]} candidate")
+    return box
+
+
+def feather_mask(size: tuple[int, int]) -> Image.Image:
+    """Full strength inside, fading to nothing over the outer tenth of the box, so the patch has no visible seam."""
+    pad = max(6, min(size) // 10)
+    mask = Image.new("L", size, 0)
+    ImageDraw.Draw(mask).rectangle([pad, pad, size[0] - pad, size[1] - pad], fill=255)
+    return mask.filter(ImageFilter.GaussianBlur(pad / 2))
+
+
+def cmd_repaint(a) -> None:
+    """Redraw one small area of a candidate: crop the box, enlarge it so the detail fills the frame, edit only the crop,
+    shrink it back and paste it in with a feathered edge. An edit of the whole panel ignores small things (four tries
+    could not put a radio on p29's drip stand); at crop size the model draws them (p30's collar, p34's hair, p37's hand).
+    The results are new candidates numbered after the existing ones; the base file is never changed."""
+    b, ch = load_board(), load_choices()
+    base = OUT / "panels" / (a.candidate if a.candidate.endswith(".png") else a.candidate + ".png")
+    if not base.exists():
+        raise SystemExit(f"{base} does not exist")
+    pid = base.stem.rsplit("_", 1)[0]
+    find_panel(b, pid)
+    src = Image.open(base).convert("RGB")
+    box = parse_box(a.box, src.size)
+    crop = src.crop(box)
+    scale = max(1, min(6, round(1024 / max(crop.size))))
+    w, h = (max(512, round(v * scale / 32) * 32) for v in crop.size)
+    work = OUT / "repaint"
+    work.mkdir(parents=True, exist_ok=True)
+    tmp = work / f"{base.stem}_crop.png"
+    crop.resize((w, h), Image.LANCZOS).save(tmp)
+    text = a.prompt if "<image1>" in a.prompt else f"Keep this picture exactly the same as <image1>. Change only this: {a.prompt}"
+    prompt = f"{style_text(b, ch, 'panel')} {text}"
+    seed = a.seed or random.randrange(2**31)
+    graph = comfy.build_graph(prompt, [comfy.upload(tmp)], w, h, seed, a.n, f"ghost_comic/repaint/{pid}")
+    prompt_id, images, wall, exec_s = comfy.run(graph)
+    mask = feather_mask(crop.size)
+    files = []
+    for k, img in enumerate(images, next_number(OUT / "panels", pid) + 1):
+        raw = work / f"{pid}_{k}_raw.png"
+        comfy.fetch(img, raw)
+        out = src.copy()
+        out.paste(Image.open(raw).convert("RGB").resize(crop.size, Image.LANCZOS), box[:2], mask)
+        out.save(OUT / "panels" / f"{pid}_{k}.png")
+        files.append(f"{pid}_{k}.png")
+    rec = {"kind": "repaint", "id": pid, "prompt_id": prompt_id, "base": base.name, "box": list(box), "w": w, "h": h,
+           "n": a.n, "seed": seed, "prompt": text, "wall_s": wall, "exec_s": exec_s, "files": files}
+    log(rec)
+    print(json.dumps(rec, ensure_ascii=False), flush=True)
+
+
 def cmd_lint(a) -> None:
     raise SystemExit(1 if print_lint(lint(load_board(), a.only)) else 0)
 
@@ -671,6 +757,104 @@ def continuity_panels(b: dict, ch: dict, cell: dict, limit: int = 3) -> list[dic
         want += [c["id"] for c in near]
     picked = [i for i in dict.fromkeys(want) if i in ch["panels"] and i != cell["id"]]
     return [find_panel(b, i) for i in picked[:limit]]
+
+
+def logged_keys() -> dict[str, str]:
+    """{candidate file: prompt_key} for every panel job in out/log.jsonl that recorded one (repaints keep their base's)."""
+    keys: dict[str, str] = {}
+    if not (OUT / "log.jsonl").exists():
+        return keys
+    for line in (OUT / "log.jsonl").read_text(encoding="utf-8").splitlines():
+        try:
+            r = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if r.get("kind") == "panels" and r.get("prompt_key"):
+            keys.update({f: r["prompt_key"] for f in r.get("files", [])})
+        elif r.get("kind") == "repaint" and r.get("base") in keys:
+            keys.update({f: keys[r["base"]] for f in r.get("files", [])})
+    return keys
+
+
+def current_key(b: dict, ch: dict, cell: dict) -> str | None:
+    """The prompt_key a candidate drawn now would get; None when a reference is not ready yet."""
+    try:
+        return prompt_key(compose_prompt(b, ch, cell), [ref_path(r, ch, b).name for r in cell.get("refs", [])])
+    except (KeyError, SystemExit):
+        return None
+
+
+def head_line(b: dict, cell: dict) -> str:
+    """The brief's head count. `heads` on the panel counts people who are no character (patients, a crowd)."""
+    named = people(b, cell)
+    names = "、".join(b["characters"][c].get("name", c) for c in named)
+    n = cell.get("heads")
+    if isinstance(n, str):
+        return f"- 人數：{n}" + (f"（有名字的：{names}）" if named else "")
+    if n is not None:
+        return f"- 人數：剛好 {n} 人" + (f"（其中有名字的：{names}）" if named else "")
+    return f"- 人數：剛好 {len(named)} 人" + (f"（{names}）" if named else "，畫面上不該有人")
+
+
+def cast_brief(b: dict, ch: dict, cids: list[str]) -> None:
+    """One character across every picked panel, next to their sheet: face, hair, clothes, what they carry, size.
+    The panel checks passed 阿嬤 drawn from words with a face that was not hers, and a boy with black hair on one page
+    and white on the next; the owner found both. Only a look at all of a character's panels at once shows that."""
+    picked = lambda cid: [(pi, c) for pi, c, _ in all_panels(b)  # noqa: E731
+                          if not c.get("fill") and c["id"] in ch["panels"] and cid in cast(b, c)]
+    if cids == ["all"]:
+        cids = [cid for cid in b["characters"] if len(picked(cid)) >= 2]
+    dest = OUT / "review"
+    dest.mkdir(parents=True, exist_ok=True)
+    font = ImageFont.truetype(font_path("bold"), 26)
+    scale = b.get("consistency", {}).get("scale", {})
+    for cid in cids:
+        if cid not in b["characters"]:
+            raise SystemExit(f"no character {cid!r} on the board")
+        ci, rows = b["characters"][cid], picked(cid)
+        if not rows:
+            print(f"{cid}: no picked panel draws them, left out")
+            continue
+        sheets = [OUT / ch["refs"][k] for k in (cid, f"{cid}:head", f"{cid}:bust") if k in ch["refs"]]
+        if not sheets and cid in ch["sheets"]:
+            sheets = [OUT / ch["sheets"][cid]]
+        L = [f"# 跨格檢查：{ci.get('name', cid)}", "",
+             "照 qa_checklist.md 的「跨格檢查」，把這個角色出現的每一格都跟角色卡、也跟彼此比對。每一格都要開原圖看；"
+             "總覽圖只用來找哪幾格不一樣。",
+             f"要放大、調亮暗部或裁切時可以寫小程式，但程式和輸出只放在 {dest / 'work' / f'cast_{cid}'}，"
+             "不要動 out/ 裡其他任何檔案。", "",
+             f"- 特徵：{ci.get('features', '')}。{scale.get(cid, '')}"]
+        if ci.get("ghost"):
+            L.append("- 這是鬼：臉本來就可以在陰影裡，但身形、衣服、比例要每格一樣。")
+        L.append("- 角色卡：")
+        L += [f"  - 角色卡 {p.name}：{p}" for p in sheets] or ["  - （沒有選定的角色卡）"]
+        L.append(f"- 總覽圖：{dest / f'cast_{cid}.png'}")
+        L.append("- 每一格（閱讀順序）：")
+        for pi, c in rows:  # a mirrored panel puts the bangle on the other wrist on the page; the checker sees the file
+            note = "，".join(x for x in (c.get("label", ""), "頁面上左右翻轉（mirror）" if c.get("mirror") else "") if x)
+            L.append(f"  - 第 {pi} 頁 {c['id']}（{note}）：{OUT / 'panels' / ch['panels'][c['id']]}")
+            L.append(f"    畫面要的是：{c['prompt']}")
+        rest = [c["id"] for _, c, _ in all_panels(b) if cid in cast(b, c) and c["id"] not in ch["panels"] and not c.get("fill")]
+        if rest:
+            L.append(f"- 還沒選定、這次不比：{'、'.join(rest)}")
+        L.append("")
+        (dest / f"cast_{cid}.md").write_text("\n".join(L), encoding="utf-8")
+        th = 300
+        tiles = [(p.stem, Image.open(p).convert("RGB")) for p in sheets]
+        tiles += [(c["id"], Image.open(OUT / "panels" / ch["panels"][c["id"]]).convert("RGB")) for _, c in rows]
+        tiles = [(t, im.resize((max(1, round(im.width * th / im.height)), th))) for t, im in tiles]
+        per_row, gap = 5, 10
+        lines = [tiles[i:i + per_row] for i in range(0, len(tiles), per_row)]
+        sheet = Image.new("RGB", (max(sum(im.width + gap for _, im in r) for r in lines), len(lines) * (th + 40)), "#888")
+        d = ImageDraw.Draw(sheet)
+        for ri, r in enumerate(lines):
+            x = 0
+            for t, im in r:
+                sheet.paste(im, (x, ri * (th + 40) + 36))
+                d.text((x + 4, ri * (th + 40) + 2), t, fill="white", font=font)
+                x += im.width + gap
+        sheet.save(dest / f"cast_{cid}.png")
+        print(dest / f"cast_{cid}.md")
 
 
 def read_brief(b: dict) -> None:
@@ -712,6 +896,9 @@ def cmd_review(a) -> None:
     if getattr(a, "read", False):
         read_brief(b)
         return
+    if getattr(a, "cast", None):
+        cast_brief(b, ch, a.cast)
+        return
     ids = list(a.ids or [])
     if a.page:
         ids += [c["id"] for c, _ in page_cells(b, b["pages"][a.page - 1])]
@@ -722,23 +909,29 @@ def cmd_review(a) -> None:
         raise SystemExit("nothing to review")
     name = a.name or (f"page{a.page}" if a.page else ("unpicked" if a.unpicked else "_".join(ids[:4])))
     found = {pid: candidates(OUT / "panels", pid) for pid in ids}
+    # candidates drawn from an earlier version of the prompt (or other references) than the board has now
+    keys = logged_keys()
+    now = {pid: current_key(b, ch, find_panel(b, pid)) for pid in ids}
+    stale = {pid: [f for f in fs if now[pid] and keys.get(f.name, now[pid]) != now[pid]] for pid, fs in found.items()}
     if getattr(a, "new", False):  # redraws only: the checker re-judged old, already failed candidates until told not to
         seen = reviewed_paths(skip=name)
-        found = {pid: [f for f in fs if str(f) not in seen] for pid, fs in found.items()}
+        found = {pid: [f for f in fs if str(f) not in seen and f not in stale[pid]] for pid, fs in found.items()}
         for pid in [p for p, fs in found.items() if not fs]:
-            print(f"{pid}: no candidates newer than the earlier briefs, left out")
+            print(f"{pid}: no candidates newer than the earlier briefs from the current prompt, left out")
         ids = [p for p in ids if found[p]]
         if not ids:
             raise SystemExit("nothing new to review")
     scale = b.get("consistency", {}).get("scale", {})
     L = [f"# 格子檢查：{', '.join(ids)}", "",
-         "照 qa_checklist.md 逐張檢查下面每一張候選圖，每張都要開原圖看，不要看縮圖。", ""]
+         "照 qa_checklist.md 逐張檢查下面每一張候選圖，每張都要開原圖看，不要看縮圖。",
+         f"要放大、調亮暗部或裁切時可以寫小程式，但程式和輸出只放在 {OUT / 'review' / 'work' / name}，"
+         "不要動 out/ 裡其他任何檔案。", ""]
     for pid in ids:
         cell = find_panel(b, pid)
         files = found[pid]
         heads, everyone = people(b, cell), cast(b, cell)
         L += [f"## {pid}：{cell.get('label', '')}", ""]
-        L.append(f"- 人數：剛好 {len(heads)} 人" + ("（" + "、".join(b['characters'][c].get('name', c) for c in heads) + "）" if heads else "，畫面上不該有人"))
+        L.append(head_line(b, cell))
         animals = [c for c in everyone if c not in heads]
         if animals:
             L.append("- 動物：" + "、".join(b['characters'][c].get('name', c) for c in animals) + "，各一隻")
@@ -756,6 +949,9 @@ def cmd_review(a) -> None:
             L += [f"  - {m['id']}（{m.get('label', '')}）：{OUT / 'panels' / ch['panels'][m['id']]}" for m in match]
         L.append("- 候選：")
         L += [f"  - {f}" for f in files] or ["  - （還沒畫）"]
+        old = [f.stem for f in files if f in stale[pid]]
+        if old:
+            L.append(f"- 其中 {'、'.join(old)} 是舊版 prompt 畫的；現在的 prompt 是上面「畫面要的是」，照它判")
         L.append("")
     dest = OUT / "review"
     dest.mkdir(parents=True, exist_ok=True)
@@ -1109,7 +1305,9 @@ def cmd_status(a) -> None:
     print(f"all: {picked}/{total} picked; style {ch.get('style', '-')}; {len(ch['sheets'])} sheets chosen")
     briefs = sorted((OUT / "review").glob("*.md")) if (OUT / "review").exists() else []
     print(f"review briefs: {len(briefs)}" + (f" (latest {max(briefs, key=lambda f: f.stat().st_mtime).name})" if briefs else ""))
+    # exec_s is the GPU's own time; wall_s also counts the wait in ComfyUI's queue (〈三個人〉: 284 min wall, 147 exec)
     mins: dict[str, float] = {}
+    wall = 0.0
     images = 0
     if (OUT / "log.jsonl").exists():
         for line in (OUT / "log.jsonl").read_text(encoding="utf-8").splitlines():
@@ -1117,10 +1315,11 @@ def cmd_status(a) -> None:
                 r = json.loads(line)
             except json.JSONDecodeError:
                 continue
-            mins[r.get("kind", "?")] = mins.get(r.get("kind", "?"), 0.0) + r.get("wall_s", 0) / 60
+            mins[r.get("kind", "?")] = mins.get(r.get("kind", "?"), 0.0) + r.get("exec_s", r.get("wall_s", 0)) / 60
+            wall += r.get("wall_s", 0) / 60
             images += len(r.get("files", []))
     print("GPU: " + (", ".join(f"{k} {v:.1f} min" for k, v in mins.items()) + f"; total {sum(mins.values()):.1f} min, "
-                     f"{images} images" if mins else "nothing drawn yet"))
+                     f"{images} images ({wall:.1f} min with queue waits)" if mins else "nothing drawn yet"))
 
 
 def main() -> None:
@@ -1147,6 +1346,14 @@ def main() -> None:
     rv.add_argument("--name", default=None)
     rv.add_argument("--new", action="store_true", help="only candidates that no earlier brief in out/review listed")
     rv.add_argument("--read", action="store_true", help="a first-time reader's brief for the laid-out pages")
+    rv.add_argument("--cast", type=lambda v: v.split(","), default=None,
+                    help="character ids (or 'all'): every picked panel of each, side by side with the sheet")
+    rp = sub.add_parser("repaint")
+    rp.add_argument("candidate", help="the candidate to start from, e.g. p34_1")
+    rp.add_argument("--box", required=True, help="x0,y0,x1,y1 in its pixels, or fractions such as 0.3,0.1,0.6,0.5")
+    rp.add_argument("--prompt", required=True, help="what to change inside the box")
+    rp.add_argument("--n", type=int, default=3)
+    rp.add_argument("--seed", type=int, default=0)
     for x in (s, p):
         x.add_argument("--seed", type=int, default=0)
         x.add_argument("--only", type=lambda v: v.split(","), default=None)
@@ -1167,7 +1374,7 @@ def main() -> None:
     global BOARD
     BOARD = a.board
     {"check": cmd_check, "styles": cmd_styles, "sheets": cmd_sheets, "choose": cmd_choose, "refs": cmd_refs,
-     "lint": cmd_lint, "review": cmd_review,
+     "lint": cmd_lint, "review": cmd_review, "repaint": cmd_repaint,
      "plan": cmd_plan, "panels": cmd_panels, "contact": cmd_contact, "pages": cmd_pages, "status": cmd_status}[a.cmd](a)
 
 

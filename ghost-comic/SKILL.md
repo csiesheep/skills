@@ -39,6 +39,11 @@ The owner decides at three gates before any panel is drawn. Do not pick for them
 the panel run until all three are done: they asked for exactly this order after a run where the
 style was wrong and the sheets were picked for them.
 
+0. **Story first.** When one request asks for a story and its comic (產生鬼故事…畫漫畫), write
+   the story with ghost-story, send it, and wait for the owner's OK before step 1. A comic costs
+   one to two and a half GPU hours; the owner read 〈代班那台電梯一直超載〉 only after its seven
+   pages were drawn, said 「這故事不好，放棄」, and all of it was thrown away. The next story was
+   sent first and approved with one word. A story the owner supplies needs no gate.
 1. **Board.** Copy `assets/example_board.json` into the work folder as `board.json` and rewrite it
    for the story: characters with at least two memorable features each (`features` in Chinese,
    the same features in `desc` and in every panel prompt), scenes, the `consistency` block
@@ -73,8 +78,9 @@ candidate-by-candidate questions.
 
 5. **Panels.** `manga.py lint` first: the prompting.md table as checks (a crossed-arms full-body
    shot, a reference never mentioned, a full-body sheet in a close-up, a head crop for a scared
-   or crying face, a seated character with a scene reference, a character unnamed where first
-   drawn, words that draw walls, signs or photographic light). `panels` runs it too and refuses to draw on errors. Then
+   or crying face, a seated character with a scene reference, a scene sheet in a panel with
+   people, a character unnamed where first drawn, words that draw walls, signs or photographic
+   light). `panels` runs it too and refuses to draw on errors. Then
    `manga.py panels` (pass 1, 2 candidates each, `n` in the board overrides). If the first few
    results of a batch share one flaw, stop the batch and fix the cause before it spends the GPU
    on the rest.
@@ -90,7 +96,16 @@ candidate-by-candidate questions.
    the picked panels a candidate has to match (its `panel:` references, `continuity`, the
    nearest picked panel of the same scene). Then `manga.py panels --pass 2` (and 3) for panels
    that use other panels as references, and check again. Run the checker on one batch while the
-   GPU draws the next; neither waits for the other.
+   GPU draws the next; neither waits for the other. A candidate that is right except for one
+   small thing (a collar, the hair, a hand) is fixed with `manga.py repaint <candidate> --box
+   x0,y0,x1,y1 --prompt "..."`, which redraws only that area at crop size; an edit of the whole
+   panel ignores details that small and changes what was right. When every panel is picked,
+   `manga.py review --cast all` writes one brief per character: every picked panel they are in,
+   beside their sheet. Give each to a fresh checker with the checklist's 跨格檢查. Checking panel
+   by panel cannot see that a face or a hair colour changed between panels: in the fifth comic
+   阿嬤's close-up, drawn from words, was not her face, and the boy's hair was black on one page
+   and white on the next. Both had passed, and the owner found both; run blind on those panels,
+   the cast check caught both, and a bangle on the wrong wrist in three more.
 7. **Pages.** `manga.py pages` writes `out/pages/page_NN.png`, `out/comic.pdf` and
    `out/overview.jpg`, and prints `WARN lettering` like `plan`. Look at every page yourself:
    text over a face, a bubble beside someone who is not speaking, a reading order that jumps, a
@@ -114,17 +129,19 @@ candidate-by-candidate questions.
    honestly with what a redraw would change.
 9. **Fix round.** Map each note of the owner's to a panel id (if they name a page that does not
    contain what they describe, say which panel you think they mean), rewrite the prompt, redraw
-   with `n: 3`, re-lay out only the pages that changed (`pages --pages 3,5`), send them. When the
+   with `n: 3` (or `repaint` when the note is about one small area), re-lay out only the pages
+   that changed (`pages --pages 3,5`), send them. When the
    note names a kind of defect (extra hands, the wrong lighting), sweep every picked panel for the
    same defect before replying, and add a row to prompting.md. A character added in a fix round
    (細姑's photo) still gets 3 or 4 versions for the owner to pick, with the checker's notes.
 
 When the owner asks to see progress mid-run, `manga.py status` gives the numbers (picked per
-page, what is missing and how many candidates it has, GPU minutes) and `pages --pages 1,2` lays
+page, what is missing and how many candidates it has, GPU minutes counted from `exec_s`, which
+leaves out time spent waiting in ComfyUI's queue) and `pages --pages 1,2` lays
 out what is picked so far, unpicked panels as labelled placeholders; send that instead of saying
 it is not ready.
 
-Time on an RTX 3090: a panel with references takes 47 to 115 s per image and one without takes 23 to 36 s, with 2 to 3 candidates per panel. The first comic (33 panels, every gate and redraw) took about 81 minutes of GPU time, the second (32 panels) about 61, the third (28 panels, every candidate independently checked, 24 redraws) about 100, with 8 checker batches of 4 to 30 minutes each running beside the GPU. State the estimate before each long run.
+Time on an RTX 3090: a panel with references takes 47 to 115 s per image and one without takes 23 to 36 s, with 2 to 3 candidates per panel; a `repaint` of 3 or 4 versions takes 1.3 to 2.3 minutes. GPU time from each log's `exec_s`: the first comic (33 panels, every gate and redraw) about 97 minutes, the second (32 panels) about 71, the third (28 panels, every candidate independently checked, 24 redraws) about 91, the fifth (10 pages, 37 panels, 9 characters) about 147, with checker batches of 4 to 30 minutes each running beside the GPU. The fourth was thrown away after about 104 (step 0). State the estimate before each long run.
 
 ## Rules
 
@@ -155,7 +172,9 @@ Time on an RTX 3090: a panel with references takes 47 to 115 s per image and one
 - A reference image brings its whole composition and pose, not just the face or the room: a panel
   of four hikers put two 小美 in the next one, a standing sheet kept a seated friend standing.
   Crop characters to `:head` or `:bust`, use the empty scene sheet instead of a busy panel, and
-  mention every reference in the prompt.
+  mention every reference in the prompt. But a scene sheet in a panel with people shrinks them
+  or leaves them out and brings its own camera: keep it for empty rooms and wide shots from its
+  viewpoint, and describe the place in words otherwise.
 - Bind scene layouts and lighting per panel (`scene`, `light`); inferring them from references
   put tents into a view from inside a tent and blacked out daytime backgrounds.
 - The writer of the prompts is a poor checker of the images. An independent pass that counts
@@ -167,3 +186,15 @@ Time on an RTX 3090: a panel with references takes 47 to 115 s per image and one
   the boy grinning in a scared panel. A scene sheet puts a seated character in its middle, on
   the coffee table. Same-framing edits keep the camera, not the colour of the wardrobe; write
   down everything that has to stay.
+- A reference brings its gaze too: every character drawn from a front-view sheet stared at the
+  reader until the prompt said "in profile, head turned toward the door". Dropping the reference
+  to escape its pose fixes the pose and loses the face; a main character's close-up keeps
+  `:head` and spells the expression out.
+- Small details need a small canvas. Three whole-panel edits left a guard's shirt as it was;
+  the same request on an enlarged crop (`repaint`) fixed it, and a collar, the hair and a hand
+  after it. When even that fails (a
+  radio on a drip stand), put the detail in the narration instead of burning more GPU.
+- Each character has to be checked across panels as well as in each one (`review --cast`), and
+  the picked sheet has to match what the owner has in mind: the boy's sheet had black hair, so
+  his panels split between black and white, and a checker holding the sheet calls the white
+  ones wrong.

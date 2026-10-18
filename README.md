@@ -176,7 +176,7 @@ from (said in the room, through a screen or phone, narration), screen bezels wit
 picture-in-picture, faded flashbacks, a PDF. The owner decides at three gates before any panel
 is drawn: style (three examples of one panel), character and scene designs (three versions
 each), and a wireframe of every page with the real lettering. Learned on the first run
-(7 pages, 33 panels, about 81 GPU minutes):
+(7 pages, 33 panels, about 97 GPU minutes):
 
 - a two-figure character sheet used as a reference draws two of the same person; references
   are cropped to one view and turned grayscale
@@ -189,7 +189,7 @@ each), and a wireframe of every page with the real lettering. Learned on the fir
 - the strongest device is the same framing three times empty and a fourth time with the ghost,
   seen only inside the other person's screen
 
-After the second comic (6 pages, 32 panels, about 61 GPU minutes) the pitfalls became tools:
+After the second comic (6 pages, 32 panels, about 71 GPU minutes) the pitfalls became tools:
 `lint` checks prompts against the failure table before any GPU time (crossed arms in a
 full-body shot, a reference the prompt never mentions, a full-body sheet in a close-up, words
 that draw walls, signs or photographic light) and `panels` refuses to draw on errors; `refs`
@@ -198,7 +198,7 @@ panels name their `scene` and `light` instead of having them inferred from refer
 `review` writes a brief for a fresh subagent that opens every candidate and counts heads,
 hands and feet, because the four-handed club leader got past the one who wrote the prompts.
 
-The third comic (7 pages, 28 panels, about 100 GPU minutes, every candidate checked) showed
+The third comic (7 pages, 28 panels, about 91 GPU minutes, every candidate checked) showed
 that a panel can be drawn right and still be read wrong: the owner took an unnamed grandmother
 for the dead aunt she was talking about. So `review --read` now hands a fresh subagent nothing
 but the page images; it retells the story, names every character and says who speaks each
@@ -212,4 +212,21 @@ a scene sheet (he landed on the coffee table); `plan` and `pages` warn about let
 covers lettering; panels can be mirrored or shrunk on their own background for lettering
 without editing files; `review --new` lists only redrawn candidates and every brief names the
 picked panels a candidate has to match; `status` says what is picked and how much GPU it took.
+
+The fourth comic was drawn before the owner had read its story, and was thrown away with it
+(about 104 GPU minutes): a story written for a comic is now shown first and drawn only after an
+OK. The fifth (10 pages, 37 panels, nine characters, about 147 GPU minutes) passed every panel
+check and two blind readers, and the owner still found two faults, both the same character
+looking different from one panel to the next: a grandmother's close-up drawn from words alone
+had someone else's face, and a boy's hair was black on one page and white on the next.
+`review --cast` now lines up every picked panel of each character beside their sheet for a
+fresh checker. Run blind on the panels as first delivered, it caught both: the grandmother's
+close-up was called a different face, and the boy's hair split between panels (the checker,
+holding a black-haired sheet, called the white ones wrong), plus three panels with her bangle on
+the wrong wrist; a control character got no false alarms. `repaint` redraws one small area on an enlarged crop: it fixed a
+uniform shirt that three whole-panel edits had left alone, then a collar, the hair and a
+beckoning hand; `lint` warns about scene sheets in panels with people (they came out tiny or missing,
+and the sheet's camera came with them); a panel's `heads` counts people who are no character;
+`review --new` skips candidates drawn from an earlier version of a prompt; and `status` counts
+GPU time without the wait in ComfyUI's queue, which had doubled the figure.
 
