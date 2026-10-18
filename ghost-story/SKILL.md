@@ -41,6 +41,9 @@ Common phrasings:
   20% either way. Use a preset only when the user names one (短、長).
 - **不要把鬼寫得太清楚、克制一點**: that is `--taste 留白`, and it is enough on its own. Set
   `--ghost` only when the user names a level (完全不要出現 → 0, 只要一瞬間 → 2).
+- **反轉 再反轉 (又再反轉)**: `--ending 反轉` and `--note 反轉兩次` (三次 for 又再反轉). The
+  writing rules' 「好幾次反轉」 section then replaces "the twist turns once": every twist has to
+  overturn what the narrator believed, with a clue planted before it.
 - **How many**: 產生 5 個選最好的 → count 5; 只要一篇、寫一篇就好 → count 1; anything else → 3.
   The count is how many compete, not how many are delivered. If the user wants to read all of
   them (三篇都給我看), deliver all, ranked.
@@ -96,8 +99,13 @@ are legitimate.
    - the rubric for each story (five scores, overall, pass or fail, at most three fix notes);
    - every pair judged twice with `pairwise_judge.md`, once in each order, recording the
      popular and scary winner each time, then the win counts per story.
+   For a twist ending, the rubric also states each twist in one line (「本來以為……，其實……」).
    The winner is the story with the most **scary** wins; ties go to more popular wins, then to
-   the higher rubric overall. Pairwise comes first because it picked the right real post about
+   the higher rubric overall. A winner that the judge's rubric fails cannot be delivered as it
+   is: apply its fix notes if they are cheap and have a fresh subagent recheck that point, or
+   take the best story that passed. The hospital story with three twists won on scary wins and
+   failed for its third twist, which only put one more figure behind the narrator; its fix note
+   made that twist overturn who was protecting whom. Pairwise comes first because it picked the right real post about
    90% of the time, while the absolute rubric did no better than chance (AUC about 0.5). If the
    two disagree, say so in one line. Apply the winner's fix notes in place if they are concrete
    and cheap (step 4's rule), then recount.
@@ -107,7 +115,9 @@ are legitimate.
    sentence on why the winner won, and the folder where every draft is saved. Save to a file
    only if the user asked or there are several. If the user later wants to know which of two
    versions is scarier, use `references/pairwise_judge.md` the same way: a fresh subagent, run
-   twice with A and B swapped.
+   twice with A and B swapped. If the request also asks for a comic (畫漫畫、產生漫畫), stop
+   here and ask whether to go on; start ghost-comic only after the owner's OK. The owner read
+   one story only after its comic was drawn, rejected it, and about 1.7 GPU hours went with it.
 
 ## Rules
 
@@ -126,6 +136,9 @@ are legitimate.
   lowest both on pushes and on how often readers say 好毛.
 - Popular is not the same as scary. Explained endings get more pushes but fewer 好毛 and
   more 虛; twist endings get fewer pushes and the most 好毛.
+- A twist has to be retellable in one line by a first-time reader. 「結局看不太懂」 sank a
+  whole story and its comic; with several twists, each one must overturn the last belief, not
+  add one more ghost.
 - An absolute 1–10 judge could not tell real top posts from real low ones (AUC about 0.5).
   Asking "which of these two" could, about 90% of the time. Use the rubric to check the
   rules, and comparison to choose.

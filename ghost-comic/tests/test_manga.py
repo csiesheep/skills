@@ -481,6 +481,143 @@ class ReviewThirdComicTest(unittest.TestCase):
         self.assertIn("p25(1)", out)
         self.assertIn("panels 1.5 min", out)
         self.assertIn("2 images", out)
+        manga.log({"kind": "panels", "id": "p2", "wall_s": 300, "exec_s": 60, "files": ["p2_1.png"]})
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            manga.cmd_status(self.ns())
+        out = buf.getvalue()
+        self.assertIn("panels 2.5 min", out)  # 1.5 (no exec_s logged) + 1.0 exec, not the 5 min spent in the queue
+        self.assertIn("6.5 min with queue waits", out)
+
+
+class FifthComicTest(unittest.TestCase):
+    """Tools from 〈阿嬤說我後面跟了三個人〉."""
+
+    def setUp(self):
+        self.td = Path(tempfile.mkdtemp())
+        manga.set_work(self.td)
+        (manga.OUT / "panels").mkdir(parents=True)
+        (manga.OUT / "refs").mkdir(parents=True)
+        self.ns = lambda **k: type("A", (), dict({"ids": [], "page": None, "unpicked": False, "name": None, "new": False,  # noqa: E731
+                                                  "read": False, "cast": None}, **k))
+
+    def tearDown(self):
+        manga.set_work(Path.cwd())
+        shutil.rmtree(self.td, ignore_errors=True)
+
+    def _board(self, cells_by_page, **chars):
+        b = _tiny(cells_by_page, **chars)
+        b["style"] = "Clean black and white line art."
+        (self.td / "board.json").write_text(json.dumps(b, ensure_ascii=False), encoding="utf-8")
+        return b
+
+    def _png(self, name, colour="white", size=(64, 64)):
+        Image.new("RGB", size, colour).save(manga.OUT / "panels" / name)
+
+    def test_cast_brief_lines_up_every_picked_panel(self):
+        self._board([[{"id": "p1", "cast": ["ama"], "label": "阿嬤進來"}, {"id": "p2", "cast": ["ama", "boy"]}],
+                     [{"id": "p3", "cast": ["boy"]}, {"id": "p4", "cast": ["ama"]}]],
+                    ama={"name": "阿嬤", "features": "花襯衫、玉鐲戴左手"}, boy={"name": "弟弟", "features": "白頭髮"})
+        for name in ("p1_1.png", "p2_3.png", "p3_1.png", "p4_1.png"):
+            self._png(name)
+        Image.new("RGB", (40, 40), "white").save(manga.OUT / "refs" / "ama_head.png")
+        manga.save_choices({"panels": {"p1": "p1_1.png", "p2": "p2_3.png", "p3": "p3_1.png"},
+                            "refs": {"ama:head": "refs/ama_head.png"}})
+        manga.cmd_review(self.ns(cast=["ama"]))
+        md = (manga.OUT / "review" / "cast_ama.md").read_text(encoding="utf-8")
+        self.assertIn("花襯衫、玉鐲戴左手", md)
+        self.assertIn("p1_1.png", md)
+        self.assertIn("p2_3.png", md)
+        self.assertNotIn("p3_1.png", md)  # 弟弟 only
+        self.assertIn("還沒選定、這次不比：p4", md)
+        self.assertIn("ama_head.png", md)
+        self.assertLess(md.index("p1_1.png"), md.index("p2_3.png"))  # reading order
+        self.assertTrue((manga.OUT / "review" / "cast_ama.png").exists())
+        self.assertEqual(manga.reviewed_paths(), set())  # its lines never count as reviewed candidates for --new
+        manga.cmd_review(self.ns(cast=["all"]))  # 弟弟 has two picked panels too
+        self.assertTrue((manga.OUT / "review" / "cast_boy.md").exists())
+        with self.assertRaises(SystemExit):
+            manga.cmd_review(self.ns(cast=["nobody"]))
+
+    def test_heads_counts_people_who_are_no_character(self):
+        b = self._board([[{"id": "p1", "cast": ["me"], "heads": 4, "prompt": "Four nurses at the station."},
+                          {"id": "p2", "cast": ["me"], "heads": "走廊上一群看不清的病人，不用數", "prompt": "x"}]],
+                        me={"name": "我"})
+        self._png("p1_1.png")
+        self._png("p2_1.png")
+        manga.cmd_review(self.ns(ids=["p1", "p2"], name="t"))
+        md = (manga.OUT / "review" / "t.md").read_text(encoding="utf-8")
+        self.assertIn("剛好 4 人（其中有名字的：我）", md)
+        self.assertIn("人數：走廊上一群看不清的病人，不用數（有名字的：我）", md)
+        self.assertIn(str(manga.OUT / "review" / "work" / "t"), md)  # where the checker may put its own scripts
+        lint = [(p, lvl, m) for p, lvl, m in manga.lint(b)]
+        self.assertFalse(any(p == "p1" and "one character" in m for p, _, m in lint))  # four people, not one
+        b["pages"][0]["rows"][0]["cells"][0]["heads"] = 0
+        self.assertTrue(any(p == "p1" and lvl == "error" and "fewer" in m for p, lvl, m in manga.lint(b)))
+
+    def test_new_skips_candidates_of_a_rewritten_prompt(self):
+        b = self._board([[{"id": "p1", "prompt": "The old corridor, nobody in it."}]])
+        for k in (1, 2, 3):
+            self._png(f"p1_{k}.png")
+        ch = manga.load_choices()
+        now = manga.current_key(b, ch, manga.find_panel(b, "p1"))
+        manga.log({"kind": "panels", "id": "p1", "prompt_key": "0ld0ld0ld0", "files": ["p1_1.png", "p1_2.png"]})
+        manga.log({"kind": "panels", "id": "p1", "prompt_key": now, "files": ["p1_3.png"]})
+        manga.cmd_review(self.ns(ids=["p1"], name="all"))
+        md = (manga.OUT / "review" / "all.md").read_text(encoding="utf-8")
+        self.assertIn("p1_1.png", md)  # listed, but marked
+        self.assertIn("其中 p1_1、p1_2 是舊版 prompt 畫的", md)
+        shutil.rmtree(manga.OUT / "review")
+        manga.cmd_review(self.ns(ids=["p1"], name="redraw", new=True))
+        md = (manga.OUT / "review" / "redraw.md").read_text(encoding="utf-8")
+        self.assertIn("p1_3.png", md)
+        self.assertNotIn("p1_1.png", md)
+        manga.log({"kind": "repaint", "id": "p1", "base": "p1_3.png", "files": ["p1_4.png"]})
+        self.assertEqual(manga.logged_keys()["p1_4.png"], now)  # a repaint keeps its base's prompt
+
+    def test_repaint_changes_only_the_box(self):
+        self._board([[{"id": "p1"}]])
+        src = Image.new("RGB", (200, 160), "black")
+        src.save(manga.OUT / "panels" / "p1_1.png")
+        self._png("p1_3.png")
+        sent = {}
+        orig = (manga.comfy.upload, manga.comfy.build_graph, manga.comfy.run, manga.comfy.fetch)
+        manga.comfy.upload = lambda p: (sent.setdefault("crop", Image.open(p).size), p.name)[1]
+        manga.comfy.build_graph = lambda prompt, names, w, h, *a: sent.update(prompt=prompt, size=(w, h)) or {}
+        manga.comfy.run = lambda g: ("pid", [{"filename": "x"}, {"filename": "y"}], 9.0, 4.0)
+        manga.comfy.fetch = lambda img, dest: Image.new("RGB", (512, 512), "white").save(dest)
+        try:
+            manga.cmd_repaint(type("A", (), {"candidate": "p1_1", "box": "40,40,160,120", "prompt": "his hair is white",
+                                             "n": 2, "seed": 5}))
+        finally:
+            manga.comfy.upload, manga.comfy.build_graph, manga.comfy.run, manga.comfy.fetch = orig
+        self.assertEqual([f.name for f in manga.candidates(manga.OUT / "panels", "p1")], ["p1_1.png", "p1_3.png", "p1_4.png", "p1_5.png"])
+        out = Image.open(manga.OUT / "panels" / "p1_4.png")
+        self.assertEqual(out.getpixel((100, 80)), (255, 255, 255))  # inside the box: the new patch
+        self.assertEqual(out.getpixel((10, 10)), (0, 0, 0))  # outside: untouched
+        self.assertLess(sum(out.getpixel((41, 41))), 30)  # the box's own edge fades into the old picture
+        self.assertTrue(0 < sum(out.getpixel((50, 50))) < 3 * 255)  # with no hard seam
+        self.assertEqual(Image.open(manga.OUT / "panels" / "p1_1.png").getpixel((100, 80)), (0, 0, 0))  # base unchanged
+        self.assertEqual(sent["crop"][0] % 32, 0)
+        self.assertGreaterEqual(min(sent["crop"]), 512)  # enlarged so the detail fills the frame
+        self.assertIn("Keep this picture exactly the same as <image1>. Change only this: his hair is white", sent["prompt"])
+        self.assertTrue(sent["prompt"].startswith("Clean black and white line art."))
+        rec = json.loads((manga.OUT / "log.jsonl").read_text(encoding="utf-8").splitlines()[-1])
+        self.assertEqual((rec["kind"], rec["base"], rec["box"], rec["exec_s"]), ("repaint", "p1_1.png", [40, 40, 160, 120], 4.0))
+        self.assertEqual(manga.parse_box("0.2,0.25,0.8,0.75", (200, 160)), (40, 40, 160, 120))
+        with self.assertRaises(SystemExit):
+            manga.parse_box("40,40,260,120", (200, 160))  # outside the picture
+
+    def test_scene_sheet_in_a_panel_with_people(self):
+        b = self._board([[{"id": "p1", "refs": ["me:bust", "scene:room"],
+                           "prompt": "In the room from <image2>, the nurse from <image1> walks to the bed. Only one person in the frame."}]],
+                        me={"name": "我"})
+        hits = lambda: [m for p, lvl, m in manga.lint(b) if "scene sheet in a panel with people" in m]  # noqa: E731
+        self.assertEqual(len(hits()), 1)
+        b["pages"][0]["rows"][0]["cells"][0]["prompt"] = "Wide shot of the room from <image2>; the nurse from <image1> walks to the bed. Only one person in the frame."
+        self.assertEqual(hits(), [])
+        b["pages"][0]["rows"][0]["cells"][0].update(refs=["scene:room"], prompt="The room from <image1>, nobody in it.")
+        self.assertEqual(hits(), [])
 
 
 if __name__ == "__main__":
