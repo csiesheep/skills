@@ -660,5 +660,107 @@ class FifthComicTest(unittest.TestCase):
         self.assertEqual(hits(), [])
 
 
+class SixthComicTest(unittest.TestCase):
+    """Tools and rules from 〈阿嬤住院那個禮拜〉."""
+
+    def setUp(self):
+        self.td = Path(tempfile.mkdtemp())
+        manga.set_work(self.td)
+        (manga.OUT / "panels").mkdir(parents=True)
+
+    def tearDown(self):
+        manga.set_work(Path.cwd())
+        shutil.rmtree(self.td, ignore_errors=True)
+
+    def test_fill_turns_a_black_pane_white_and_keeps_its_frame(self):
+        im = Image.new("RGB", (200, 160), "white")
+        d = ImageDraw.Draw(im)
+        d.rectangle([100, 10, 190, 90], fill="black")          # the pane
+        d.rectangle([96, 6, 194, 94], outline="black", width=3)  # its frame, a line
+        d.line([(10, 150), (90, 150)], fill="black", width=2)     # a line outside the box
+        im.save(manga.OUT / "panels" / "p1_1.png")
+        manga.cmd_fill(type("A", (), {"candidate": "p1_1", "box": "90,0,200,100"}))
+        out = Image.open(manga.OUT / "panels" / "p1_2.png")
+        self.assertEqual(out.getpixel((145, 50)), (255, 255, 255))
+        self.assertEqual(out.getpixel((96, 50)), (0, 0, 0))  # the frame stays
+        self.assertEqual(out.getpixel((50, 150)), (0, 0, 0))
+        rec = json.loads((manga.OUT / "log.jsonl").read_text(encoding="utf-8").splitlines()[-1])
+        self.assertEqual((rec["kind"], rec["base"]), ("fill", "p1_1.png"))
+        with self.assertRaises(SystemExit):
+            manga.cmd_fill(type("A", (), {"candidate": "p1_1", "box": "0,0,80,80"}))  # nothing black there
+
+    def test_tone_darkens_paper_inside_the_polygon_only(self):
+        im = Image.new("RGB", (200, 200), "white")
+        ImageDraw.Draw(im).line([(0, 100), (200, 100)], fill="black", width=3)
+        im.save(manga.OUT / "panels" / "p2_1.png")
+        for mode in ("dots", "strokes"):
+            manga.cmd_tone(type("A", (), {"candidate": "p2_1", "poly": "20,20 180,20 180,180 20,180", "mode": mode}))
+        dots, strokes = (Image.open(manga.OUT / "panels" / f"p2_{k}.png").convert("L") for k in (2, 3))
+        for out in (dots, strokes):
+            inside = sum(out.crop((40, 40, 160, 90)).getdata()) / (120 * 50)
+            self.assertLess(inside, 235)  # textured
+            self.assertEqual(out.getpixel((5, 5)), 255)  # outside the polygon: untouched
+            self.assertEqual(out.getpixel((100, 100)), 0)  # the line stays black
+        with self.assertRaises(SystemExit):
+            manga.cmd_tone(type("A", (), {"candidate": "p2_1", "poly": "1,1 5,5", "mode": "dots"}))
+
+    def test_crop_keeps_the_shape_and_enlarges(self):
+        im = Image.new("RGB", (100, 200), "white")
+        ImageDraw.Draw(im).rectangle([20, 20, 60, 60], fill="black")
+        im.save(manga.OUT / "panels" / "p3_1.png")
+        manga.cmd_crop(type("A", (), {"candidate": "p3_1", "box": "20,20,70,120"}))
+        out = Image.open(manga.OUT / "panels" / "p3_2.png")
+        self.assertEqual(out.size, (100, 200))
+        self.assertLess(sum(out.getpixel((30, 30))), 60)  # the square, now twice as big, fills the top left
+        rec = json.loads((manga.OUT / "log.jsonl").read_text(encoding="utf-8").splitlines()[-1])
+        self.assertEqual(rec["box"], [20, 20, 70, 120])  # height follows the shape: 50 wide, 100 tall
+        with self.assertRaises(SystemExit):
+            manga.cmd_crop(type("A", (), {"candidate": "p3_1", "box": "0,150,100,160"}))  # runs off the bottom
+
+    def test_scene_brief_lines_up_a_room(self):
+        b = _tiny([[{"id": "p1", "scene": "room", "label": "房間"}, {"id": "p2", "scene": "room", "mirror": True}],
+                   [{"id": "p3"}, {"id": "p4", "scene": "room"}]])
+        (self.td / "board.json").write_text(json.dumps(b, ensure_ascii=False), encoding="utf-8")
+        for n in ("p1_1.png", "p2_1.png", "p3_1.png"):
+            Image.new("RGB", (64, 48), "white").save(manga.OUT / "panels" / n)
+        manga.save_choices({"panels": {"p1": "p1_1.png", "p2": "p2_1.png", "p3": "p3_1.png"}})
+        ns = lambda **k: type("A", (), dict({"ids": [], "page": None, "unpicked": False, "name": None, "new": False,  # noqa: E731
+                                              "read": False, "cast": None, "scene": None}, **k))
+        manga.cmd_review(ns(scene=["room"]))
+        md = (manga.OUT / "review" / "scene_room.md").read_text(encoding="utf-8")
+        self.assertIn("the living room never changes", md)  # the fixed layout from consistency.scene
+        self.assertIn("p1_1.png", md)
+        self.assertIn("p2（頁面上左右翻轉（mirror））", md)
+        self.assertNotIn("p3_1.png", md)  # not set in the room
+        self.assertTrue((manga.OUT / "review" / "scene_room.png").exists())
+        self.assertEqual(manga.reviewed_paths(), set())
+        with self.assertRaises(SystemExit):
+            manga.cmd_review(ns(scene=["attic"]))
+
+    def test_lint_gaze_wide_close_up_and_seen_by(self):
+        b = _tiny([[{"id": "p1", "cast": ["a", "b"], "prompt": "A father and his son sit by a bed. Exactly two people in the frame."}]],
+                  a={"name": "我爸"}, b={"name": "我"})
+        hits = lambda needle: [m for p, lvl, m in manga.lint(b) if needle in m]  # noqa: E731
+        self.assertEqual(len(hits("nothing says where they look")), 1)
+        b["pages"][0]["rows"][0]["cells"][0]["prompt"] += " He is in profile, his head turned toward his son. Nobody looks at the viewer."
+        self.assertEqual(hits("nothing says where they look"), [])
+        c = b["pages"][0]["rows"][0]["cells"][0]
+        c.update(cast=["b"], prompt="Close-up of the young man's face. Only one person in the frame.")
+        self.assertEqual(hits("close-up in a wide cell"), [])  # a full-page cell is tall
+        b["pages"][0]["rows"][0]["h"] = 0.2
+        self.assertEqual(len(hits("close-up in a wide cell")), 1)
+        c.update(cast=[], prompt="A window high on a wall, as seen by someone lying on his back. Nobody in the picture.")
+        self.assertEqual(len(hits("as seen by someone")), 1)
+
+    def test_lint_close_shot_with_a_scene_layout(self):
+        b = _tiny([[{"id": "p1", "scene": "room", "cast": [], "prompt": "Through a gap in the curtain, a face. Nobody in the picture."}]])
+        hits = lambda: [m for p, lvl, m in manga.lint(b) if "close shot with a scene layout" in m]  # noqa: E731
+        self.assertEqual(len(hits()), 1)
+        b["pages"][0]["rows"][0]["cells"][0]["scene"] = []
+        self.assertEqual(hits(), [])
+        b["pages"][0]["rows"][0]["cells"][0].update(scene="room", prompt="Wide shot of the room from the doorway. Nobody in the picture.")
+        self.assertEqual(hits(), [])  # a view of the whole room keeps its layout
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -14,6 +14,9 @@
     py -X utf8 manga.py contact p5 p10                # candidates side by side, for picking
     py -X utf8 manga.py choose p5=2 p10=1 ...
     py -X utf8 manga.py repaint p34_1 --box 220,70,500,330 --prompt "his hair is white"   # redraw one small area
+    py -X utf8 manga.py fill p11_2 --box 590,0,768,200   # solid black in the box turns white (a daytime window)
+    py -X utf8 manga.py tone p16_5 --poly "48,345 140,276 215,292 92,365" --mode dots   # screentone on white paper
+    py -X utf8 manga.py crop p28_10 --box 150,150,610,950   # a region enlarged to the panel: a close-up
     py -X utf8 manga.py panels --pass 2               # panels that use other panels as references
     py -X utf8 manga.py review --cast all             # each character across every picked panel, beside the sheet
     py -X utf8 manga.py pages                         # lettering, layout, PDF, overview
@@ -35,7 +38,7 @@ import re
 import sys
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageOps
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont, ImageOps
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import comfy  # noqa: E402
@@ -316,6 +319,10 @@ _NOT_SMILING = re.compile(r"\b(scared|frightened|afraid|terrified|fear|cry|cries
                           r"nobody smiles|frown|frowns|frowning|grim|pale|tight-lipped|lips pressed|mouth tight|mouth pulled down)\b", re.I)
 _SITS_ON = re.compile(r"\b(sits?|sitting|seated)\b[^.]{0,60}?\b(sofa|couch|armchair|chair|bench|stool|bed)\b", re.I)
 _WIDE = re.compile(r"\b(wide shot|establishing shot|long shot)\b", re.I)
+_GAZE = re.compile(r"\b(viewer|in profile|three-quarter|head turned|turned toward|looks? (at|down|up|toward)|"
+                   r"looking (at|down|up|toward)|eyes (on|fixed|lowered)|faces? turned)\b", re.I)
+_SEEN_BY = re.compile(r"\b(as seen by|seen by someone|from the point of view of|through the eyes of)\b", re.I)
+_PART_SHOT = re.compile(r"\b(close-up|close shot|extreme close-up|through a gap|head-and-shoulders|head and shoulders)\b", re.I)
 
 
 def character_names(board: dict, cid: str) -> list[str]:
@@ -342,7 +349,7 @@ def lint(board: dict, only: list[str] | None = None) -> list[tuple[str, str, str
     scene_ids = set(board.get("consistency", {}).get("scene", {})) | set(board.get("scenes", {}))
     if not _explicit_scenes(board) and board.get("consistency", {}).get("scene_refs"):
         out.append(("board", "warn", "scene layouts are inferred from references (consistency.scene_refs); set `scene` on each panel instead"))
-    for _, cell, _ in all_panels(board):
+    for _, cell, box in all_panels(board):
         pid = cell["id"]
         if cell.get("fill") or (only and pid not in only):
             continue
@@ -398,6 +405,23 @@ def lint(board: dict, only: list[str] | None = None) -> list[tuple[str, str, str
             say("warn", "a scene sheet in a panel with people: they came out tiny or not at all (〈三個人〉 p2, p7), and the "
                         "sheet's camera came along (eye level where a CCTV view was asked, 〈電梯〉 p12); keep it only for a "
                         "wide shot from the sheet's own viewpoint (say 'wide shot'), otherwise describe the place in words")
+        if len(heads) >= 2 and not _GAZE.search(prompt):
+            say("warn", "two or more people and nothing says where they look: front-view sheets made everyone stare at the "
+                        "reader (〈阿嬤住院〉 p3, p9, p34); write the head direction ('in profile, his head turned toward her') "
+                        "and add 'Nobody looks at the viewer.'")
+        bw, bh = box[2] - box[0], box[3] - box[1]
+        if heads and _HEADSHOT.search(prompt) and bw > 1.7 * bh:
+            say("warn", f"a close-up in a wide cell ({bw}x{bh}): the model fills the width with the whole body (p24, and p28 "
+                        f"four times); make the cell taller, or draw it wider and `crop` the face out")
+        if _SEEN_BY.search(prompt):
+            say("warn", "'as seen by someone' draws that someone into the picture (p15, three times); describe the camera "
+                        "(low angle, looking up at the window) instead of a viewer")
+        layouts = board.get("consistency", {}).get("scene", {})
+        if _PART_SHOT.search(prompt) and any(s in layouts for s in ([cell["scene"]] if isinstance(cell.get("scene"), str)
+                                                                    else cell.get("scene", []) or [])):
+            say("warn", "a close shot with a scene layout: the whole fixed layout goes into the prompt and the model draws "
+                        "the whole room (p29, 8 of 8 pulled back from a curtain gap to the room); set \"scene\": [] for a "
+                        "shot of one part of the place")
         if _NOT_SMILING.search(prompt):
             for r in refs:
                 cr = char_ref(board, r)
@@ -729,6 +753,108 @@ def cmd_repaint(a) -> None:
     print(json.dumps(rec, ensure_ascii=False), flush=True)
 
 
+# ---------------------------------------------------------------------------
+# hand fixes: what repaint cannot do. It keeps a big flat tone as it is: three edits left a daytime window solid black,
+# two left a pale buzz cut paler. These change pixels directly and write new candidates, like repaint
+# ---------------------------------------------------------------------------
+
+
+def open_candidate(name: str) -> tuple[Path, str, Image.Image]:
+    base = OUT / "panels" / (name if name.endswith(".png") else name + ".png")
+    if not base.exists():
+        raise SystemExit(f"{base} does not exist")
+    return base, base.stem.rsplit("_", 1)[0], Image.open(base).convert("RGB")
+
+
+def save_fix(kind: str, base: Path, pid: str, out: Image.Image, **extra) -> str:
+    dest = f"{pid}_{next_number(OUT / 'panels', pid) + 1}.png"
+    out.save(OUT / "panels" / dest)
+    log({"kind": kind, "id": pid, "base": base.name, "files": [dest], "wall_s": 0, "exec_s": 0, **extra})
+    print(dest)
+    return dest
+
+
+def fill_solid_black(im: Image.Image, box, colour=(255, 255, 255)) -> tuple[Image.Image, int]:
+    """Every solid black area inside the box becomes `colour`. Solid means it covers at least 45% of its bounding box and is
+    6 px or more across both ways, so outlines of a window frame or a curtain stay."""
+    im = im.copy()
+    x0, y0, x1, y1 = box
+    filled = 0
+    for y in range(y0, y1, 4):
+        for x in range(x0, x1, 4):
+            if sum(im.getpixel((x, y))) >= 90:
+                continue
+            before = im.copy()
+            ImageDraw.floodfill(im, (x, y), colour, thresh=70)
+            diff = ImageChops.difference(before, im).convert("L").point(lambda v: 255 if v else 0)
+            bb = diff.getbbox()
+            w, h = (bb[2] - bb[0], bb[3] - bb[1]) if bb else (0, 0)
+            area = sum(1 for v in diff.crop(bb).getdata() if v) if bb else 0
+            if not bb or min(w, h) < 6 or area < 0.45 * w * h or area < 60:
+                im = before
+            else:
+                filled += area
+    return im, filled
+
+
+def cmd_fill(a) -> None:
+    """Paint the solid black inside a box white: a daytime window the line-art style drew black, a black blob in a corner."""
+    base, pid, src = open_candidate(a.candidate)
+    box = parse_box(a.box, src.size)
+    out, filled = fill_solid_black(src, box)
+    if not filled:
+        raise SystemExit("nothing solid and black in that box")
+    save_fix("fill", base, pid, out, box=list(box), px=filled)
+
+
+def add_tone(im: Image.Image, poly: list[tuple[int, int]], mode: str, seed: int = 7) -> Image.Image:
+    """Screentone dots or short stubble strokes inside a polygon, on white paper only, so lines, glasses and faces stay."""
+    mask = Image.new("L", im.size, 0)
+    ImageDraw.Draw(mask).polygon(poly, fill=255)
+    mask = mask.filter(ImageFilter.GaussianBlur(2))
+    paper = im.convert("L").point(lambda v: 255 if v > 170 else 0)
+    tex = Image.new("L", im.size, 255)
+    d = ImageDraw.Draw(tex)
+    rng = random.Random(seed)
+    x0, y0 = min(p[0] for p in poly), min(p[1] for p in poly)
+    x1, y1 = max(p[0] for p in poly), max(p[1] for p in poly)
+    area = max(1, (x1 - x0) * (y1 - y0))
+    if mode == "dots":
+        for _ in range(int(area * 0.22)):
+            x, y = rng.uniform(x0, x1), rng.uniform(y0, y1)
+            d.ellipse([x - 0.9, y - 0.9, x + 0.9, y + 0.9], fill=40)
+    else:  # strokes pointing away from a centre below the shape, like short hair growing outward
+        cx, cy = (x0 + x1) / 2, y1 + (y1 - y0)
+        for _ in range(int(area * 0.05)):
+            x, y = rng.uniform(x0, x1), rng.uniform(y0, y1)
+            ang = math.atan2(y - cy, x - cx) + rng.uniform(-0.25, 0.25)
+            n = rng.uniform(4, 8)
+            d.line([(x, y), (x + n * math.cos(ang), y + n * math.sin(ang))], fill=30, width=1)
+    out = im.copy()
+    out.paste(Image.merge("RGB", [tex] * 3), (0, 0), ImageChops.multiply(mask, paper))
+    return out
+
+
+def cmd_tone(a) -> None:
+    """Hand-drawn texture in a polygon: a buzz cut the model left white (it read as a bald head, twice)."""
+    base, pid, src = open_candidate(a.candidate)
+    poly = [tuple(int(v) for v in p.split(",")) for p in a.poly.split()]
+    if len(poly) < 3:
+        raise SystemExit("--poly needs at least three points, 'x,y x,y x,y'")
+    save_fix("tone", base, pid, add_tone(src, poly, a.mode), poly=[list(p) for p in poly], mode=a.mode)
+
+
+def cmd_crop(a) -> None:
+    """Cut a region out of a candidate and enlarge it to the candidate's size: the close-up the model would not draw. The
+    box keeps the candidate's shape (its height follows from the width); the face in p28 came out of a wider draw."""
+    base, pid, src = open_candidate(a.candidate)
+    x0, y0, x1, _ = parse_box(a.box, src.size)
+    h = round((x1 - x0) * src.height / src.width)
+    if y0 + h > src.height:
+        raise SystemExit(f"the box needs {h} px of height from y={y0}; move it up or make it narrower")
+    save_fix("crop", base, pid, src.crop((x0, y0, x1, y0 + h)).resize(src.size, Image.LANCZOS), box=[x0, y0, x1, y0 + h])
+
+
 def cmd_lint(a) -> None:
     raise SystemExit(1 if print_lint(lint(load_board(), a.only)) else 0)
 
@@ -772,7 +898,7 @@ def logged_keys() -> dict[str, str]:
             continue
         if r.get("kind") == "panels" and r.get("prompt_key"):
             keys.update({f: r["prompt_key"] for f in r.get("files", [])})
-        elif r.get("kind") == "repaint" and r.get("base") in keys:
+        elif r.get("kind") in ("repaint", "fill", "tone", "crop") and r.get("base") in keys:
             keys.update({f: keys[r["base"]] for f in r.get("files", [])})
     return keys
 
@@ -858,6 +984,53 @@ def cast_brief(b: dict, ch: dict, cids: list[str]) -> None:
         print(dest / f"cast_{cid}.md")
 
 
+def contact_sheet(tiles: list[tuple[str, Image.Image]], path: Path, th: int = 300, per_row: int = 5) -> None:
+    font = ImageFont.truetype(font_path("bold"), 26)
+    tiles = [(t, im.resize((max(1, round(im.width * th / im.height)), th))) for t, im in tiles]
+    lines = [tiles[i:i + per_row] for i in range(0, len(tiles), per_row)]
+    sheet = Image.new("RGB", (max(sum(im.width + 10 for _, im in r) for r in lines), len(lines) * (th + 40)), "#888")
+    d = ImageDraw.Draw(sheet)
+    for ri, r in enumerate(lines):
+        x = 0
+        for t, im in r:
+            sheet.paste(im, (x, ri * (th + 40) + 36))
+            d.text((x + 4, ri * (th + 40) + 2), t, fill="white", font=font)
+            x += im.width + 10
+    sheet.save(path)
+
+
+def scene_brief(b: dict, ch: dict, sids: list[str]) -> None:
+    """One room across every picked panel set in it, against its fixed layout (consistency.scene): where the window, the
+    bed, the door and the furniture are, and which way things face. In the sixth comic the window, the bed and the photo
+    frame moved from panel to panel and every panel had passed on its own; the owner saw it on the pages."""
+    layouts = b.get("consistency", {}).get("scene", {})
+    if sids == ["all"]:
+        sids = list(layouts)
+    dest = OUT / "review"
+    dest.mkdir(parents=True, exist_ok=True)
+    for sid in sids:
+        if sid not in layouts:
+            raise SystemExit(f"no fixed layout for scene {sid!r} in consistency.scene")
+        rows = [(pi, c) for pi, c, _ in all_panels(b) if not c.get("fill") and c["id"] in ch["panels"] and sid in panel_scenes(b, c)]
+        if not rows:
+            print(f"{sid}: no picked panel is set there, left out")
+            continue
+        L = [f"# 場景跨格檢查：{sid}", "",
+             "照 qa_checklist.md 的「場景跨格檢查」，把這個場景的每一格都跟下面的固定格局、也跟彼此比對。每一格都要開原圖看；"
+             "總覽圖只用來找哪幾格不一樣。",
+             f"要放大或裁切時可以寫小程式，但程式和輸出只放在 {dest / 'work' / f'scene_{sid}'}，不要動 out/ 裡其他任何檔案。", "",
+             f"- 固定格局：{layouts[sid]}", f"- 總覽圖：{dest / f'scene_{sid}.png'}", "- 每一格（閱讀順序）："]
+        for pi, c in rows:
+            note = "，".join(x for x in (c.get("label", ""), "頁面上左右翻轉（mirror）" if c.get("mirror") else "") if x)
+            L.append(f"  - 第 {pi} 頁 {c['id']}（{note}）：{OUT / 'panels' / ch['panels'][c['id']]}")
+            L.append(f"    畫面要的是：{c['prompt']}")
+        L.append("")
+        (dest / f"scene_{sid}.md").write_text("\n".join(L), encoding="utf-8")
+        contact_sheet([(c["id"], Image.open(OUT / "panels" / ch["panels"][c["id"]]).convert("RGB")) for _, c in rows],
+                      dest / f"scene_{sid}.png")
+        print(dest / f"scene_{sid}.md")
+
+
 def read_brief(b: dict) -> None:
     """A brief for a first-time reader (references/reader_check.md): the page images in reading order and nothing else;
     beside it a key for the one who compares: who each character is, where they first appear, every line in order."""
@@ -896,6 +1069,9 @@ def cmd_review(a) -> None:
     ch = load_choices()
     if getattr(a, "read", False):
         read_brief(b)
+        return
+    if getattr(a, "scene", None):
+        scene_brief(b, ch, a.scene)
         return
     if getattr(a, "cast", None):
         cast_brief(b, ch, a.cast)
@@ -1442,6 +1618,8 @@ def main() -> None:
     rv.add_argument("--name", default=None)
     rv.add_argument("--new", action="store_true", help="only candidates that no earlier brief in out/review listed")
     rv.add_argument("--read", action="store_true", help="a first-time reader's brief for the laid-out pages")
+    rv.add_argument("--scene", type=lambda v: v.split(","), default=None,
+                    help="scene ids (or 'all'): every picked panel set there, against its fixed layout")
     rv.add_argument("--cast", type=lambda v: v.split(","), default=None,
                     help="character ids (or 'all'): every picked panel of each, side by side with the sheet")
     rp = sub.add_parser("repaint")
@@ -1450,6 +1628,16 @@ def main() -> None:
     rp.add_argument("--prompt", required=True, help="what to change inside the box")
     rp.add_argument("--n", type=int, default=3)
     rp.add_argument("--seed", type=int, default=0)
+    fl = sub.add_parser("fill")
+    fl.add_argument("candidate")
+    fl.add_argument("--box", required=True, help="x0,y0,x1,y1 (or fractions); solid black inside it turns white")
+    tn = sub.add_parser("tone")
+    tn.add_argument("candidate")
+    tn.add_argument("--poly", required=True, help="'x,y x,y x,y ...' around the area to texture")
+    tn.add_argument("--mode", choices=["dots", "strokes"], default="dots")
+    cr = sub.add_parser("crop")
+    cr.add_argument("candidate")
+    cr.add_argument("--box", required=True, help="x0,y0,x1,y1; the height follows the candidate's shape")
     for x in (s, p):
         x.add_argument("--seed", type=int, default=0)
         x.add_argument("--only", type=lambda v: v.split(","), default=None)
@@ -1475,7 +1663,7 @@ def main() -> None:
     global BOARD
     BOARD = a.board
     {"check": cmd_check, "styles": cmd_styles, "sheets": cmd_sheets, "choose": cmd_choose, "refs": cmd_refs,
-     "lint": cmd_lint, "review": cmd_review, "repaint": cmd_repaint,
+     "lint": cmd_lint, "review": cmd_review, "repaint": cmd_repaint, "fill": cmd_fill, "tone": cmd_tone, "crop": cmd_crop,
      "plan": cmd_plan, "panels": cmd_panels, "contact": cmd_contact, "pages": cmd_pages, "status": cmd_status,
      "export": cmd_export}[a.cmd](a)
 

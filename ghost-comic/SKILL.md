@@ -48,6 +48,11 @@ style was wrong and the sheets were picked for them.
    for the story: characters with at least two memorable features each (`features` in Chinese,
    the same features in `desc` and in every panel prompt), scenes, the `consistency` block
    (fixed room layout, fixed heights), the `lights` states, pages, panel labels and lettering.
+   Write each room's layout as a floor plan, not a mood: which wall the window and the door are
+   in, where each piece of furniture stands against which wall, which way the objects the story
+   turns face. Check it against the story's own geometry (a knock "right next to my head" puts
+   the window by the head of the bed). In the sixth comic the room was described loosely, and
+   the window, the bed and the dresser moved from panel to panel until the owner pointed at it.
    Give every panel its `scene` and `light` explicitly, and a `cast` when a character is drawn
    from words alone. Name every speaking character in the panel where they are first drawn (a
    `tag` or a caption; `intro` points at another panel on the same page, `ghost: true` exempts
@@ -99,13 +104,26 @@ candidate-by-candidate questions.
    GPU draws the next; neither waits for the other. A candidate that is right except for one
    small thing (a collar, the hair, a hand) is fixed with `manga.py repaint <candidate> --box
    x0,y0,x1,y1 --prompt "..."`, which redraws only that area at crop size; an edit of the whole
-   panel ignores details that small and changes what was right. When every panel is picked,
+   panel ignores details that small and changes what was right. Three things repaint cannot do
+   are done by hand, each writing a new candidate: `manga.py fill <candidate> --box ...` turns
+   solid black inside the box white (a daytime window the line art drew black; three repaints
+   left it black), `tone --poly "x,y ..." --mode dots|strokes` puts screentone or stubble on the
+   white paper inside a polygon (a buzz cut that read as bald; two repaints made it paler), and
+   `crop --box ...` cuts a region out and enlarges it (the close-up four draws in a wide cell
+   would not give). Look at the first few results of every batch before the rest draw: in the
+   sixth comic page 1 showed everyone staring at the reader, and fixing the gaze before going on
+   saved the other nine pages. When every panel is picked,
    `manga.py review --cast all` writes one brief per character: every picked panel they are in,
    beside their sheet. Give each to a fresh checker with the checklist's 跨格檢查. Checking panel
    by panel cannot see that a face or a hair colour changed between panels: in the fifth comic
    阿嬤's close-up, drawn from words, was not her face, and the boy's hair was black on one page
    and white on the next. Both had passed, and the owner found both; run blind on those panels,
    the cast check caught both, and a bangle on the wrong wrist in three more.
+   `manga.py review --scene all` does the same for places: every picked panel set in a room,
+   against its fixed layout, for the checklist's 場景跨格檢查. Redraw the room's wide shot first
+   from the plan and make the later views of that room same-framing edits of a picked panel
+   (the night view of the lit room is the day view with the light changed), so the layout is
+   carried by a picture rather than redrawn from words each time.
 7. **Pages.** `manga.py pages` writes `out/pages/page_NN.png`, `out/comic.pdf` and
    `out/overview.jpg`, and prints `WARN lettering` like `plan`. Look at every page yourself:
    text over a face, a bubble beside someone who is not speaking, a reading order that jumps, a
@@ -125,8 +143,11 @@ candidate-by-candidate questions.
    After fixing, give the new pages to another fresh reader, and repeat until a reader gets the
    story, every character and every speaker right. The reader after the first fix round found
    two more: a caption describing an action the picture does not show, and a kinship word read
-   from the wrong person's side. Then send the pages and the PDF, and list the weak panels
-   honestly with what a redraw would change.
+   from the wrong person's side. In the sixth comic the second reader still could not tell which
+   way the photo faced, and the third got everything right. Where a caption and its picture
+   disagree, change the caption: it costs nothing and the picture is what the reader trusts.
+   Then send the pages and the PDF, and list the weak panels honestly with what a redraw would
+   change.
 9. **Fix round.** Map each note of the owner's to a panel id (if they name a page that does not
    contain what they describe, say which panel you think they mean), rewrite the prompt, redraw
    with `n: 3` (or `repaint` when the note is about one small area), re-lay out only the pages
@@ -134,6 +155,12 @@ candidate-by-candidate questions.
    note names a kind of defect (extra hands, the wrong lighting), sweep every picked panel for the
    same defect before replying, and add a row to prompting.md. A character added in a fix round
    (細姑's photo) still gets 3 or 4 versions for the owner to pick, with the checker's notes.
+   When the owner asks for new story (「結局太弱，多一頁讓阿嬤描述故事」), write the dialogue first
+   and send it as a table, panel by panel, before drawing; then lay the new page out, draw it,
+   and give all the pages to a fresh reader again. New backstory moves the timeline of what is
+   already drawn: once 阿嬤 said the photo only came out after the 頭七 eleven years ago, the
+   eight-year-old who turned it on page 2 had to become a junior-high boy, and her flashback face
+   could no longer be younger than the one on the new page. The reader caught both.
 
 10. **Publish.** `manga.py export` turns the laid-out pages into an Instagram carousel in
    `out/export/ig/`: a cover (page 1, or `--cover <panel>` with the vertical title over one
@@ -148,7 +175,7 @@ leaves out time spent waiting in ComfyUI's queue) and `pages --pages 1,2` lays
 out what is picked so far, unpicked panels as labelled placeholders; send that instead of saying
 it is not ready.
 
-Time on an RTX 3090: a panel with references takes 47 to 115 s per image and one without takes 23 to 36 s, with 2 to 3 candidates per panel; a `repaint` of 3 or 4 versions takes 1.3 to 2.3 minutes. GPU time from each log's `exec_s`: the first comic (33 panels, every gate and redraw) about 97 minutes, the second (32 panels) about 71, the third (28 panels, every candidate independently checked, 24 redraws) about 91, the fifth (10 pages, 37 panels, 9 characters) about 147, with checker batches of 4 to 30 minutes each running beside the GPU. The fourth was thrown away after about 104 (step 0). State the estimate before each long run.
+Time on an RTX 3090: a panel with references takes 47 to 115 s per image and one without takes 23 to 36 s, with 2 to 3 candidates per panel; a `repaint` of 3 or 4 versions takes 1.3 to 2.3 minutes. GPU time from each log's `exec_s`: the first comic (33 panels, every gate and redraw) about 97 minutes, the second (32 panels) about 71, the third (28 panels, every candidate independently checked, 24 redraws) about 91, the fifth (10 pages, 37 panels, 9 characters) about 147, the sixth about 130 for its first 10 pages and 38 panels and about 178 after four owner fix rounds and an added page (11 pages, 44 panels; the reveal panel took 41 draws), with checker batches of 4 to 30 minutes each running beside the GPU. The fourth was thrown away after about 104 (step 0). State the estimate before each long run.
 
 ## Rules
 
@@ -197,6 +224,13 @@ Time on an RTX 3090: a panel with references takes 47 to 115 s per image and one
   reader until the prompt said "in profile, head turned toward the door". Dropping the reference
   to escape its pose fixes the pose and loses the face; a main character's close-up keeps
   `:head` and spells the expression out.
+- Which way an object faces is the hardest thing to show. A photo "facing the window" was drawn
+  front on (read as facing the bed), turned 45 degrees (unreadable), and from the back (the owner:
+  it faces the wall, not the window). What read was a view from behind the frame with the window
+  straight ahead of it, the same picture in every panel where it faces the window, alternating
+  with the front view where it faces the bed.
+- Mentioning a viewer draws the viewer: "as seen by someone lying on the bed" put a person in the
+  middle of an empty window shot three times. Name the camera, not the person.
 - Small details need a small canvas. Three whole-panel edits left a guard's shirt as it was;
   the same request on an enlarged crop (`repaint`) fixed it, and a collar, the hair and a hand
   after it. When even that fails (a
