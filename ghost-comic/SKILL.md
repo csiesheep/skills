@@ -155,6 +155,12 @@ candidate-by-candidate questions.
    note names a kind of defect (extra hands, the wrong lighting), sweep every picked panel for the
    same defect before replying, and add a row to prompting.md. A character added in a fix round
    (細姑's photo) still gets 3 or 4 versions for the owner to pick, with the checker's notes.
+   When the owner asks for new story (「結局太弱，多一頁讓阿嬤描述故事」), write the dialogue first
+   and send it as a table, panel by panel, before drawing; then lay the new page out, draw it,
+   and give all the pages to a fresh reader again. New backstory moves the timeline of what is
+   already drawn: once 阿嬤 said the photo only came out after the 頭七 eleven years ago, the
+   eight-year-old who turned it on page 2 had to become a junior-high boy, and her flashback face
+   could no longer be younger than the one on the new page. The reader caught both.
 
 10. **Publish.** `manga.py export` turns the laid-out pages into an Instagram carousel in
    `out/export/ig/`: a cover (page 1, or `--cover <panel>` with the vertical title over one
@@ -169,7 +175,7 @@ leaves out time spent waiting in ComfyUI's queue) and `pages --pages 1,2` lays
 out what is picked so far, unpicked panels as labelled placeholders; send that instead of saying
 it is not ready.
 
-Time on an RTX 3090: a panel with references takes 47 to 115 s per image and one without takes 23 to 36 s, with 2 to 3 candidates per panel; a `repaint` of 3 or 4 versions takes 1.3 to 2.3 minutes. GPU time from each log's `exec_s`: the first comic (33 panels, every gate and redraw) about 97 minutes, the second (32 panels) about 71, the third (28 panels, every candidate independently checked, 24 redraws) about 91, the fifth (10 pages, 37 panels, 9 characters) about 147, the sixth (10 pages, 38 panels, one reveal panel taking close to 30 draws) about 130, with checker batches of 4 to 30 minutes each running beside the GPU. The fourth was thrown away after about 104 (step 0). State the estimate before each long run.
+Time on an RTX 3090: a panel with references takes 47 to 115 s per image and one without takes 23 to 36 s, with 2 to 3 candidates per panel; a `repaint` of 3 or 4 versions takes 1.3 to 2.3 minutes. GPU time from each log's `exec_s`: the first comic (33 panels, every gate and redraw) about 97 minutes, the second (32 panels) about 71, the third (28 panels, every candidate independently checked, 24 redraws) about 91, the fifth (10 pages, 37 panels, 9 characters) about 147, the sixth about 130 for its first 10 pages and 38 panels and about 178 after four owner fix rounds and an added page (11 pages, 44 panels; the reveal panel took 41 draws), with checker batches of 4 to 30 minutes each running beside the GPU. The fourth was thrown away after about 104 (step 0). State the estimate before each long run.
 
 ## Rules
 
