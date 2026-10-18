@@ -60,6 +60,9 @@
 | 揭臉格將近 30 張都畫成哭泣的少女、手指碰嘴（p29） | 「臉貼玻璃、一隻眼、手」的組合讓模型往「受驚的女孩」跑 | 寫成 `an adult man's grey, dead, expressionless face ... dry, no tears ... the hand well away from his mouth`；最後還是靠局部修：程式畫窗簾邊蓋住半張臉，再分別重畫臉、手、眉眼。「手指多一節、用指節敲」畫不出來，旁白改成畫面有的「手貼在玻璃上，手指很長」 |
 | 相框「面對窗戶」三種畫法都沒過：正面朝讀者（讀成對著床）、側轉 45 度（看不出）、背面朝讀者（擁有者說「沒有對著窗戶」） | 背面朝讀者其實是對著梳妝台後面的牆；窗戶在旁邊時，方向看不出來 | 從相框背後看過去，窗戶就在它正前方佔滿上半格：`seen from just behind the frame ... straight ahead of it, filling the upper half, one large window`。同一張用在每個「對著窗戶」的格子，跟「對著床」的正面交替 |
 | 盲讀讀者把「唰啦」讀成「唰吋」，「叩叩叩」少一個字 | `draw_sfx` 的暫存圖只有兩個字寬（PR #10 修了） | 已修。狀聲詞放的位置也要避開旁白框和格框，不要蓋到臉 |
+| 主角登場那格的房子畫成照片寫實（灰階漸層、磚牆紋理），前一格同一棟房子是線稿（〈阿嬤住院〉p2，擁有者抓到的；逐格檢查和盲讀都沒提） | 那格只有三張角色參考圖，房子全靠文字描述，沒有一張圖告訴模型背景要怎麼畫 | 同構圖換背景：選定的那張當 `<image1>` 留住人和狗，建立鏡頭的那格（`panel:p1`）當 `<image2>`，寫 `the same farmhouse as in <image2>, drawn exactly the way <image2> is drawn: clean black ink outlines on white, flat tones, no photographic shading, no grey gradients, no brick texture`。擁有者說一格畫風不對，就把每一格背景多的排成一張總覽比一次 |
+| 地上的相框比梳妝台的抽屜還寬，有旁邊拖鞋的三倍大（p10，擁有者抓到的） | 那一格要講的就是那個東西，模型把它畫大，又放在前景；提示詞沒有拿它跟畫面裡別的東西比 | 寫跟旁邊東西比的大小：`no bigger than the slipper beside it`。其他都對的話用 PIL 手修：多邊形遮罩把那個東西縮小貼回去，空出來的地方補地板色。縮完到頁面上再看一次，旁白框可能會壓到它 |
+| 門上氣窗中間兩格畫出一團像字的花紋（p1、p2），`NOTEXT` 擋不掉 | 一排規則的小格子（氣窗、窗格、磁磚）裡，模型偶爾塞進像字的筆畫 | 用 PIL 把旁邊好的格子連框線一起複製過去。先塗白再畫黑格會把框線一起擦掉 |
 
 ## 時間（RTX 3090）
 
