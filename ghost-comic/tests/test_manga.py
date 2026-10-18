@@ -515,7 +515,7 @@ class FifthComicTest(unittest.TestCase):
         Image.new("RGB", size, colour).save(manga.OUT / "panels" / name)
 
     def test_cast_brief_lines_up_every_picked_panel(self):
-        self._board([[{"id": "p1", "cast": ["ama"], "label": "阿嬤進來"}, {"id": "p2", "cast": ["ama", "boy"]}],
+        self._board([[{"id": "p1", "cast": ["ama"], "label": "阿嬤進來"}, {"id": "p2", "cast": ["ama", "boy"], "mirror": True}],
                      [{"id": "p3", "cast": ["boy"]}, {"id": "p4", "cast": ["ama"]}]],
                     ama={"name": "阿嬤", "features": "花襯衫、玉鐲戴左手"}, boy={"name": "弟弟", "features": "白頭髮"})
         for name in ("p1_1.png", "p2_3.png", "p3_1.png", "p4_1.png"):
@@ -532,6 +532,7 @@ class FifthComicTest(unittest.TestCase):
         self.assertIn("還沒選定、這次不比：p4", md)
         self.assertIn("ama_head.png", md)
         self.assertLess(md.index("p1_1.png"), md.index("p2_3.png"))  # reading order
+        self.assertIn("p2（頁面上左右翻轉（mirror））", md)  # which wrist the bangle is on depends on it
         self.assertTrue((manga.OUT / "review" / "cast_ama.png").exists())
         self.assertEqual(manga.reviewed_paths(), set())  # its lines never count as reviewed candidates for --new
         manga.cmd_review(self.ns(cast=["all"]))  # 弟弟 has two picked panels too

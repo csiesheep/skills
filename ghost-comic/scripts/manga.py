@@ -830,8 +830,9 @@ def cast_brief(b: dict, ch: dict, cids: list[str]) -> None:
         L += [f"  - 角色卡 {p.name}：{p}" for p in sheets] or ["  - （沒有選定的角色卡）"]
         L.append(f"- 總覽圖：{dest / f'cast_{cid}.png'}")
         L.append("- 每一格（閱讀順序）：")
-        for pi, c in rows:
-            L.append(f"  - 第 {pi} 頁 {c['id']}（{c.get('label', '')}）：{OUT / 'panels' / ch['panels'][c['id']]}")
+        for pi, c in rows:  # a mirrored panel puts the bangle on the other wrist on the page; the checker sees the file
+            note = "，".join(x for x in (c.get("label", ""), "頁面上左右翻轉（mirror）" if c.get("mirror") else "") if x)
+            L.append(f"  - 第 {pi} 頁 {c['id']}（{note}）：{OUT / 'panels' / ch['panels'][c['id']]}")
             L.append(f"    畫面要的是：{c['prompt']}")
         rest = [c["id"] for _, c, _ in all_panels(b) if cid in cast(b, c) and c["id"] not in ch["panels"] and not c.get("fill")]
         if rest:

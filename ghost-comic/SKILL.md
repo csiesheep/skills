@@ -104,7 +104,8 @@ candidate-by-candidate questions.
    beside their sheet. Give each to a fresh checker with the checklist's 跨格檢查. Checking panel
    by panel cannot see that a face or a hair colour changed between panels: in the fifth comic
    阿嬤's close-up, drawn from words, was not her face, and the boy's hair was black on one page
-   and white on the next. Both had passed, and the owner found both.
+   and white on the next. Both had passed, and the owner found both; run blind on those panels,
+   the cast check caught both, and a bangle on the wrong wrist in three more.
 7. **Pages.** `manga.py pages` writes `out/pages/page_NN.png`, `out/comic.pdf` and
    `out/overview.jpg`, and prints `WARN lettering` like `plan`. Look at every page yourself:
    text over a face, a bubble beside someone who is not speaking, a reading order that jumps, a
