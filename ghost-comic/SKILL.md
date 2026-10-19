@@ -168,6 +168,15 @@ candidate-by-candidate questions.
    older shape), an end card saying the story is fiction and drawn with AI (`--handle` adds
    the account), and `caption.txt`. A comic of more than 18 pages is split into parts, since a
    post holds 20 slides. Posting is the owner's: send the folder, never post for them.
+   An account with its own look adds `--brand <name> --seal <square seal png> --number N`: the
+   cover becomes the picked panel framed on paper with the title at its top right and a strip
+   reading 「<name>｜第 N 首」 with the disclosure and the seal; the end card becomes four lines on
+   paper (本首完, the disclosure, 看完記得收驚, the handle) with the seal stamped in red; the
+   pages sit on paper; the caption opens with 「第 N 首｜title」 and adds 「傳給那個說自己不怕的朋友」
+   and `#<name>`. Leave `--number` out until the story's posting slot is known: numbers run across
+   every story the account posts, comics and text alike. Look at slide 1 before sending: the title
+   box sits at the top right of the picture, so pick a cover panel with nothing important there (the
+   first 鬼唱詩 cover hid a man's face behind it; a close-up on a black ground fixed it).
 11. **Reels.** Instagram's carousels keep followers; Reels are what reach people who do not
    follow yet, so every comic also gets short videos. `manga.py reel teaser p8 p9 p10 --handle
    @account --logo <square png>` makes a 9:16 video in `out/export/reels/`: each panel moves

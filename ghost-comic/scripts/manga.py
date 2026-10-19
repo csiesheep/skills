@@ -1535,6 +1535,97 @@ def ig_end(b: dict, w: int, h: int, handle: str | None) -> Image.Image:
     return im
 
 
+# A brand's own cover and end card (`export --brand`), so every comic on the profile grid sits in the same frame:
+# paper ground, ink lines, one spot of seal red. Colours and layout from the 鬼唱詩 brand note (2026-10-18).
+PAPER, INK, SEAL_RED, GREY = (242, 237, 228), (20, 20, 20), (184, 50, 42), (105, 105, 105)
+
+
+def seal_images(path: str | None) -> tuple[Image.Image | None, Image.Image | None]:
+    """(solid, outline) from a square seal picture with light characters on a red ground (an avatar): solid is the
+    picture as it is, for the cover; outline turns it round to red characters in a red frame on transparent, the way
+    the seal is stamped on the end card."""
+    if not path:
+        return None, None
+    solid = Image.open(path).convert("RGB")
+    g = solid.convert("L")
+    chars = g.point(lambda v: 255 if v > 200 else 0).filter(ImageFilter.MaxFilter(3))
+    s = solid.width
+    out = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    red = Image.new("RGBA", (s, s), SEAL_RED + (255,))
+    out.paste(red, (0, 0), chars)
+    frame = Image.new("L", (s, s), 0)
+    k = round(s * 0.045)
+    ImageDraw.Draw(frame).rectangle([k, k, s - 1 - k, s - 1 - k], outline=255, width=round(s * 0.05))
+    out.paste(red, (0, 0), frame)
+    return solid, out
+
+
+def brand_cover(b: dict, ch: dict, w: int, h: int, panel: str | None, brand: str, number: int | None,
+                seal: Image.Image | None) -> Image.Image:
+    """Slide 1: the picked panel framed on paper, the vertical title at its top right, and a strip under it with
+    「<brand>｜第 N 首」, the disclosure and the seal. The same frame for every comic."""
+    im = Image.new("RGB", (w, h), PAPER)
+    m = round(w * 0.05)
+    strip = round(h * 0.11)
+    box = (m, m, w - m, h - m - strip)
+    pw, ph = box[2] - box[0], box[3] - box[1]
+    if panel:
+        cell = find_panel(b, panel)
+        if panel not in ch["panels"]:
+            raise SystemExit(f"--cover {panel}: that panel has no picked candidate")
+        pic = cover(panel_source(cell, ch), pw, ph, tuple(cell.get("focus", (0.5, 0.5))))
+    else:
+        pic = cover(Image.open(OUT / "pages" / "page_01.png").convert("RGB"), pw, ph, (0.5, 0.0))
+    im.paste(pic, box[:2])
+    d = ImageDraw.Draw(im)
+    d.rectangle([box[0] - 1, box[1] - 1, box[2], box[3]], outline=INK, width=5)
+    draw_entry(im, {"kind": "title", "text": board_title(b), "pos": "tr", "scale": 1.3}, box, round(w / 40))
+    top = box[3] + round(strip * 0.22)
+    line = f"{brand}｜第 {number} 首" if number else brand
+    big = ImageFont.truetype(font_path("serif"), round(w / 23))
+    try:
+        big.set_variation_by_name("SemiBold")
+    except (OSError, ValueError, AttributeError):
+        pass
+    small = ImageFont.truetype(font_path("plain"), round(w / 42))
+    d.text((m, top), line, font=big, fill=INK)
+    d.text((m, top + round(big.size * 1.35)), DISCLOSURE, font=small, fill=GREY)
+    if seal is not None:
+        sz = round(strip * 0.8)
+        im.paste(seal.resize((sz, sz), Image.LANCZOS), (w - m - sz, box[3] + (strip - sz) // 2 + 4))
+    return im
+
+
+def brand_end(w: int, h: int, handle: str | None, seal: Image.Image | None) -> Image.Image:
+    """The last slide, four lines on paper: 本首完, the disclosure, 看完記得收驚, the handle; the seal stamped at the
+    bottom right in red."""
+    im = Image.new("RGB", (w, h), PAPER)
+    d = ImageDraw.Draw(im)
+
+    def serif(size: int) -> ImageFont.FreeTypeFont:
+        f = ImageFont.truetype(font_path("serif"), size)
+        try:
+            f.set_variation_by_name("SemiBold")
+        except (OSError, ValueError, AttributeError):
+            pass
+        return f
+
+    lines = [("本首完", serif(round(w / 13)), INK, 2.2), ("AI 輔助創作，純屬虛構", serif(round(w / 25)), INK, 1.7),
+             ("看完記得收驚", serif(round(w / 25)), INK, 2.2)]
+    if handle:
+        lines.append((handle, ImageFont.truetype(font_path("plain"), round(w / 28)), GREY, 1.0))
+    heights = [round(f.size * gap) for _, f, _, gap in lines]
+    y = round(h * 0.42 - sum(heights) / 2)
+    for (text, f, colour, _), lh in zip(lines, heights):
+        d.text(((w - d.textlength(text, font=f)) / 2, y), text, font=f, fill=colour)
+        y += lh
+    if seal is not None:
+        sz = round(w * 0.17)
+        m = round(w * 0.07)
+        im.paste(seal.resize((sz, sz), Image.LANCZOS), (w - m - sz, h - m - sz), seal.resize((sz, sz), Image.LANCZOS))
+    return im
+
+
 def cmd_export(a) -> None:
     """Instagram carousel from the laid-out pages: a cover, every page whole on a 3:4 (or 4:5) slide, an end card,
     and a caption with the disclosure. A page of 1200 x 1700 leaves about 32 px of white at each side on 3:4. More
@@ -1551,16 +1642,26 @@ def cmd_export(a) -> None:
     per = IG_MAX - 2
     parts = [pages[i:i + per] for i in range(0, len(pages), per)]
     title = board_title(b).replace("\n", "")
+    solid, outline = seal_images(a.seal) if a.brand else (None, None)
+    ground = PAPER if a.brand else "white"
     for k, part in enumerate(parts, 1):
         tag = f"part{k}_" if len(parts) > 1 else ""
-        slides = [ig_cover(b, ch, w, h, a.cover)] + [fit_on(Image.open(p), w, h) for p in part]
+        first = (brand_cover(b, ch, w, h, a.cover, a.brand, a.number, solid) if a.brand
+                 else ig_cover(b, ch, w, h, a.cover))
+        slides = [first] + [fit_on(Image.open(p), w, h, ground) for p in part]
         if k == len(parts):
-            slides.append(ig_end(b, w, h, a.handle))
+            slides.append(brand_end(w, h, a.handle, outline) if a.brand else ig_end(b, w, h, a.handle))
         for i, s in enumerate(slides, 1):
             s.save(dest / f"{tag}{i:02d}.jpg", quality=92)
         print(f"{dest / (tag + '01.jpg')} .. {tag}{len(slides):02d}.jpg ({len(slides)} slides)")
-    cap = [f"[創作] {title}" + (f"（{len(parts)} 之 1）" if len(parts) > 1 else ""), "", DISCLOSURE,
-           "漫畫由右往左、由上往下讀。", "", " ".join(a.tags.split(","))]
+    split = f"（{len(parts)} 之 1）" if len(parts) > 1 else ""
+    if a.brand:
+        head = (f"第 {a.number} 首｜{title}" if a.number else f"{a.brand}｜{title}") + split
+        tags = a.tags if a.tags_given else f"#{a.brand},{a.tags}"
+        cap = [head, "", DISCLOSURE, "漫畫由右往左、由上往下讀。", "傳給那個說自己不怕的朋友。", "",
+               " ".join(tags.split(","))]
+    else:
+        cap = [f"[創作] {title}" + split, "", DISCLOSURE, "漫畫由右往左、由上往下讀。", "", " ".join(a.tags.split(","))]
     (dest / "caption.txt").write_text("\n".join(cap) + "\n", encoding="utf-8")
     print(dest / "caption.txt")
 
@@ -2077,7 +2178,11 @@ def main() -> None:
     ex.add_argument("--ratio", choices=sorted(IG_SIZES), default="3:4")
     ex.add_argument("--cover", default=None, help="panel id for slide 1 (default: page 1 as it is)")
     ex.add_argument("--handle", default=None, help="account name for the end card, e.g. @tonight_lights_on")
-    ex.add_argument("--tags", default="#鬼故事,#靈異,#怪談,#漫畫,#創作", help="comma-separated hashtags for the caption")
+    ex.add_argument("--tags", default=None, help="comma-separated hashtags for the caption")
+    ex.add_argument("--brand", default=None,
+                    help="account name: use the brand cover and end card (paper, ink, one seal) instead of the plain ones")
+    ex.add_argument("--number", type=int, default=None, help="with --brand: the story number, 「第 N 首」")
+    ex.add_argument("--seal", default=None, help="with --brand: square seal picture, light characters on red (the avatar)")
     rl = sub.add_parser("reel")
     rl.add_argument("mode", choices=["teaser", "line"])
     rl.add_argument("ids", nargs="*", help="teaser: the panels in order, usually three")
@@ -2096,6 +2201,10 @@ def main() -> None:
     rl.add_argument("--name", default=None, help="output file name without extension")
     rl.add_argument("--tags", default="#鬼故事,#靈異,#怪談,#台灣怪談,#創作", help="comma-separated hashtags for the caption")
     a = ap.parse_args()
+    if a.cmd == "export":
+        a.tags_given = a.tags is not None
+        if a.tags is None:
+            a.tags = "#鬼故事,#靈異,#怪談,#漫畫,#創作"
     set_work(Path(a.work))
     global BOARD
     BOARD = a.board
