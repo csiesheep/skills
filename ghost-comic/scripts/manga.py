@@ -23,6 +23,8 @@
     py -X utf8 manga.py review --read                 # brief for a first-time reader of the pages (references/reader_check.md)
     py -X utf8 manga.py status                        # picked per page, what is missing, GPU minutes so far
     py -X utf8 manga.py export --cover p27            # Instagram carousel: cover, every page on 3:4, end card, caption
+    py -X utf8 manga.py reel teaser p8 p9 p10 --handle @gui.chang.shi      # 9:16 Reel: three panels, captions, end card
+    py -X utf8 manga.py reel line --text "我回頭，床上那個人還在{睡}。"     # 9:16 Reel: a one-line story typed out on black
 
 Files in the work folder: board.json (the storyboard, see references/board_format.md), choices.json
 (written by `choose`), out/ (everything generated). Lettering is drawn here, vertical, never by the model.
@@ -1563,6 +1565,424 @@ def cmd_export(a) -> None:
     print(dest / "caption.txt")
 
 
+# ---------------------------------------------------------------------------
+# Reels: 9:16 video for Instagram Reels, YouTube Shorts and TikTok
+# ---------------------------------------------------------------------------
+
+REEL_W, REEL_H, REEL_FPS = 1080, 1920, 30
+# The apps draw a header over the top, and the account name, caption and buttons over the bottom fifth and the right
+# edge. Every word of a Reel stays inside this box so nothing is covered; pictures may run past it.
+REEL_SAFE = (90, 260, 960, 1480)
+REEL_PIC = (280, 1250)  # the picture band of a teaser (y0, y1); the caption sits under it
+REEL_CAP_Y = 1290
+CAPTION_KINDS = ("narration", "speech", "voice", "phone", "screen")
+NO_START_H = set("，。、：；！？」』）…—～")
+PAUSE_SHORT, PAUSE_LONG = set("，、：；"), set("。！？…")
+
+
+def ease(t: float) -> float:
+    return t * t * (3 - 2 * t)
+
+
+def ffmpeg_exe() -> str:
+    import shutil
+    exe = shutil.which("ffmpeg")
+    if exe:
+        return exe
+    try:
+        import imageio_ffmpeg
+    except ImportError:
+        raise SystemExit("reel needs ffmpeg: put it on PATH, or `py -m pip install imageio-ffmpeg`") from None
+    return imageio_ffmpeg.get_ffmpeg_exe()
+
+
+def write_video(frames, path: Path, fps: int = REEL_FPS) -> int:
+    """Pipe RGB frames into ffmpeg: H.264, yuv420p, faststart, no sound. Music is added in the app, where the
+    trending sounds are. Returns the number of frames written."""
+    import subprocess
+    cmd = [ffmpeg_exe(), "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
+           "-s", f"{REEL_W}x{REEL_H}", "-r", str(fps), "-i", "-", "-c:v", "libx264", "-preset", "medium",
+           "-crf", "18", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(path)]
+    proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+    n = 0
+    try:
+        for f in frames:
+            proc.stdin.write(f.convert("RGB").tobytes())
+            n += 1
+    finally:
+        proc.stdin.close()
+    if proc.wait() != 0:
+        raise SystemExit(f"ffmpeg failed writing {path}")
+    return n
+
+
+def reel_font(size: int, kind: str = "serif", weight: str | None = "SemiBold") -> ImageFont.FreeTypeFont:
+    f = ImageFont.truetype(font_path(kind), size)
+    if weight:
+        try:
+            f.set_variation_by_name(weight)
+        except (OSError, ValueError, AttributeError):
+            pass  # not a variable font: its one weight it is
+    return f
+
+
+def _w(chars, font) -> float:
+    return sum(font.getlength(c) for c, _ in chars)
+
+
+def wrap_h(chars: list[tuple[str, int]], font, max_w: float) -> list[list[tuple[str, int]]]:
+    """Horizontal lines for a caption: greedy, then balanced, since two lines of similar length read better than a long
+    one and a stub. Closing punctuation never starts a line; "\n" forces a break. `chars` are (character, flag)."""
+    def greedy(limit: float) -> list[list[tuple[str, int]]]:
+        lines, cur = [], []
+        for c in chars:
+            if c[0] == "\n":
+                lines.append(cur)
+                cur = []
+            elif cur and _w(cur + [c], font) > limit and c[0] not in NO_START_H:
+                lines.append(cur)
+                cur = [c]
+            else:
+                cur.append(c)
+        if cur:
+            lines.append(cur)
+        return lines
+
+    lines = greedy(max_w)
+    if len(lines) > 1 and not any(c[0] == "\n" for c in chars):
+        balanced = greedy(min(max_w, _w(chars, font) / len(lines) * 1.06 + font.size))
+        if len(balanced) == len(lines):
+            lines = balanced
+    return lines
+
+
+BREAK_AFTER_H = set("，。、：；！？…」』")
+
+
+def wrap_phrases(chars: list[tuple[str, int]], font, max_w: float, max_lines: int) -> list[list[tuple[str, int]]] | None:
+    """Lines that break only after punctuation, packed and then balanced; None when a phrase is wider than the line or
+    it takes more than max_lines (the caller then tries a smaller size, and breaks between characters only last).
+    「妹妹，妳後面那三個是妳同／事喔？」 was the first teaser's caption before this."""
+    if any(c[0] == "\n" for c in chars):
+        return None
+    ps, cur = [], []
+    for i, c in enumerate(chars):
+        cur.append(c)
+        nxt = chars[i + 1][0] if i + 1 < len(chars) else ""
+        if c[0] in BREAK_AFTER_H and nxt not in BREAK_AFTER_H:
+            ps.append(cur)
+            cur = []
+    if cur:
+        ps.append(cur)
+    if any(_w(p, font) > max_w for p in ps):
+        return None
+
+    def pack(limit: float) -> list[list[tuple[str, int]]]:
+        lines, line = [], []
+        for p in ps:
+            if line and _w(line + p, font) > limit:
+                lines.append(line)
+                line = list(p)
+            else:
+                line += p
+        if line:
+            lines.append(line)
+        return lines
+
+    lines = pack(max_w)
+    if len(lines) > 1:
+        balanced = pack(max(max(_w(p, font) for p in ps), _w(chars, font) / len(lines) * 1.06))
+        if len(balanced) == len(lines):
+            lines = balanced
+    return lines if len(lines) <= max_lines else None
+
+
+def fit_lines(chars, sizes, max_w: float, max_lines: int, kind: str = "serif", weight: str | None = "SemiBold"):
+    """(size, font, lines) at the largest size whose punctuation-only breaks fit; failing that, the largest size whose
+    character breaks fit; failing that, the smallest size as it comes out."""
+    for size in sizes:
+        font = reel_font(size, kind, weight)
+        lines = wrap_phrases(chars, font, max_w, max_lines)
+        if lines:
+            return size, font, lines
+    for size in sizes:
+        font = reel_font(size, kind, weight)
+        lines = wrap_h(chars, font, max_w)
+        if len(lines) <= max_lines:
+            return size, font, lines
+    return size, font, lines
+
+
+def text_layer(lines, font, colours: dict, line_h: float, alphas: list[float] | None = None) -> Image.Image:
+    """Centred lines on a transparent layer, each character in its flag's colour with a black outline; `alphas` (one
+    per character, reading order) fades characters in one by one."""
+    w = int(max(_w(l, font) for l in lines)) + 20
+    h = int(line_h * len(lines)) + 20
+    im = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    k = 0
+    for i, line in enumerate(lines):
+        x = (w - _w(line, font)) / 2
+        y = 10 + i * line_h
+        for c, flag in line:
+            a = 1.0 if alphas is None else alphas[k]
+            k += 1
+            if a > 0:
+                r, g, b = colours[flag]
+                d.text((x, y), c, font=font, fill=(r, g, b, round(255 * a)), stroke_width=3,
+                       stroke_fill=(0, 0, 0, round(255 * a)))
+            x += font.getlength(c)
+    return im
+
+
+def paste_layer(base: Image.Image, layer: Image.Image, xy, opacity: float = 1.0) -> None:
+    if opacity <= 0:
+        return
+    if opacity < 1:
+        layer = layer.copy()
+        layer.putalpha(layer.getchannel("A").point(lambda v: round(v * opacity)))
+    base.paste(layer, xy, layer)
+
+
+def centred_text(im: Image.Image, y: float, text: str, font, fill) -> float:
+    """One centred line; returns the y below it."""
+    d = ImageDraw.Draw(im)
+    d.text(((REEL_W - d.textlength(text, font=font)) / 2, y), text, font=font, fill=fill)
+    return y + font.size * 1.5
+
+
+def hex_rgb(h: str) -> tuple[int, int, int]:
+    h = h.lstrip("#")
+    return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+
+
+def panel_caption(cell: dict) -> str:
+    """A panel's lettering as one horizontal caption: narration as it is, speech in 「」, line breaks dropped."""
+    parts = []
+    for e in cell.get("text", []):
+        if e["kind"] in CAPTION_KINDS:
+            t = e["text"].replace("\n", "")
+            if e["kind"] in ("speech", "voice", "phone") and not t.startswith("「"):
+                t = f"「{t}」"
+            parts.append(t)
+    return "".join(parts)
+
+
+def caption_layer(text: str) -> Image.Image | None:
+    if not text:
+        return None
+    size, font, lines = fit_lines([(c, 0) for c in text], (60, 52, 46), REEL_SAFE[2] - REEL_SAFE[0], 3)
+    if len(lines) > 3:
+        print(f"WARN reel: caption runs to {len(lines)} lines; shorten it with --captions: {text}")
+    return text_layer(lines, font, {0: (242, 242, 242)}, size * 1.45)
+
+
+def panel_motion(src: Image.Image, n: int, focus=(0.5, 0.5)):
+    """(picture, top-left) for each of n frames. A panel wider than the band pushes in slowly toward its `focus`; a
+    taller one fills the band's width and pans from top to bottom, so all of it is seen."""
+    W, H = src.size
+    y0, y1 = REEL_PIC
+    band_h = y1 - y0
+    wide = W / H >= REEL_W / band_h
+    vw, vh = (REEL_W, round(REEL_W * H / W)) if wide else (REEL_W, band_h)
+    top = y0 + (band_h - vh) // 2 if wide else y0
+    for i in range(n):
+        t = ease(i / max(1, n - 1))
+        if wide:
+            s = 1 + 0.08 * t
+            bw, bh = W / s, H / s
+            cx = min(max(W * focus[0], bw / 2), W - bw / 2)
+            cy = min(max(H * focus[1], bh / 2), H - bh / 2)
+        else:
+            s = 1 + 0.04 * t
+            bw = W / s
+            bh = bw * vh / vw
+            cx, cy = W / 2, bh / 2 + (H - bh) * t
+        box = (cx - bw / 2, cy - bh / 2, cx + bw / 2, cy + bh / 2)
+        yield src.transform((vw, vh), Image.Transform.EXTENT, box, Image.Resampling.BICUBIC), (0, top)
+
+
+def reel_end(title: str, end_text: str, handle: str | None, accent, logo: str | None) -> Image.Image:
+    im = Image.new("RGB", (REEL_W, REEL_H), "black")
+    y = 560
+    if logo:
+        lg = Image.open(logo).convert("RGBA").resize((240, 240), Image.LANCZOS)
+        im.paste(lg, ((REEL_W - 240) // 2, 470), lg)
+        y = 780
+    if title:
+        y = centred_text(im, y, f"〈{title}〉", reel_font(50), (190, 190, 190))
+    y = centred_text(im, y + 10, end_text, reel_font(76), (245, 245, 245))
+    if handle:
+        y = centred_text(im, y + 20, handle, reel_font(46, "plain", None), accent)
+    centred_text(im, y + 10, DISCLOSURE, reel_font(34, "plain", None), (140, 140, 140))
+    return im
+
+
+def frame_sheet(samples: list[Image.Image], path: Path) -> None:
+    """Sampled frames side by side, for looking at a Reel without playing it."""
+    tw, th = 270, 480
+    sheet = Image.new("RGB", (len(samples) * (tw + 10) + 10, th + 20), "#777")
+    for i, f in enumerate(samples):
+        sheet.paste(f.resize((tw, th), Image.LANCZOS), (10 + i * (tw + 10), 10))
+    sheet.save(path, quality=90)
+
+
+def reel_caption(path: Path, first: str, more: list[str], tags: str) -> None:
+    lines = [first, "", DISCLOSURE, *more, "傳給那個說自己不怕的朋友。", "", " ".join(tags.split(","))]
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def reel_teaser(a) -> None:
+    b, ch = load_board(), load_choices()
+    if not a.ids:
+        raise SystemExit("reel teaser needs panel ids, e.g. `reel teaser p8 p9 p10`")
+    caps = a.captions.split("|") if a.captions else []
+    items = []
+    for k, pid in enumerate(a.ids):
+        cell = find_panel(b, pid)
+        if pid not in ch["panels"]:
+            raise SystemExit(f"{pid} has no picked candidate")
+        text = caps[k] if k < len(caps) and caps[k] != "" else panel_caption(cell)
+        if text == "-":
+            text = ""
+        items.append((cell, panel_source(cell, ch), caption_layer(text)))
+    title = board_title(b).replace("\n", "") if a.title is None else a.title
+    accent = hex_rgb(a.accent)
+    end = reel_end(title, a.end, a.handle, accent, a.logo)
+    per = [round(a.seconds * REEL_FPS) for _ in items]
+    per[-1] += REEL_FPS  # the last panel is the one to sit with
+    n_end = round(2.5 * REEL_FPS)
+    total = sum(per) + n_end
+    marks = {round(total * i / 7) for i in range(7)} | {total - 1}
+    samples: list[Image.Image] = []
+    black = Image.new("RGB", (REEL_W, REEL_H), "black")
+
+    def frames():
+        idx = 0
+        for k, ((cell, src, cap), n) in enumerate(zip(items, per)):
+            for i, (pic, xy) in enumerate(panel_motion(src, n, tuple(cell.get("focus", (0.5, 0.5))))):
+                f = black.copy()
+                f.paste(pic, xy)
+                if cap is not None:  # the first caption is there from frame 0: it is the hook
+                    op = 1.0 if k == 0 else min(1.0, max(0.0, (i - 6) / 8))
+                    paste_layer(f, cap, ((REEL_W - cap.width) // 2, REEL_CAP_Y), op)
+                fade = 1.0
+                if k > 0 and i < 4:
+                    fade = (i + 1) / 5
+                if i >= n - 5:
+                    fade = min(fade, (n - i) / 6)
+                if fade < 1:
+                    f = Image.blend(black, f, fade)
+                if idx in marks:
+                    samples.append(f.copy())
+                idx += 1
+                yield f
+        for i in range(n_end):
+            f = Image.blend(black, end, min(1.0, (i + 1) / 8))
+            if idx in marks:
+                samples.append(f.copy())
+            idx += 1
+            yield f
+
+    dest = OUT / "export" / "reels"
+    dest.mkdir(parents=True, exist_ok=True)
+    name = a.name or "teaser_" + "-".join(a.ids)
+    n = write_video(frames(), dest / f"{name}.mp4")
+    # the cover: the first panel half way through its move, the title over the top of the picture
+    cell, src, cap = items[0]
+    pic, xy = list(panel_motion(src, per[0], tuple(cell.get("focus", (0.5, 0.5)))))[per[0] // 2]
+    cov = black.copy()
+    cov.paste(pic, xy)
+    if cap is not None:
+        paste_layer(cov, cap, ((REEL_W - cap.width) // 2, REEL_CAP_Y))
+    if title:
+        size, font, lines = fit_lines([(c, 0) for c in title], (84, 72), REEL_SAFE[2] - REEL_SAFE[0], 3, "serif", "Bold")
+        tl = text_layer(lines, font, {0: (255, 255, 255)}, size * 1.3)
+        paste_layer(cov, tl, ((REEL_W - tl.width) // 2, 300))
+    cov.save(dest / f"{name}_cover.jpg", quality=92)
+    cov.crop((0, 240, REEL_W, 1680)).save(dest / f"{name}_grid.jpg", quality=90)  # the 3:4 the profile grid shows
+    frame_sheet(samples, dest / f"{name}_frames.jpg")
+    reel_caption(dest / f"{name}_caption.txt", f"[創作] {title}" if title else "[創作]", ["全篇漫畫在主頁。"], a.tags)
+    print(f"{dest / name}.mp4: {n} frames, {n / REEL_FPS:.1f} s; cover, grid, frames and caption beside it")
+
+
+def parse_accent(text: str) -> list[tuple[str, int]]:
+    """Characters with a flag: 1 inside {braces}, which are dropped."""
+    out, flag = [], 0
+    for c in text:
+        if c == "{":
+            flag = 1
+        elif c == "}":
+            flag = 0
+        else:
+            out.append((c, flag))
+    return out
+
+
+def reel_line(a) -> None:
+    """A one-line story: black, the words appear one by one at reading pace, a beat before the {accented} part, which
+    comes in the accent colour; then a hold, and a fade to black so the loop restarts cleanly."""
+    if not a.text:
+        raise SystemExit('reel line needs --text, e.g. --text "我回頭，床上那個人還在{睡}。"')
+    chars = parse_accent(a.text)
+    plain = [c for c in chars if c[0] != "\n"]
+    sizes = (84, 72, 60) if len(plain) <= 28 else (72, 60) if len(plain) <= 44 else (60, 52)
+    size, font, lines = fit_lines(chars, sizes, 840, 6)
+    line_h = size * 1.55
+    times, t, prev = [], 0.5, 0
+    for c, flag in plain:
+        if flag and not prev:
+            t += a.beat
+        times.append(t)
+        t += 1 / a.cps
+        t += 0.25 if c in PAUSE_SHORT else 0.45 if c in PAUSE_LONG else 0
+        prev = flag
+    n = round((times[-1] + a.hold) * REEL_FPS)
+    colours = {0: (238, 238, 238), 1: hex_rgb(a.accent)}
+    bg = Image.new("RGB", (REEL_W, REEL_H), "black")
+    y = 1360
+    if a.handle:
+        y = centred_text(bg, y, a.handle, reel_font(40, "plain", None), hex_rgb(a.accent))
+    centred_text(bg, y, DISCLOSURE, reel_font(30, "plain", None), (120, 120, 120))
+    black = Image.new("RGB", (REEL_W, REEL_H), "black")
+    marks = {round(n * i / 7) for i in range(7)} | {n - 1}
+    samples: list[Image.Image] = []
+    full = None
+
+    def frames():
+        nonlocal full
+        for i in range(n):
+            tt = i / REEL_FPS
+            alphas = [min(1.0, max(0.0, (tt - tc) * REEL_FPS / 4)) for tc in times]
+            layer = text_layer(lines, font, colours, line_h, alphas)
+            f = bg.copy()
+            paste_layer(f, layer, ((REEL_W - layer.width) // 2, round(870 - layer.height / 2)))
+            if i == n - 8:
+                full = f.copy()
+            if i >= n - 6:
+                f = Image.blend(black, f, (n - i) / 7)
+            if i in marks:
+                samples.append(f.copy())
+            yield f
+
+    dest = OUT / "export" / "reels"
+    dest.mkdir(parents=True, exist_ok=True)
+    name = a.name or "line_" + hashlib.sha1(a.text.encode()).hexdigest()[:8]
+    count = write_video(frames(), dest / f"{name}.mp4")
+    full.save(dest / f"{name}_cover.jpg", quality=92)
+    full.crop((0, 240, REEL_W, 1680)).save(dest / f"{name}_grid.jpg", quality=90)
+    frame_sheet(samples, dest / f"{name}_frames.jpg")
+    reel_caption(dest / f"{name}_caption.txt", "".join(c for c, _ in plain), [], a.tags)
+    print(f"{dest / name}.mp4: {count} frames, {count / REEL_FPS:.1f} s; cover, grid, frames and caption beside it")
+
+
+def cmd_reel(a) -> None:
+    """9:16 videos for Reels, Shorts and TikTok. `teaser`: a few picked panels, each moving slowly with its caption,
+    then an end card that sends viewers to the full comic. `line`: a one-line story typed out on black. Silent mp4,
+    1080 x 1920, 30 fps, plus a cover, the 3:4 the profile grid shows, a strip of sampled frames and a caption."""
+    (reel_line if a.mode == "line" else reel_teaser)(a)
+
+
 def cmd_status(a) -> None:
     """Where the run stands: picks per page, the panels still missing (with how many candidates each has), how many
     review briefs exist, and GPU minutes from out/log.jsonl by kind."""
@@ -1658,6 +2078,23 @@ def main() -> None:
     ex.add_argument("--cover", default=None, help="panel id for slide 1 (default: page 1 as it is)")
     ex.add_argument("--handle", default=None, help="account name for the end card, e.g. @tonight_lights_on")
     ex.add_argument("--tags", default="#鬼故事,#靈異,#怪談,#漫畫,#創作", help="comma-separated hashtags for the caption")
+    rl = sub.add_parser("reel")
+    rl.add_argument("mode", choices=["teaser", "line"])
+    rl.add_argument("ids", nargs="*", help="teaser: the panels in order, usually three")
+    rl.add_argument("--captions", default=None,
+                    help="teaser: one caption per panel separated by |; empty takes the panel's lettering, - shows none")
+    rl.add_argument("--seconds", type=float, default=3.5, help="teaser: seconds per panel (the last gets one more)")
+    rl.add_argument("--title", default=None, help="teaser: title on the cover and end card (default: the board's; '' for none)")
+    rl.add_argument("--end", default="全篇漫畫在主頁", help="teaser: the end card's line")
+    rl.add_argument("--logo", default=None, help="teaser: a square image (PNG with transparency) for the end card")
+    rl.add_argument("--text", default=None, help="line: the story; {braces} mark the part shown in the accent colour")
+    rl.add_argument("--cps", type=float, default=7.0, help="line: characters per second")
+    rl.add_argument("--beat", type=float, default=0.6, help="line: pause in seconds before the accented part")
+    rl.add_argument("--hold", type=float, default=2.5, help="line: seconds the whole line stays up")
+    rl.add_argument("--handle", default=None, help="account name, e.g. @gui.chang.shi")
+    rl.add_argument("--accent", default="#B8322A", help="accent colour for the handle and the {accented} words")
+    rl.add_argument("--name", default=None, help="output file name without extension")
+    rl.add_argument("--tags", default="#鬼故事,#靈異,#怪談,#台灣怪談,#創作", help="comma-separated hashtags for the caption")
     a = ap.parse_args()
     set_work(Path(a.work))
     global BOARD
@@ -1665,7 +2102,7 @@ def main() -> None:
     {"check": cmd_check, "styles": cmd_styles, "sheets": cmd_sheets, "choose": cmd_choose, "refs": cmd_refs,
      "lint": cmd_lint, "review": cmd_review, "repaint": cmd_repaint, "fill": cmd_fill, "tone": cmd_tone, "crop": cmd_crop,
      "plan": cmd_plan, "panels": cmd_panels, "contact": cmd_contact, "pages": cmd_pages, "status": cmd_status,
-     "export": cmd_export}[a.cmd](a)
+     "export": cmd_export, "reel": cmd_reel}[a.cmd](a)
 
 
 if __name__ == "__main__":
