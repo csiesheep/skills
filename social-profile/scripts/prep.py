@@ -29,7 +29,7 @@ SITES = {
                           "two changes per 14 days (reported)"},
     "threads": {"bio": 150, "seen": "", "edit": "https://www.threads.com/@{handle}",
                 "name": "a Name row is in Edit profile (untested); it keeps its own photo and bio"},
-    "facebook": {"bio": 101, "seen": "", "edit": "https://www.facebook.com/{handle}",
+    "facebook": {"bio": 255, "seen": "bio", "edit": "https://www.facebook.com/{handle}",
                  "name": "Page name changes go to Facebook's review"},
     "youtube": {"bio": 1000, "seen": "", "edit": "https://studio.youtube.com/",
                 "name": "channel name changes are limited (reported); nothing is live until Publish"},

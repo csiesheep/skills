@@ -27,7 +27,8 @@ met on the way. Read the section for each site before driving it.
   target's own profile means you are not it. Wrong account: stop on that site.
 - **Leave Chrome as you found it.** Work in a new tab, close it at the end, and switch Facebook back
   to the personal profile after acting as the Page. Otherwise the user's next Facebook comment goes
-  out as the brand.
+  out as the brand. If Facebook was already acting as the Page when you arrived (the user switched
+  earlier), leave it so, and say in the report that Chrome's Facebook is still the Page.
 
 ## Steps
 
@@ -51,8 +52,12 @@ met on the way. Read the section for each site before driving it.
       they open the operating system's file picker, which the extension cannot see and which
       blocks the tab. Some sites need a menu opened first so the input exists (Facebook). A crop
       dialog may follow: keep the default full square and press its Apply / Done / Save.
-   3. Text: click the field, `ctrl+a`, type. For a multi-line bio, type each line and press the
-      Enter key between lines. Compare the page's own counter with prep.py's count.
+   3. Text: click the field, `ctrl+a`, Delete, type. For a multi-line bio, type each line and press
+      the Enter key between lines (it made a line break on all six sites). Put the Chinese into the
+      type action as the characters themselves, copied from profile.json, never as hand-written
+      `\u` escapes: one wrong escape turned 王士禎 into 王士秎 in a classical quote, which a glance
+      does not catch. Zoom on the field and compare the page's own counter with prep.py's count
+      before saving; a mismatch means a stray or missing character.
    4. Save, and answer the site's confirmation (TikTok asks before a nickname change because it
       locks the name for 7 days; say yes only if the user asked for that name).
    5. Verify: reload the public profile and zoom on the header. TikTok served the old picture and
