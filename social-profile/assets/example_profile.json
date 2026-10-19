@@ -1,0 +1,27 @@
+{
+  "_comment": "The run this skill came from (鬼唱詩, 2026-10-18). Copy next to your picture and edit. Leave out a field to keep it as it is; \"photo\": false keeps a site's photo.",
+  "image": "C:/Users/sheep/Pictures/ghost_comic/avatar/final/avatar_1024.png",
+  "sites": {
+    "instagram": {
+      "handle": "gui.chang.shi",
+      "bio": "鬼唱詩｜台灣怪談\n每晚 11 點，鬼開口說一首。\nAI 輔助創作，純屬虛構。看完記得收驚。\n漫畫在這裡，文字在 Threads ↓"
+    },
+    "threads": {
+      "handle": "gui.chang.shi",
+      "bio": "每晚 11 點說一首台灣怪談。AI 輔助寫、人工審，純屬虛構。漫畫版在 IG。鬼唱詩，不是唱詩班。"
+    },
+    "facebook": {
+      "handle": "gui.chang.shi"
+    },
+    "youtube": {
+      "handle": "鬼唱詩"
+    },
+    "tiktok": {
+      "handle": "guichangshi",
+      "name": "鬼唱詩"
+    },
+    "pinterest": {
+      "handle": "guichangshi"
+    }
+  }
+}
