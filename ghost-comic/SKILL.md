@@ -30,7 +30,7 @@ Read before writing a board:
 - Python 3.10+ with Pillow, run as `py -X utf8` on Windows. A CJK font with vertical punctuation
   forms (Microsoft JhengHei or Noto Sans/Serif TC).
 - A work folder of its own, outside `AppData\Roaming\Claude\` (Python may not see files the
-  desktop app writes there), e.g. `C:\Users\sheep\Pictures\ghost_comic\<story>`. All commands run
+  desktop app writes there), e.g. `C:\Users\sheep\Pictures\gui_chang_shi\stories\<story>\comic`. All commands run
   from it; output goes to `out/`.
 
 ## Steps
