@@ -1535,10 +1535,130 @@ def ig_end(b: dict, w: int, h: int, handle: str | None) -> Image.Image:
     return im
 
 
+# A brand file (`--brand-file brand.json`) holds an account's look and words: colours, seal, the disclosure, how a
+# story number is written, the end card's lines and the caption template. The code draws; the file decides what.
+# Without one, export and reel keep their plain defaults. See assets/example_brand.json.
+BRAND_COLOURS = {"paper": "#FFFFFF", "ink": "#141414", "accent": "#B8322A", "muted": "#696969"}
+
+
+def load_brand(path: str | None) -> dict | None:
+    """Read a brand file; paths in it (seal, logo, ledger) are relative to the file itself."""
+    if not path:
+        return None
+    p = Path(path).resolve()
+    br = json.loads(p.read_text(encoding="utf-8"))
+    for k in ("seal", "logo", "ledger"):
+        if br.get(k):
+            br[k] = str((p.parent / br[k]).resolve())
+    br["rgb"] = {k: hex_rgb(v) for k, v in {**BRAND_COLOURS, **br.get("colors", {})}.items()}
+    br.setdefault("name", "")
+    br.setdefault("disclosure", DISCLOSURE)
+    br.setdefault("number", "第 {n} 首")
+    return br
+
+
+def brand_text(template: str, br: dict, number: int | None = None, title: str = "") -> str:
+    """Fill {name} {number} {title} {disclosure} {handle}. With no number yet, {number} becomes the brand's name, so
+    「{number}｜{title}」 reads 「鬼唱詩｜title」 until the story has its slot."""
+    num = br["number"].format(n=number) if number else br.get("name", "")
+    return template.format(name=br.get("name", ""), number=num, title=title, disclosure=br["disclosure"],
+                           handle=br.get("handle") or "")
+
+
+def seal_images(path: str | None, red) -> tuple[Image.Image | None, Image.Image | None]:
+    """(solid, outline) from a square seal picture with light characters on a red ground (an avatar): solid is the
+    picture as it is, for the cover; outline turns it round to red characters in a red frame on transparent, the way
+    the seal is stamped on the end card."""
+    if not path:
+        return None, None
+    solid = Image.open(path).convert("RGB")
+    g = solid.convert("L")
+    chars = g.point(lambda v: 255 if v > 200 else 0).filter(ImageFilter.MaxFilter(3))
+    s = solid.width
+    out = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    ink = Image.new("RGBA", (s, s), tuple(red) + (255,))
+    out.paste(ink, (0, 0), chars)
+    frame = Image.new("L", (s, s), 0)
+    k = round(s * 0.045)
+    ImageDraw.Draw(frame).rectangle([k, k, s - 1 - k, s - 1 - k], outline=255, width=round(s * 0.05))
+    out.paste(ink, (0, 0), frame)
+    return solid, out
+
+
+def _serif(size: int) -> ImageFont.FreeTypeFont:
+    f = ImageFont.truetype(font_path("serif"), size)
+    try:
+        f.set_variation_by_name("SemiBold")
+    except (OSError, ValueError, AttributeError):
+        pass
+    return f
+
+
+def brand_cover(b: dict, ch: dict, w: int, h: int, panel: str | None, br: dict, number: int | None,
+                seal: Image.Image | None) -> Image.Image:
+    """Slide 1: the picked panel framed on the paper colour, the vertical title at its top right, and a strip under
+    it with the brand's `cover_strip` line (「鬼唱詩｜第 N 首」), the disclosure and the seal. The same frame for every
+    comic, so the profile grid reads as one shelf."""
+    c = br["rgb"]
+    im = Image.new("RGB", (w, h), c["paper"])
+    m = round(w * 0.05)
+    strip = round(h * 0.11)
+    box = (m, m, w - m, h - m - strip)
+    pw, ph = box[2] - box[0], box[3] - box[1]
+    if panel:
+        cell = find_panel(b, panel)
+        if panel not in ch["panels"]:
+            raise SystemExit(f"--cover {panel}: that panel has no picked candidate")
+        pic = cover(panel_source(cell, ch), pw, ph, tuple(cell.get("focus", (0.5, 0.5))))
+    else:
+        pic = cover(Image.open(OUT / "pages" / "page_01.png").convert("RGB"), pw, ph, (0.5, 0.0))
+    im.paste(pic, box[:2])
+    d = ImageDraw.Draw(im)
+    d.rectangle([box[0] - 1, box[1] - 1, box[2], box[3]], outline=c["ink"], width=5)
+    draw_entry(im, {"kind": "title", "text": board_title(b), "pos": "tr", "scale": 1.3}, box, round(w / 40))
+    top = box[3] + round(strip * 0.22)
+    line = brand_text(br.get("cover_strip", "{name}｜{number}"), br, number) if number else br.get("name", "")
+    big = _serif(round(w / 23))
+    small = ImageFont.truetype(font_path("plain"), round(w / 42))
+    d.text((m, top), line, font=big, fill=c["ink"])
+    d.text((m, top + round(big.size * 1.35)), br["disclosure"], font=small, fill=c["muted"])
+    if seal is not None:
+        sz = round(strip * 0.8)
+        im.paste(seal.resize((sz, sz), Image.LANCZOS), (w - m - sz, box[3] + (strip - sz) // 2 + 4))
+    return im
+
+
+def brand_end(w: int, h: int, br: dict, handle: str | None, seal: Image.Image | None) -> Image.Image:
+    """The last slide on the paper colour: the brand's `end_card` lines (the first one large), the handle, and the
+    seal stamped at the bottom right."""
+    c = br["rgb"]
+    im = Image.new("RGB", (w, h), c["paper"])
+    d = ImageDraw.Draw(im)
+    texts = br.get("end_card") or ["（完）", br["disclosure"]]
+    lines = [(texts[0], _serif(round(w / 13)), c["ink"], 2.2)]
+    lines += [(t, _serif(round(w / 25)), c["ink"], 1.7) for t in texts[1:]]
+    if len(lines) > 1:
+        lines[-1] = (*lines[-1][:3], 2.2)
+    if handle:
+        lines.append((handle, ImageFont.truetype(font_path("plain"), round(w / 28)), c["muted"], 1.0))
+    heights = [round(f.size * gap) for _, f, _, gap in lines]
+    y = round(h * 0.42 - sum(heights) / 2)
+    for (text, f, colour, _), lh in zip(lines, heights):
+        d.text(((w - d.textlength(text, font=f)) / 2, y), text, font=f, fill=colour)
+        y += lh
+    if seal is not None:
+        sz = round(w * 0.17)
+        m = round(w * 0.07)
+        s = seal.resize((sz, sz), Image.LANCZOS)
+        im.paste(s, (w - m - sz, h - m - sz), s)
+    return im
+
+
 def cmd_export(a) -> None:
     """Instagram carousel from the laid-out pages: a cover, every page whole on a 3:4 (or 4:5) slide, an end card,
     and a caption with the disclosure. A page of 1200 x 1700 leaves about 32 px of white at each side on 3:4. More
-    pages than fit in one post (20 slides) are split into parts."""
+    pages than fit in one post (20 slides) are split into parts. With --brand-file the cover, end card, page ground
+    and caption follow the brand file."""
     b, ch = load_board(), load_choices()
     pages = sorted((OUT / "pages").glob("page_*.png"))
     if not pages:
@@ -1551,16 +1671,28 @@ def cmd_export(a) -> None:
     per = IG_MAX - 2
     parts = [pages[i:i + per] for i in range(0, len(pages), per)]
     title = board_title(b).replace("\n", "")
+    br = a.brand
+    handle = a.handle or (br or {}).get("handle")
+    solid, outline = seal_images(br.get("seal"), br["rgb"]["accent"]) if br else (None, None)
+    ground = br["rgb"]["paper"] if br else "white"
     for k, part in enumerate(parts, 1):
         tag = f"part{k}_" if len(parts) > 1 else ""
-        slides = [ig_cover(b, ch, w, h, a.cover)] + [fit_on(Image.open(p), w, h) for p in part]
+        first = brand_cover(b, ch, w, h, a.cover, br, a.number, solid) if br else ig_cover(b, ch, w, h, a.cover)
+        slides = [first] + [fit_on(Image.open(p), w, h, ground) for p in part]
         if k == len(parts):
-            slides.append(ig_end(b, w, h, a.handle))
+            slides.append(brand_end(w, h, br, handle, outline) if br else ig_end(b, w, h, handle))
         for i, s in enumerate(slides, 1):
             s.save(dest / f"{tag}{i:02d}.jpg", quality=92)
         print(f"{dest / (tag + '01.jpg')} .. {tag}{len(slides):02d}.jpg ({len(slides)} slides)")
-    cap = [f"[創作] {title}" + (f"（{len(parts)} 之 1）" if len(parts) > 1 else ""), "", DISCLOSURE,
-           "漫畫由右往左、由上往下讀。", "", " ".join(a.tags.split(","))]
+    split = f"（{len(parts)} 之 1）" if len(parts) > 1 else ""
+    if br:
+        cfg = br.get("caption", {})
+        head = brand_text(cfg.get("title", "{number}｜{title}"), br, a.number, title) + split
+        lines = [brand_text(x, br, a.number, title) for x in cfg.get("lines", ["{disclosure}"])]
+        tags = a.tags.split(",") if a.tags_given else cfg.get("tags", [])
+        cap = [head, "", *lines, "", " ".join(tags)]
+    else:
+        cap = [f"[創作] {title}" + split, "", DISCLOSURE, "漫畫由右往左、由上往下讀。", "", " ".join(a.tags.split(","))]
     (dest / "caption.txt").write_text("\n".join(cap) + "\n", encoding="utf-8")
     print(dest / "caption.txt")
 
@@ -1802,7 +1934,8 @@ def panel_motion(src: Image.Image, n: int, focus=(0.5, 0.5)):
         yield src.transform((vw, vh), Image.Transform.EXTENT, box, Image.Resampling.BICUBIC), (0, top)
 
 
-def reel_end(title: str, end_text: str, handle: str | None, accent, logo: str | None) -> Image.Image:
+def reel_end(title: str, end_text: str, handle: str | None, accent, logo: str | None,
+             disclosure: str = DISCLOSURE) -> Image.Image:
     im = Image.new("RGB", (REEL_W, REEL_H), "black")
     y = 560
     if logo:
@@ -1814,7 +1947,7 @@ def reel_end(title: str, end_text: str, handle: str | None, accent, logo: str | 
     y = centred_text(im, y + 10, end_text, reel_font(76), (245, 245, 245))
     if handle:
         y = centred_text(im, y + 20, handle, reel_font(46, "plain", None), accent)
-    centred_text(im, y + 10, DISCLOSURE, reel_font(34, "plain", None), (140, 140, 140))
+    centred_text(im, y + 10, disclosure, reel_font(34, "plain", None), (140, 140, 140))
     return im
 
 
@@ -1827,9 +1960,24 @@ def frame_sheet(samples: list[Image.Image], path: Path) -> None:
     sheet.save(path, quality=90)
 
 
-def reel_caption(path: Path, first: str, more: list[str], tags: str) -> None:
-    lines = [first, "", DISCLOSURE, *more, "傳給那個說自己不怕的朋友。", "", " ".join(tags.split(","))]
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+def reel_caption(path: Path, first: str, lines: list[str], tags: str) -> None:
+    path.write_text("\n".join([first, "", *lines, "", " ".join(tags.split(","))]) + "\n", encoding="utf-8")
+
+
+def reel_caption_parts(a, kind: str, title: str) -> tuple[str, list[str]]:
+    """First line and body of a Reel's caption: from the brand file's `reel` block when there is one ("teaser_lines"
+    or "line_lines"), else the plain disclosure."""
+    br = a.brand
+    if not br:
+        first = f"[創作] {title}" if kind == "teaser" else title
+        return first, [DISCLOSURE] + (["全篇漫畫在主頁。"] if kind == "teaser" else [])
+    cfg = br.get("reel", {})
+    if kind == "teaser":
+        first = brand_text(cfg.get("title", br.get("caption", {}).get("title", "{number}｜{title}")), br, a.number, title)
+    else:
+        first = title
+    lines = cfg.get(f"{kind}_lines", ["{disclosure}"])
+    return first, [brand_text(x, br, a.number, title) for x in lines]
 
 
 def reel_teaser(a) -> None:
@@ -1848,7 +1996,7 @@ def reel_teaser(a) -> None:
         items.append((cell, panel_source(cell, ch), caption_layer(text)))
     title = board_title(b).replace("\n", "") if a.title is None else a.title
     accent = hex_rgb(a.accent)
-    end = reel_end(title, a.end, a.handle, accent, a.logo)
+    end = reel_end(title, a.end, a.handle, accent, a.logo, a.disclosure)
     per = [round(a.seconds * REEL_FPS) for _ in items]
     per[-1] += REEL_FPS  # the last panel is the one to sit with
     n_end = round(2.5 * REEL_FPS)
@@ -1902,7 +2050,8 @@ def reel_teaser(a) -> None:
     cov.save(dest / f"{name}_cover.jpg", quality=92)
     cov.crop((0, 240, REEL_W, 1680)).save(dest / f"{name}_grid.jpg", quality=90)  # the 3:4 the profile grid shows
     frame_sheet(samples, dest / f"{name}_frames.jpg")
-    reel_caption(dest / f"{name}_caption.txt", f"[創作] {title}" if title else "[創作]", ["全篇漫畫在主頁。"], a.tags)
+    first, lines = reel_caption_parts(a, "teaser", title)
+    reel_caption(dest / f"{name}_caption.txt", first, lines, a.tags)
     print(f"{dest / name}.mp4: {n} frames, {n / REEL_FPS:.1f} s; cover, grid, frames and caption beside it")
 
 
@@ -1943,7 +2092,7 @@ def reel_line(a) -> None:
     y = 1360
     if a.handle:
         y = centred_text(bg, y, a.handle, reel_font(40, "plain", None), hex_rgb(a.accent))
-    centred_text(bg, y, DISCLOSURE, reel_font(30, "plain", None), (120, 120, 120))
+    centred_text(bg, y, a.disclosure, reel_font(30, "plain", None), (120, 120, 120))
     black = Image.new("RGB", (REEL_W, REEL_H), "black")
     marks = {round(n * i / 7) for i in range(7)} | {n - 1}
     samples: list[Image.Image] = []
@@ -1972,7 +2121,8 @@ def reel_line(a) -> None:
     full.save(dest / f"{name}_cover.jpg", quality=92)
     full.crop((0, 240, REEL_W, 1680)).save(dest / f"{name}_grid.jpg", quality=90)
     frame_sheet(samples, dest / f"{name}_frames.jpg")
-    reel_caption(dest / f"{name}_caption.txt", "".join(c for c, _ in plain), [], a.tags)
+    first, lines = reel_caption_parts(a, "line", "".join(c for c, _ in plain))
+    reel_caption(dest / f"{name}_caption.txt", first, lines, a.tags)
     print(f"{dest / name}.mp4: {count} frames, {count / REEL_FPS:.1f} s; cover, grid, frames and caption beside it")
 
 
@@ -2076,8 +2226,8 @@ def main() -> None:
     ex = sub.add_parser("export")
     ex.add_argument("--ratio", choices=sorted(IG_SIZES), default="3:4")
     ex.add_argument("--cover", default=None, help="panel id for slide 1 (default: page 1 as it is)")
-    ex.add_argument("--handle", default=None, help="account name for the end card, e.g. @tonight_lights_on")
-    ex.add_argument("--tags", default="#鬼故事,#靈異,#怪談,#漫畫,#創作", help="comma-separated hashtags for the caption")
+    ex.add_argument("--handle", default=None, help="account name for the end card (default: the brand file's)")
+    ex.add_argument("--tags", default=None, help="comma-separated hashtags for the caption (default: the brand file's)")
     rl = sub.add_parser("reel")
     rl.add_argument("mode", choices=["teaser", "line"])
     rl.add_argument("ids", nargs="*", help="teaser: the panels in order, usually three")
@@ -2085,17 +2235,39 @@ def main() -> None:
                     help="teaser: one caption per panel separated by |; empty takes the panel's lettering, - shows none")
     rl.add_argument("--seconds", type=float, default=3.5, help="teaser: seconds per panel (the last gets one more)")
     rl.add_argument("--title", default=None, help="teaser: title on the cover and end card (default: the board's; '' for none)")
-    rl.add_argument("--end", default="全篇漫畫在主頁", help="teaser: the end card's line")
+    rl.add_argument("--end", default=None, help="teaser: the end card's line (default: the brand file's, else 全篇漫畫在主頁)")
     rl.add_argument("--logo", default=None, help="teaser: a square image (PNG with transparency) for the end card")
     rl.add_argument("--text", default=None, help="line: the story; {braces} mark the part shown in the accent colour")
     rl.add_argument("--cps", type=float, default=7.0, help="line: characters per second")
     rl.add_argument("--beat", type=float, default=0.6, help="line: pause in seconds before the accented part")
     rl.add_argument("--hold", type=float, default=2.5, help="line: seconds the whole line stays up")
-    rl.add_argument("--handle", default=None, help="account name, e.g. @gui.chang.shi")
-    rl.add_argument("--accent", default="#B8322A", help="accent colour for the handle and the {accented} words")
+    rl.add_argument("--handle", default=None, help="account name (default: the brand file's)")
+    rl.add_argument("--accent", default=None, help="accent colour for the handle and the {accented} words")
     rl.add_argument("--name", default=None, help="output file name without extension")
-    rl.add_argument("--tags", default="#鬼故事,#靈異,#怪談,#台灣怪談,#創作", help="comma-separated hashtags for the caption")
+    rl.add_argument("--tags", default=None, help="comma-separated hashtags for the caption (default: the brand file's)")
+    for x in (ex, rl):
+        x.add_argument("--brand-file", default=None,
+                       help="an account's look and words (colours, seal, disclosure, end card, captions); see "
+                            "assets/example_brand.json. Without it the plain cover, end card and captions are used")
+        x.add_argument("--number", type=int, default=None,
+                       help="the story's number in the account (「第 N 首」); leave out until its posting slot is known")
     a = ap.parse_args()
+    if a.cmd in ("export", "reel"):
+        a.brand = load_brand(a.brand_file)
+        br = a.brand or {}
+        a.tags_given = a.tags is not None
+        a.handle = a.handle or br.get("handle")
+        a.disclosure = br.get("disclosure", DISCLOSURE)
+        if a.cmd == "export" and a.tags is None:
+            a.tags = "#鬼故事,#靈異,#怪談,#漫畫,#創作"
+        if a.cmd == "reel":
+            reel_cfg = br.get("reel", {})
+            if a.tags is None:
+                a.tags = ",".join(reel_cfg.get("tags") or br.get("caption", {}).get("tags") or
+                                  ["#鬼故事", "#靈異", "#怪談", "#創作"])
+            a.accent = a.accent or br.get("colors", {}).get("accent") or "#B8322A"
+            a.logo = a.logo or br.get("logo")
+            a.end = a.end or reel_cfg.get("end_line") or "全篇漫畫在主頁"
     set_work(Path(a.work))
     global BOARD
     BOARD = a.board

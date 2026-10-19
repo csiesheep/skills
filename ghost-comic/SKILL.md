@@ -168,6 +168,18 @@ candidate-by-candidate questions.
    older shape), an end card saying the story is fiction and drawn with AI (`--handle` adds
    the account), and `caption.txt`. A comic of more than 18 pages is split into parts, since a
    post holds 20 slides. Posting is the owner's: send the folder, never post for them.
+   An account with its own look adds `--brand-file brand.json --number N`. The brand file holds
+   the account's look and words, not this skill (`assets/example_brand.json` is 鬼唱詩's): paper,
+   ink and accent colours, the seal, the disclosure, how a number reads, the end card's lines,
+   the caption template and tags. With it the cover becomes the picked panel framed on paper with
+   the title at its top right and a strip like 「鬼唱詩｜第 N 首」 beside the seal; the end card
+   becomes the brand's lines with the seal stamped in red; pages sit on paper; the caption follows
+   the brand's template. Edit the brand file, not the code, to change any of that. Take the
+   number from the account's ledger (the social-post skill) and leave `--number` out until the
+   story has one: numbers run across every story the account posts, comics and text alike. Look
+   at slide 1 before sending: the title box sits at the top right of the picture, so pick a cover
+   panel with nothing important there (the first 鬼唱詩 cover hid a man's face behind it; a
+   close-up on a black ground fixed it).
 11. **Reels.** Instagram's carousels keep followers; Reels are what reach people who do not
    follow yet, so every comic also gets short videos. `manga.py reel teaser p8 p9 p10 --handle
    @account --logo <square png>` makes a 9:16 video in `out/export/reels/`: each panel moves
@@ -177,7 +189,9 @@ candidate-by-candidate questions.
    Captions default to the panel's lettering; write shorter ones with `--captions "a|b|c"`
    (`-` for none), since a caption runs three lines at most. `manga.py reel line --text
    "…那扇門是從{裡面}鎖的。"` types a one-line story out on black, a beat before the braced
-   words, which come in the accent colour. Both write a silent mp4 (1080 x 1920, 30 fps; the
+   words, which come in the accent colour. `--brand-file` and `--number` work here too: the
+   handle, accent colour, end-card logo and line, caption and tags then come from the brand
+   file. Both write a silent mp4 (1080 x 1920, 30 fps; the
    owner adds a sound in the app, where the trending ones are), a cover, the 3:4 crop the
    profile grid shows, `_frames.jpg` with sampled frames, and a caption. Look at `_frames.jpg`
    before sending: every word stays inside the box the apps leave uncovered (`REEL_SAFE`),

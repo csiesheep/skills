@@ -137,7 +137,10 @@ are legitimate.
   cuts the story for the platform: `--mode attach` (default) is one Threads post of 500
   characters ending on a sentence, with the whole story as a text attachment; `--mode chain`
   is numbered Threads posts of 500 at most, cut between paragraphs or sentences; `--mode ig` is
-  an Instagram caption within 2,200.
+  an Instagram caption within 2,200. For an account with a brand file (the same `brand.json`
+  ghost-comic's export reads), add `--brand-file brand.json --number N`: the heading becomes the
+  brand's 「第 N 首｜title」, the disclosure and sign-off (鬼唱詩's 「收驚。」) and tags come from the
+  file. The number comes from the account's ledger (social-post); leave it out until assigned.
 - **No real targets.** Keep places at the level the rules allow (縣市、區、路段、某國中)
   and never name a real person, a real business, or a specific temple or hospital as haunted.
 - **Don't copy.** The pool is paraphrase on purpose. Don't reconstruct a known marvel post,
