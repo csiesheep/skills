@@ -1,0 +1,69 @@
+{
+  "_doc": "An account's look and words, read by `manga.py export` and `manga.py reel` with --brand-file (and by ghost-story's `ghost_plan.py post`). This is the 鬼唱詩 account's file as an example; copy it next to your own seal and edit. Paths are relative to the file. {name} {number} {title} {disclosure} {handle} are filled in; {number} becomes the name until the story has a number. Leave a field out to use the plain default.",
+  "name": "鬼唱詩",
+  "handle": "@gui.chang.shi",
+  "colors": {
+    "paper": "#F2EDE4",
+    "ink": "#141414",
+    "accent": "#B8322A",
+    "muted": "#696969"
+  },
+  "seal": "../avatar/final/avatar_1024.png",
+  "logo": "../avatar/final/avatar_circle_1024.png",
+  "disclosure": "AI 輔助創作｜故事純屬虛構",
+  "number": "第 {n} 首",
+  "cover_strip": "{name}｜{number}",
+  "end_card": [
+    "本首完",
+    "AI 輔助創作，純屬虛構",
+    "看完記得收驚"
+  ],
+  "caption": {
+    "title": "{number}｜{title}",
+    "lines": [
+      "{disclosure}",
+      "漫畫由右往左、由上往下讀。",
+      "傳給那個說自己不怕的朋友。"
+    ],
+    "tags": [
+      "#鬼唱詩",
+      "#台灣怪談",
+      "#鬼故事",
+      "#漫畫",
+      "#靈異",
+      "#創作"
+    ]
+  },
+  "reel": {
+    "end_line": "全篇漫畫在主頁",
+    "teaser_lines": [
+      "{disclosure}",
+      "全篇漫畫在主頁。",
+      "傳給那個說自己不怕的朋友。"
+    ],
+    "line_lines": [
+      "{disclosure}",
+      "傳給那個說自己不怕的朋友。"
+    ],
+    "tags": [
+      "#鬼唱詩",
+      "#台灣怪談",
+      "#鬼故事",
+      "#恐怖",
+      "#創作"
+    ]
+  },
+  "story": {
+    "title": "{number}｜{title}",
+    "disclosure": "（AI 輔助創作，故事純屬虛構）",
+    "sign_off": "收驚。",
+    "tags": [
+      "#鬼唱詩",
+      "#台灣怪談",
+      "#鬼故事",
+      "#靈異",
+      "#創作"
+    ]
+  },
+  "ledger": "ledger.json"
+}

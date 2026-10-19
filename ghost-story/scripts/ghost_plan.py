@@ -411,13 +411,34 @@ def _pack(pieces: list[str], room: int) -> list[str]:
     return chunks
 
 
-def make_posts(text: str, mode: str = "attach", limit: int = 500) -> dict:
+def load_brand(path: str | None) -> dict | None:
+    """An account's brand file (the same JSON ghost-comic's export and reel read): its `story` block sets the heading
+    (「{number}｜{title}」), the disclosure line, the sign-off and the tags; `number` says how a story number is
+    written."""
+    if not path:
+        return None
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def make_posts(text: str, mode: str = "attach", limit: int = 500, brand: dict | None = None,
+               number: int | None = None) -> dict:
     """attach: one post (title, disclosure, the opening up to the limit, cut at a paragraph or sentence) plus the
     whole story as a text attachment. chain: the story in numbered posts of at most `limit` characters, cut at
-    paragraphs or sentences. ig: one caption within Instagram's 2,200 characters with the opening and the disclosure."""
+    paragraphs or sentences. ig: one caption within Instagram's 2,200 characters with the opening and the disclosure.
+    With a brand file the heading, disclosure, sign-off and tags come from it; without one the title gets [創作]."""
     title, _, body = text.strip().partition("\n")
-    head = f"{post_title(title)}\n{DISCLOSURE}\n\n"
-    body = body.strip("\n")
+    tags = "#鬼故事 #靈異 #怪談 #創作"
+    if brand:
+        st = brand.get("story", {})
+        num = brand.get("number", "第 {n} 首").format(n=number) if number else brand.get("name", "")
+        heading = st.get("title", "{number}｜{title}").format(number=num, title=_TAG.sub("", title).strip(),
+                                                             name=brand.get("name", ""))
+        head = f"{heading}\n{st.get('disclosure', brand.get('disclosure', DISCLOSURE))}\n\n"
+        sign = st.get("sign_off", "")
+        tags = " ".join(st.get("tags", [])) or tags
+    else:
+        head, sign = f"{post_title(title)}\n{DISCLOSURE}\n\n", ""
+    body = body.strip("\n") + (f"\n\n{sign}" if sign else "")
     if mode == "chain":
         room = limit - len(" (99/99)")
         first = _pack(_pieces(body, room - len(head)), room - len(head))
@@ -426,13 +447,12 @@ def make_posts(text: str, mode: str = "attach", limit: int = 500) -> dict:
         n = len(chunks)
         return {"posts": [f"{c} ({i}/{n})" if n > 1 else c for i, c in enumerate(chunks, 1)], "attachment": None}
     if mode == "ig":
-        tail = "\n\n（全文看輪播）\n\n#鬼故事 #靈異 #怪談 #創作"
+        tail = f"\n\n（全文看輪播）\n\n{tags}"
         room = 2200 - len(head) - len(tail)
         return {"posts": [head + _pack(_pieces(body, room), room)[0] + tail], "attachment": None}
     more = "……（全文在附件）"
     room = limit - len(head) - len(more)
-    return {"posts": [head + _pack(_pieces(body, room), room)[0] + more],
-            "attachment": f"{post_title(title)}\n{DISCLOSURE}\n\n{body}"}
+    return {"posts": [head + _pack(_pieces(body, room), room)[0] + more], "attachment": f"{head}{body}"}
 
 
 def describe() -> str:
@@ -471,6 +491,8 @@ def main(argv=None) -> int:
     po.add_argument("file")
     po.add_argument("--mode", choices=["attach", "chain", "ig"], default="attach")
     po.add_argument("--limit", type=int, default=500, help="Threads 單篇上限")
+    po.add_argument("--brand-file", default=None, help="帳號的品牌檔（和 ghost-comic 共用）：開頭、標示、結尾口令、標籤")
+    po.add_argument("--number", type=int, default=None, help="這首在帳號裡的編號（第 N 首）；還沒排定就不要給")
     a = ap.parse_args(argv)
     if a.cmd == "options":
         print(describe())
@@ -488,7 +510,7 @@ def main(argv=None) -> int:
         print("\n" + ("\n".join("- " + m for m in issues) if issues else "都在熱門文的範圍內"))
         return 0
     if a.cmd == "post":
-        r = make_posts(Path(a.file).read_text(encoding="utf-8"), a.mode, a.limit)
+        r = make_posts(Path(a.file).read_text(encoding="utf-8"), a.mode, a.limit, load_brand(a.brand_file), a.number)
         for i, p in enumerate(r["posts"], 1):
             print(f"===== 第 {i} 則（{len(p)} 字）=====\n{p}\n")
         if r["attachment"]:
