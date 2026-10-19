@@ -1,1 +1,2 @@
 Pillow>=10
+imageio-ffmpeg>=0.4  # only for `reel`, when ffmpeg is not on PATH

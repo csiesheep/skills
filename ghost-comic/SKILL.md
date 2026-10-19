@@ -168,6 +168,23 @@ candidate-by-candidate questions.
    older shape), an end card saying the story is fiction and drawn with AI (`--handle` adds
    the account), and `caption.txt`. A comic of more than 18 pages is split into parts, since a
    post holds 20 slides. Posting is the owner's: send the folder, never post for them.
+11. **Reels.** Instagram's carousels keep followers; Reels are what reach people who do not
+   follow yet, so every comic also gets short videos. `manga.py reel teaser p8 p9 p10 --handle
+   @account --logo <square png>` makes a 9:16 video in `out/export/reels/`: each panel moves
+   slowly (a wide one pushes in toward its `focus`, a tall one pans top to bottom) with its
+   caption under it, then an end card (title, 「全篇漫畫在主頁」, handle, the disclosure). Pick
+   panels that set up the scare and stop before the reveal; never put the reveal in a teaser.
+   Captions default to the panel's lettering; write shorter ones with `--captions "a|b|c"`
+   (`-` for none), since a caption runs three lines at most. `manga.py reel line --text
+   "…那扇門是從{裡面}鎖的。"` types a one-line story out on black, a beat before the braced
+   words, which come in the accent colour. Both write a silent mp4 (1080 x 1920, 30 fps; the
+   owner adds a sound in the app, where the trending ones are), a cover, the 3:4 crop the
+   profile grid shows, `_frames.jpg` with sampled frames, and a caption. Look at `_frames.jpg`
+   before sending: every word stays inside the box the apps leave uncovered (`REEL_SAFE`),
+   pictures may run past it. Make two or three teasers per comic with different first panels;
+   the owner can post the extra ones as trial Reels, which only non-followers see. Needs
+   ffmpeg on PATH or `py -m pip install imageio-ffmpeg`. A teaser takes about 25 s, a line
+   about 7 s, no GPU.
 
 When the owner asks to see progress mid-run, `manga.py status` gives the numbers (picked per
 page, what is missing and how many candidates it has, GPU minutes counted from `exec_s`, which
