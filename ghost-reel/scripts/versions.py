@@ -1,7 +1,12 @@
 """Builds the shot list and sound events for each version from the story script."""
 from PIL import Image, ImageFilter
 
-import story_name_call as S
+S = None  # the shot list (story.load), set by use()
+
+
+def use(story):
+    global S
+    S = story
 
 W, H, FPS = 1080, 1920, 30
 SAFE_TOP, SAFE_BOTTOM, SAFE_L, SAFE_R = 270, 1470, 90, 960
@@ -272,7 +277,7 @@ def build_v3(R):
                 T.sfx(T.t, "whoosh", 0.4)
 
                 def draw(i, o=o, n=n, over=over):
-                    pic = R.clip_frame(o["clip"], i, n)
+                    pic = R.clip_frame(o["clip"], i, n, mono=o.get("mono", False))
                     pic = R.apply_fx(pic, [], i, n, base_vig=0.9, grain=7, tint=tint)
                     pic = Image.eval(pic, lambda v: int(v * 0.45)).convert("RGBA")
                     t2 = over.copy(); a = min(1, (i + 1) / 12) * min(1, (n - i) / 10)
@@ -309,7 +314,7 @@ def build_v3(R):
             t = i / max(1, n - 1)
             focus = tuple(o.get("focus", cell.get("focus", (0.5, 0.5))))
             if o.get("clip"):
-                pic = R.clip_frame(o["clip"], i, n, offset=o.get("clip_offset", 0.0))
+                pic = R.clip_frame(o["clip"], i, n, offset=o.get("clip_offset", 0.0), mono=o.get("mono", False))
             else:
                 pic = R.frame_crop(img, W, H, t, o.get("motion", "push"), focus, 0.09)
             pic = R.apply_fx(pic, o.get("fx", []), i, n, base_vig=0.85, grain=7, tint=tint)
@@ -333,12 +338,13 @@ def build_v3(R):
         T.shot(n, draw, xfade=0 if o.get("black") else 12, pid=pid)
     T.black(0.4)
     card_shot(T, R, R.end_card(), 3.2, fade=14)
-    # beds over the whole film, heavier than the others
-    T.sfx(0, "wind", 0.3, T.t)
-    T.sfx(0, "drone", 0.35, T.t)
-    if "p11" in T.times and "p20" in T.times:
-        a, b = T.times["p11"][0], T.times["p20"][1]
-        T.sfx(a, "insects", 0.55, b - a)
+    # beds: the shot list's "v3_beds", each over the whole film or from one panel's shot to another's
+    for frm, to, name, gain in S.V3_BEDS:
+        if frm is None:
+            T.sfx(0, name, gain, T.t)
+        elif frm in T.times and to in T.times:
+            a, b = T.times[frm][0], T.times[to][1]
+            T.sfx(a, name, gain, b - a)
     return T.shots, T.events, T.ducks, 0.28
 
 
