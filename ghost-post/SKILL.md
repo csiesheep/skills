@@ -17,11 +17,18 @@ ghost-post                             checks platforms and files, posts, record
 Written from the 鬼唱詩 account (2026-10-18 to 10-20): first posts on Instagram, Threads and Pinterest, and a check
 of all six platforms before 第 2 首.
 
-| Where | What |
+The files it reads follow the folder contract in `C:/Users/sheep/Pictures/gui_chang_shi/README.md` (also in the
+Obsidian note `Projects/ghost story/ghost story pipeline.md`). The parts this skill uses:
+
+| File in `stories/<short name>/` | Posted to |
 |---|---|
-| Brand folder (`C:/Users/sheep/Pictures/gui_chang_shi/brand/`) | `brand.json` (words, colours, captions), `ledger.json` (story numbers and links), `avatar/`, `music/`, `sfx/` |
-| Story folder (`.../stories/<short name>/`) | `README.md`, `story.md`, `comic/` (ghost-comic work folder), `reels/<version>/`, `posts/ig|threads|pinterest/` |
-| Plans | Obsidian `Projects/ghost story/ghost story posting.md` (per-story posting plans), `ghost story content plan.md` (which content goes where) |
+| `reels/full_v3_cinema/full_v3_cinema.mp4` | Instagram Reel, YouTube Shorts, TikTok, Facebook Page |
+| `posts/ig/01.jpg … NN.jpg`, `posts/ig/caption.txt` (01.jpg stamped; `01_nonumber.jpg` is ghost-pack's backup, never posted) | Instagram carousel, Facebook Page |
+| `posts/threads/hook.txt`, `image.jpg`, `attachment.txt` | Threads: hook with image → reply with attachment → reply with the Instagram link |
+| `posts/pinterest/00_cover.jpg`, `NN_page.jpg` (pages before the reveal), `pins.txt` | Pinterest |
+| `posts/cross_caption.txt` (`{ig_link}` filled after the Instagram post) | YouTube, TikTok, Facebook |
+| `reels/teaser_A/`, `teaser_B/` | Instagram trial Reels (phone) |
+| `README.md`, `brand/ledger.json` | links recorded here |
 
 ## What may and may not be done
 

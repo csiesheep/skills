@@ -51,39 +51,36 @@ def main():
         notes.append("caption 沒有 AI 標示")
     if len(cap) > LIMITS["ig_caption"]:
         notes.append(f"caption {len(cap)} 字超過 2,200")
+    slides = [s_ for s_ in slides if "_nonumber" not in s_.name]
+    if slides and not (ig / "01_nonumber.jpg").exists():
+        notes.append("01.jpg 還沒蓋號（ghost-pack）")
     add("IG 輪播 posts/ig", True, len(slides) >= 2 and bool(cap) and not notes,
         (f"{len(slides)} 張；" if slides else "沒有圖；") + ("；".join(notes) if notes else ("caption OK" if cap else "沒有 caption.txt")))
 
     # Reel full
-    fulls = [p for p in (d / "reels").glob("full_*") if p.is_dir() and "proto" not in p.name] if (d / "reels").exists() else []
-    vids = [v for f in fulls for v in f.glob("*.mp4") if "preview" not in v.name]
-    add("Reel full reels/full_*", True, bool(vids),
-        "；".join(f"{v.parent.name}/{v.name} {v.stat().st_size / 1e6:.0f} MB" for v in vids) or "missing")
+    main_reel = d / "reels" / "full_v3_cinema" / "full_v3_cinema.mp4"
+    add("Reel full reels/full_v3_cinema", True, main_reel.exists(),
+        f"{main_reel.stat().st_size / 1e6:.0f} MB" if main_reel.exists() else "missing (ghost-reel)")
 
     # teasers (optional)
     teasers = [p for p in (d / "reels").glob("teaser_*") if p.is_dir() and list(p.glob("*.mp4"))] if (d / "reels").exists() else []
     add("預告 Reel A、B reels/teaser_*", False, len(teasers) >= 1, ", ".join(t.name for t in teasers) or "none (optional)")
 
-    # Threads
+    # Threads: hook.txt, attachment.txt, image.jpg
     th = d / "posts" / "threads"
-    posts = sorted(th.glob("*.txt")) if th.exists() else []
-    hook = [p for p in posts if "attach" not in p.name]
-    att = [p for p in posts if "attach" in p.name]
-    imgs = sorted(th.glob("*.jpg")) + sorted(th.glob("*.png")) if th.exists() else []
+    hook_t, att_t = read(th / "hook.txt"), read(th / "attachment.txt")
     notes = []
-    for p in hook:
-        t = read(p)
-        if len(t) > LIMITS["threads"]:
-            notes.append(f"{p.name} {len(t)} 字超過 500")
-        if "[經驗]" in t:
-            notes.append(f"{p.name} 有 [經驗]")
-    if hook and num not in read(hook[0]):
-        notes.append(f"{hook[0].name} 沒有「{num}」")
-    for p in att:
-        if len(read(p)) > LIMITS["attachment"]:
-            notes.append(f"{p.name} 超過 10,000 字")
-    add("Threads posts/threads", True, bool(hook) and bool(att) and bool(imgs) and not notes,
-        f"鉤子 {len(hook)}、附件 {len(att)}、配圖 {len(imgs)}" + ("；" + "；".join(notes) if notes else ""))
+    if hook_t and len(hook_t) > LIMITS["threads"]:
+        notes.append(f"hook.txt {len(hook_t)} 字超過 500")
+    if "[經驗]" in hook_t + att_t:
+        notes.append("有 [經驗]")
+    if hook_t and num not in hook_t:
+        notes.append(f"hook.txt 沒有「{num}」（ghost-pack）")
+    if len(att_t) > LIMITS["attachment"]:
+        notes.append("attachment.txt 超過 10,000 字")
+    missing = [n for n, ok in (("hook.txt", hook_t), ("attachment.txt", att_t), ("image.jpg", (th / "image.jpg").exists())) if not ok]
+    add("Threads posts/threads", True, not missing and not notes,
+        ("缺 " + "、".join(missing) + "；" if missing else "") + ("；".join(notes) if notes else ("OK" if not missing else "")))
 
     # Pinterest
     pin = d / "posts" / "pinterest"
@@ -96,6 +93,21 @@ def main():
                 notes.append(f"{p.name} 不是 1000×1500")
     except ImportError:
         pass
+    if pins and not (pin / "00_cover_nonumber.jpg").exists():
+        notes.append("封面還沒蓋號（ghost-pack）")
+    pins = [p_ for p_ in pins if "_nonumber" not in p_.name]
+    reveal_page = None
+    bj = d / "comic" / "board.json"
+    if bj.exists():
+        board = json.loads(bj.read_text(encoding="utf-8"))
+        for k, page in enumerate(board.get("pages", []), 1):
+            cells = [x for row in page.get("rows", []) for c in row.get("cells", []) for x in c.get("stack", [c])] + page.get("insets", [])
+            if any(x.get("reveal") for x in cells):
+                reveal_page = k; break
+    if reveal_page:
+        late = [p_.name for p_ in pins if re.match(r"(\d+)_page", p_.name) and int(re.match(r"(\d+)_page", p_.name).group(1)) >= reveal_page]
+        if late:
+            notes.append(f"揭露在第 {reveal_page} 頁，這些不能釘：{'、'.join(late)}")
     txt = read(pin / "pins.txt")
     for t in re.findall(r"標題[^：]*：(.+)", txt):
         if len(t.strip()) > LIMITS["pin_title"]:
