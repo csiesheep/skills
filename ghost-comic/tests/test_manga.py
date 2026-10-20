@@ -611,7 +611,9 @@ class FifthComicTest(unittest.TestCase):
 
     def test_instagram_export(self):
         b = self._board([[{"id": "p1", "text": [{"kind": "title", "text": "阿嬤說\n後面", "pos": "tr"}]}]])
-        ns = lambda **k: type("A", (), dict({"ratio": "3:4", "cover": None, "handle": "@x", "tags": "#鬼故事,#創作"}, **k))  # noqa: E731
+        ns = lambda **k: type("A", (), dict({"ratio": "3:4", "cover": None, "handle": "@x", "tags": "#鬼故事,#創作", "brand": None,  # noqa: E731
+                                             "number": None, "tags_given": True, "threads_panel": None, "pinterest": False,
+                                             "dest": None}, **k))
         with self.assertRaises(SystemExit):
             manga.cmd_export(ns())  # no pages yet
         (manga.OUT / "pages").mkdir()
@@ -638,6 +640,41 @@ class FifthComicTest(unittest.TestCase):
         manga.cmd_export(ns())  # 20 pages: more than one post holds
         self.assertEqual(len(list(dest.glob("part1_*.jpg"))), 19)  # cover and 18 pages
         self.assertEqual(len(list(dest.glob("part2_*.jpg"))), 4)  # cover, 2 pages, end card
+
+    def test_export_to_a_story_folder_stops_before_the_reveal(self):
+        """〈半夜叫我全名的人〉: pins, the Threads picture, the cover and teasers all stop before the reveal panel."""
+        self._board([[{"id": "p1", "text": [{"kind": "title", "text": "全名", "pos": "tr"}]},
+                      {"id": "p2", "text": [{"kind": "screen", "text": "聽到有人叫你全名，都不要回。"}]}],
+                     [{"id": "p3", "text": [{"kind": "voice", "text": "林志偉。"}]}],
+                     [{"id": "p4", "reveal": True}], [{"id": "p5"}]])
+        b = manga.load_board()
+        self.assertEqual(manga.reveal_point(b), (3, {"p4", "p5"}))
+        (manga.OUT / "pages").mkdir()
+        for k in range(1, 5):
+            self._png(f"p{k}_1.png", "gray", (400, 300))
+            Image.new("RGB", (1200, 1700), "black").save(manga.OUT / "pages" / f"page_{k:02d}.png")
+        manga.save_choices({"panels": {f"p{k}": f"p{k}_1.png" for k in range(1, 5)}})
+        story = self.td / "story"
+        (story / "posts" / "ig").mkdir(parents=True)
+        (story / "posts" / "ig" / "caption.txt").write_text("ghost-pack's", encoding="utf-8")
+        ns = lambda **k: type("A", (), dict({"ratio": "3:4", "cover": None, "handle": None, "tags": "", "brand": None,  # noqa: E731
+                                             "number": None, "tags_given": True, "threads_panel": None, "pinterest": True,
+                                             "dest": str(story)}, **k))
+        manga.cmd_export(ns())
+        self.assertEqual(sorted(f.name for f in (story / "posts" / "ig").iterdir()),
+                         ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "caption.txt"])
+        self.assertEqual((story / "posts" / "ig" / "caption.txt").read_text(encoding="utf-8"), "ghost-pack's")
+        pins = sorted(f.name for f in (story / "posts" / "pinterest").iterdir())
+        self.assertEqual(pins, ["00_cover.jpg", "01_page.jpg", "02_page.jpg"])  # page 3 holds the reveal
+        self.assertTrue(all(Image.open(story / "posts" / "pinterest" / p).size == (1000, 1500) for p in pins))
+        self.assertEqual(manga.threads_panel(b, manga.load_choices(), None), "p3")  # the voice, not the blank phone
+        self.assertEqual(Image.open(story / "posts" / "threads" / "image.jpg").size, (1080, 810))
+        self.assertFalse((manga.OUT / "export").exists())
+        for bad in (dict(cover="p4"), dict(threads_panel="p5")):
+            with self.assertRaises(SystemExit):
+                manga.cmd_export(ns(**bad))
+        with self.assertRaises(SystemExit):
+            manga.reel_teaser(type("A", (), {"ids": ["p3", "p4"], "captions": None}))
 
     def test_sound_effects_keep_every_character(self):
         def ink_width(text):

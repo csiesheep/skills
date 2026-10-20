@@ -1476,6 +1476,8 @@ def cmd_pages(a) -> None:
 
 IG_SIZES = {"3:4": (1080, 1440), "4:5": (1080, 1350)}
 IG_MAX = 20  # slides in one Instagram post
+PIN_SIZE = (1000, 1500)
+PIN_MARGIN = {"cover": 35, "page": 40}
 DISCLOSURE = "AI 輔助創作｜故事純屬虛構"
 
 
@@ -1495,6 +1497,78 @@ def fit_on(im: Image.Image, w: int, h: int, colour="white") -> Image.Image:
     canvas = Image.new("RGB", (w, h), colour)
     canvas.paste(small, ((w - small.width) // 2, (h - small.height) // 2))
     return canvas
+
+
+def pin_fit(im: Image.Image, margin: int, colour) -> Image.Image:
+    """A Pinterest pin (1000 x 1500, 2:3): the image whole, inside a margin, centred on the paper colour."""
+    canvas = Image.new("RGB", PIN_SIZE, colour)
+    canvas.paste(fit_on(im, PIN_SIZE[0] - 2 * margin, PIN_SIZE[1] - 2 * margin, colour), (margin, margin))
+    return canvas
+
+
+# The reveal: the board marks the panel that shows what the story was hiding with "reveal": true. Nothing meant to
+# bring readers in (a cover, the Threads picture, a teaser, a Pinterest pin) may show it or anything after it.
+def reveal_point(b: dict) -> tuple[int | None, set[str]]:
+    """(the page the reveal is on, the ids of the reveal panel and every panel after it). (None, empty) if the board
+    marks no reveal."""
+    seen, page, after = False, None, set()
+    for pi, c, _ in all_panels(b):
+        if c.get("reveal") and not seen:
+            seen, page = True, pi
+        if seen:
+            after.add(c["id"])
+    return page, after
+
+
+def check_before_reveal(b: dict, ids, what: str) -> None:
+    page, after = reveal_point(b)
+    if page is None:
+        print(f"note: board.json marks no reveal panel (\"reveal\": true), so {what} is not checked against it")
+        return
+    bad = [i for i in ids if i in after]
+    if bad:
+        raise SystemExit(f"{what}: {', '.join(bad)} is the reveal or after it (page {page}); pick a panel before it")
+
+
+# Words that make a panel the story's hook moment (the same idea as ghost-story's hook pick): a rule, a voice, a
+# look back at nothing. Only lettering a reader would hear counts; a phone or screen panel is excluded because its
+# meaning is in the lettering, and the picture alone is a blank screen.
+_HOOK_WORDS = {2: ("不要回", "千萬", "全名", "叫你", "突然", "回頭", "什麼都沒有", "沒有人", "後面那", "背後", "敲門",
+                   "站著", "一動不動"),
+               1: ("不要", "不能", "規矩", "聲音", "影子", "半夜", "凌晨")}
+
+
+def threads_panel(b: dict, ch: dict, cover_id: str | None) -> str | None:
+    """The Threads picture when none is given: among picked panels before the reveal (not the title panel, not the
+    cover, not a phone or screen), the one whose lettering scores highest for hook words, plus 2 for a voice calling,
+    plus 2 for a wide panel (1.4:1 or wider) and 1 for 1.1:1; a tall one loses 2. Ties go to the earlier panel."""
+    _, after = reveal_point(b)
+    best, best_id = None, None
+    for pi, c, box in all_panels(b):
+        if c["id"] in after:
+            break
+        kinds = [e["kind"] for e in c.get("text", [])]
+        if c["id"] not in ch["panels"] or c.get("fill") or c["id"] == cover_id or "title" in kinds:
+            continue
+        if {"screen", "phone"} & set(kinds):
+            continue
+        said = "".join(e["text"] for e in c.get("text", []))
+        score = sum(w for w, words in _HOOK_WORDS.items() for k in words if k in said)
+        score += 2 if "voice" in kinds else 0
+        aspect = (box[2] - box[0]) / (box[3] - box[1])
+        score += 2 if aspect >= 1.4 else 1 if aspect >= 1.1 else -2 if aspect < 0.8 else 0
+        if best is None or score > best:
+            best, best_id = score, c["id"]
+    return best_id
+
+
+def threads_image(b: dict, ch: dict, pid: str) -> Image.Image:
+    """The picture for the Threads hook post: the panel as drawn (no lettering; the post's text carries the words),
+    1080 wide, its own shape kept within Threads' 4:5 to 1.91:1."""
+    cell = find_panel(b, pid)
+    src = panel_source(cell, ch)
+    aspect = min(1.91, max(0.8, src.width / src.height))
+    return cover(src, 1080, round(1080 / aspect), tuple(cell.get("focus", (0.5, 0.5))))
 
 
 def ig_cover(b: dict, ch: dict, w: int, h: int, panel: str | None) -> Image.Image:
@@ -1658,15 +1732,26 @@ def cmd_export(a) -> None:
     """Instagram carousel from the laid-out pages: a cover, every page whole on a 3:4 (or 4:5) slide, an end card,
     and a caption with the disclosure. A page of 1200 x 1700 leaves about 32 px of white at each side on 3:4. More
     pages than fit in one post (20 slides) are split into parts. With --brand-file the cover, end card, page ground
-    and caption follow the brand file."""
+    and caption follow the brand file; the cover strip carries the number only with --number (ghost-pack stamps it
+    when the story is about to be posted).
+
+    Beside the carousel: the Threads picture (--threads-panel, else threads_panel's pick) and, with --pinterest, the
+    pins: the cover and every page before the reveal page on 1000 x 1500. --dest <story folder> writes them where the
+    folder contract wants them (posts/ig, posts/threads/image.jpg, posts/pinterest) and leaves the captions to
+    ghost-pack; without it everything goes to out/export as before, the carousel caption included."""
     b, ch = load_board(), load_choices()
     pages = sorted((OUT / "pages").glob("page_*.png"))
     if not pages:
         raise SystemExit("no pages yet: run `pages` first")
+    if a.cover:
+        check_before_reveal(b, [a.cover], "--cover")
+    if a.threads_panel:
+        check_before_reveal(b, [a.threads_panel], "--threads-panel")
+    story = Path(a.dest).resolve() if a.dest else None
     w, h = IG_SIZES[a.ratio]
-    dest = OUT / "export" / "ig"
+    dest = story / "posts" / "ig" if story else OUT / "export" / "ig"
     dest.mkdir(parents=True, exist_ok=True)
-    for f in dest.glob("*"):
+    for f in dest.glob("*.jpg" if story else "*"):  # a story's posts/ig keeps ghost-pack's caption.txt
         f.unlink()
     per = IG_MAX - 2
     parts = [pages[i:i + per] for i in range(0, len(pages), per)]
@@ -1675,6 +1760,7 @@ def cmd_export(a) -> None:
     handle = a.handle or (br or {}).get("handle")
     solid, outline = seal_images(br.get("seal"), br["rgb"]["accent"]) if br else (None, None)
     ground = br["rgb"]["paper"] if br else "white"
+    first = None
     for k, part in enumerate(parts, 1):
         tag = f"part{k}_" if len(parts) > 1 else ""
         first = brand_cover(b, ch, w, h, a.cover, br, a.number, solid) if br else ig_cover(b, ch, w, h, a.cover)
@@ -1684,6 +1770,32 @@ def cmd_export(a) -> None:
         for i, s in enumerate(slides, 1):
             s.save(dest / f"{tag}{i:02d}.jpg", quality=92)
         print(f"{dest / (tag + '01.jpg')} .. {tag}{len(slides):02d}.jpg ({len(slides)} slides)")
+    tp = a.threads_panel or threads_panel(b, ch, a.cover)
+    if tp:
+        tdir = story / "posts" / "threads" if story else OUT / "export" / "threads"
+        tdir.mkdir(parents=True, exist_ok=True)
+        threads_image(b, ch, tp).save(tdir / "image.jpg", quality=92)
+        print(f"{tdir / 'image.jpg'} (Threads picture: {tp}{'' if a.threads_panel else ', picked'})")
+    else:
+        print("note: no picked panel before the reveal can be the Threads picture; give --threads-panel")
+    if a.pinterest:
+        pdir = story / "posts" / "pinterest" if story else OUT / "export" / "pinterest"
+        pdir.mkdir(parents=True, exist_ok=True)
+        for f in pdir.glob("*.jpg"):
+            f.unlink()
+        reveal_page, _ = reveal_point(b)
+        keep = pages[:reveal_page - 1] if reveal_page else pages
+        if not reveal_page:
+            print("note: no reveal panel marked, so every page became a pin; take out the ones that give it away")
+        pin_fit(first, PIN_MARGIN["cover"], ground).save(pdir / "00_cover.jpg", quality=92)
+        for p in keep:
+            n = int(p.stem.split("_")[1])
+            pin_fit(Image.open(p), PIN_MARGIN["page"], ground).save(pdir / f"{n:02d}_page.jpg", quality=92)
+        print(f"{pdir / '00_cover.jpg'} + {len(keep)} pages"
+              + (f" (pages {reveal_page} on hold the reveal)" if reveal_page else ""))
+    if story:
+        print("captions: ghost-pack writes posts/ig/caption.txt and posts/pinterest/pins.txt")
+        return
     split = f"（{len(parts)} 之 1）" if len(parts) > 1 else ""
     if br:
         cfg = br.get("caption", {})
@@ -1984,6 +2096,7 @@ def reel_teaser(a) -> None:
     b, ch = load_board(), load_choices()
     if not a.ids:
         raise SystemExit("reel teaser needs panel ids, e.g. `reel teaser p8 p9 p10`")
+    check_before_reveal(b, a.ids, "reel teaser")
     caps = a.captions.split("|") if a.captions else []
     items = []
     for k, pid in enumerate(a.ids):
@@ -2032,9 +2145,16 @@ def reel_teaser(a) -> None:
             idx += 1
             yield f
 
-    dest = OUT / "export" / "reels"
+    if a.dest:  # the folder contract: reels/teaser_A/teaser_A.mp4 and its cover, grid and frames; no caption
+        slot = a.slot or next((s for s in "ABCDEFGH" if not (Path(a.dest) / "reels" / f"teaser_{s}").exists()), None)
+        if slot is None:
+            raise SystemExit("reels/teaser_A to teaser_H all exist: give --slot")
+        name = f"teaser_{slot}"
+        dest = Path(a.dest).resolve() / "reels" / name
+    else:
+        name = a.name or "teaser_" + "-".join(a.ids)
+        dest = OUT / "export" / "reels"
     dest.mkdir(parents=True, exist_ok=True)
-    name = a.name or "teaser_" + "-".join(a.ids)
     n = write_video(frames(), dest / f"{name}.mp4")
     # the cover: the first panel half way through its move, the title over the top of the picture
     cell, src, cap = items[0]
@@ -2050,6 +2170,10 @@ def reel_teaser(a) -> None:
     cov.save(dest / f"{name}_cover.jpg", quality=92)
     cov.crop((0, 240, REEL_W, 1680)).save(dest / f"{name}_grid.jpg", quality=90)  # the 3:4 the profile grid shows
     frame_sheet(samples, dest / f"{name}_frames.jpg")
+    if a.dest:
+        print(f"{dest / name}.mp4: {n} frames, {n / REEL_FPS:.1f} s; cover, grid and frames beside it "
+              "(the caption is ghost-pack's)")
+        return
     first, lines = reel_caption_parts(a, "teaser", title)
     reel_caption(dest / f"{name}_caption.txt", first, lines, a.tags)
     print(f"{dest / name}.mp4: {n} frames, {n / REEL_FPS:.1f} s; cover, grid, frames and caption beside it")
@@ -2071,6 +2195,8 @@ def parse_accent(text: str) -> list[tuple[str, int]]:
 def reel_line(a) -> None:
     """A one-line story: black, the words appear one by one at reading pace, a beat before the {accented} part, which
     comes in the accent colour; then a hold, and a fade to black so the loop restarts cleanly."""
+    if a.dest:
+        raise SystemExit("reel line has no place in the folder contract yet: leave out --dest")
     if not a.text:
         raise SystemExit('reel line needs --text, e.g. --text "我回頭，床上那個人還在{睡}。"')
     chars = parse_accent(a.text)
@@ -2228,6 +2354,10 @@ def main() -> None:
     ex.add_argument("--cover", default=None, help="panel id for slide 1 (default: page 1 as it is)")
     ex.add_argument("--handle", default=None, help="account name for the end card (default: the brand file's)")
     ex.add_argument("--tags", default=None, help="comma-separated hashtags for the caption (default: the brand file's)")
+    ex.add_argument("--threads-panel", default=None,
+                    help="panel id for the Threads picture (default: picked among the panels before the reveal)")
+    ex.add_argument("--pinterest", action="store_true",
+                    help="also the Pinterest pins: the cover and every page before the reveal page, 1000 x 1500")
     rl = sub.add_parser("reel")
     rl.add_argument("mode", choices=["teaser", "line"])
     rl.add_argument("ids", nargs="*", help="teaser: the panels in order, usually three")
@@ -2245,12 +2375,18 @@ def main() -> None:
     rl.add_argument("--accent", default=None, help="accent colour for the handle and the {accented} words")
     rl.add_argument("--name", default=None, help="output file name without extension")
     rl.add_argument("--tags", default=None, help="comma-separated hashtags for the caption (default: the brand file's)")
+    rl.add_argument("--slot", default=None, choices=list("ABCDEFGH"),
+                    help="teaser with --dest: reels/teaser_<slot> (default: the first letter not yet used)")
     for x in (ex, rl):
+        x.add_argument("--dest", default=None,
+                       help="the story folder (stories/<name>): write where the folder contract says, captions left "
+                            "to ghost-pack; without it, out/export as before")
         x.add_argument("--brand-file", default=None,
                        help="an account's look and words (colours, seal, disclosure, end card, captions); see "
                             "assets/example_brand.json. Without it the plain cover, end card and captions are used")
         x.add_argument("--number", type=int, default=None,
-                       help="the story's number in the account (「第 N 首」); leave out until its posting slot is known")
+                       help="the story's number in the account (「第 N 首」); leave it out: ghost-pack numbers a story just before it is "
+                            "posted")
     a = ap.parse_args()
     if a.cmd in ("export", "reel"):
         a.brand = load_brand(a.brand_file)

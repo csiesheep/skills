@@ -30,7 +30,7 @@ Read before writing a board:
 - Python 3.10+ with Pillow, run as `py -X utf8` on Windows. A CJK font with vertical punctuation
   forms (Microsoft JhengHei or Noto Sans/Serif TC).
 - A work folder of its own, outside `AppData\Roaming\Claude\` (Python may not see files the
-  desktop app writes there), e.g. `C:\Users\sheep\Pictures\ghost_comic\<story>`. All commands run
+  desktop app writes there), e.g. `C:\Users\sheep\Pictures\gui_chang_shi\stories\<story>\comic`. All commands run
   from it; output goes to `out/`.
 
 ## Steps
@@ -174,12 +174,27 @@ candidate-by-candidate questions.
    the caption template and tags. With it the cover becomes the picked panel framed on paper with
    the title at its top right and a strip like 「鬼唱詩｜第 N 首」 beside the seal; the end card
    becomes the brand's lines with the seal stamped in red; pages sit on paper; the caption follows
-   the brand's template. Edit the brand file, not the code, to change any of that. Take the
-   number from the account's ledger (the social-post skill) and leave `--number` out until the
-   story has one: numbers run across every story the account posts, comics and text alike. Look
+   the brand's template. Edit the brand file, not the code, to change any of that. Leave
+   `--number` out: the cover strip then reads only 「鬼唱詩」, and ghost-pack stamps the number
+   on slide 1 and the Pinterest cover when the story is about to be posted, so the comic does
+   not depend on when it goes out. Look
    at slide 1 before sending: the title box sits at the top right of the picture, so pick a cover
    panel with nothing important there (the first 鬼唱詩 cover hid a man's face behind it; a
    close-up on a black ground fixed it).
+   The same run makes the Threads picture: `--threads-panel <panel>`, or by default the panel
+   before the reveal whose lettering is most hook-like (a rule, a voice calling, a look back at
+   nothing), wide panels first; not the cover, not the title panel, and never a phone or screen
+   panel, whose picture is blank without its lettering (第 2 首's top scorer was a blank phone).
+   It is the panel as drawn, without lettering, 1080 wide in its own shape. `--pinterest` adds
+   the pins: the cover and every page before the reveal page, whole, on 1000 x 1500 paper.
+   The reveal is read from `board.json`: mark the panel that shows what the story hid with
+   `"reveal": true`. A cover, Threads picture or teaser panel at or after it is refused, and
+   pins stop at its page. With no mark nothing is checked, and export says so.
+   `--dest <story folder>` writes everything where the folder contract
+   (`C:/Users/sheep/Pictures/gui_chang_shi/README.md`) puts it: `posts/ig/01..NN.jpg`,
+   `posts/threads/image.jpg`, `posts/pinterest/00_cover.jpg` and `NN_page.jpg`. It writes no
+   captions there, because ghost-pack writes every platform's caption. Without `--dest` all of
+   it goes to `out/export/` as before, the carousel caption included.
 11. **Reels.** Instagram's carousels keep followers; Reels are what reach people who do not
    follow yet, so every comic also gets short videos. `manga.py reel teaser p8 p9 p10 --handle
    @account --logo <square png>` makes a 9:16 video in `out/export/reels/`: each panel moves
@@ -191,7 +206,8 @@ candidate-by-candidate questions.
    "…那扇門是從{裡面}鎖的。"` types a one-line story out on black, a beat before the braced
    words, which come in the accent colour. `--brand-file` and `--number` work here too: the
    handle, accent colour, end-card logo and line, caption and tags then come from the brand
-   file. Both write a silent mp4 (1080 x 1920, 30 fps; the
+   file. `reel teaser ... --dest <story folder>` writes `reels/teaser_A/teaser_A.mp4` (then B,
+   C…; `--slot` picks one) with its cover, grid and frames, and no caption. Both write a silent mp4 (1080 x 1920, 30 fps; the
    owner adds a sound in the app, where the trending ones are), a cover, the 3:4 crop the
    profile grid shows, `_frames.jpg` with sampled frames, and a caption. Look at `_frames.jpg`
    before sending: every word stays inside the box the apps leave uncovered (`REEL_SAFE`),
