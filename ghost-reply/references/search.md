@@ -45,3 +45,16 @@ pick ones a few days old that still get comments. Keywords used: 靈異故事.
 
 Accounts found this way (horror picture stories, urban legends) are good fixed-list candidates: their posts get
 thousands of likes, and a reply near the top of the comments is seen.
+
+## 2026-10-20 notes
+
+- Threads "Top" for 靈異 returned months-old unrelated posts; the 鬼故事 custom feed in the sidebar returned
+  unrelated posts too. `filter=recent` on 靈異經驗 and 魔神仔 found the day's best: chen.kenn (673K views),
+  quietnavigator1985's new post, and story replies under hung.c.tsai's 魔神仔 post.
+- On a results page, `javascript_tool` with `[...document.querySelectorAll('a[href*="/post/"]')].map(a=>a.getAttribute('href'))`
+  lists every post and reply link at once (author in the path); faster than `find` per post.
+- Replies under a busy post are their own pages (`/@<replier>/post/<code>`): reply there to land in that comment
+  thread.
+- Instagram: open the fixed-list accounts' profiles and take the newest post (the first `/p/` link); z.n_.studio
+  and banmi.tw each had a post from the last 12 hours with 2,100 likes and 30 to 97 comments. The keyword search
+  都市傳說 also surfaced banmi.tw's new post.

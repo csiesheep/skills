@@ -55,7 +55,14 @@ Aim for five to seven posts that:
 
 - are from today (Threads: hours, not days) or, on Instagram, are still collecting comments;
 - have readers (hundreds of views or likes, dozens of replies), because a reply is only as visible as its post;
-- invite answers (a question, a "have you ever", a list to pick from) or tell a story a reply can lean on.
+- invite answers (a question, a "have you ever", a list to pick from) or tell a story a reply can lean on;
+- **still have room near the top.** On 2026-10-19 every reply went under posts that already had 289 to 406
+  replies; a new account's reply sank to the bottom and none got a like. Readers see the first screen of replies.
+  Prefer a post 1 to 12 hours old whose likes are still climbing but whose replies are few (Threads under about
+  100, Instagram 30 to 100), or, under a huge post, **a spot many people read but few have replied to**: the
+  author's pinned update (chen.kenn's 673K-view post had a pinned update with 1 reply), or a top reply that tells
+  its own story (taiwancasalin's 294-like story under a 46K-view thread had 4 replies). Reply there, not under the
+  main post.
 
 Mix sources: two or three from keyword search, the rest from the fixed list of accounts the user approved (kept at
 the bottom of the latest engagement file). Add any good account found today to the candidates there.
@@ -66,7 +73,15 @@ under that follow-up instead of the story.
 
 ### 2. Draft three replies per post
 
-Read the post and the top replies first, so the reply adds something instead of repeating what is there.
+Read the post and the top ten replies first, so the reply adds something instead of repeating what is there.
+The aim is a like or a tap on the avatar, and both come from the people reading the replies, so:
+
+- **Pick up the joke the replies are already making.** Under z.n_.studio's 「農路上的哥哥」 the top comments were
+  all about the missing scary last page; a line that turns that into a chill fits the room better than one that
+  only answers the post.
+- **Give the author a reason to answer.** An author's reply lifts yours. A C-style question asks the author about a
+  detail only they know (「洗衣機那時候是開著在轉嗎？」), never a general question for everyone.
+- Short beats clever: one line people can read in passing.
 
 - **A　冷句** — one line in the storyteller ghost's voice: quiet, short, no exclamation marks, no emoji, a turn at
   the end. It works by taking something in the post one step further.
