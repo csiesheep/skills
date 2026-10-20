@@ -1,0 +1,47 @@
+# Finding posts
+
+Written from the first run (2026-10-19, Traditional Chinese, Taiwan). Search results change daily; when a keyword
+stops returning real paranormal posts, note it here.
+
+## Threads
+
+Search URL, with `filter=recent` for today's posts or without it for the top ones:
+
+    https://www.threads.com/search?q=<keyword>&serp_type=default&filter=recent
+    https://www.threads.com/search?q=<keyword>&serp_type=default
+
+`get_page_text` reads the results. Results load slowly: wait 6 to 8 seconds, and if only the sidebar comes back,
+load the page again. Chrome may show posts translated into English; the original is the post page's tab title.
+
+| Keyword | What came back |
+|---|---|
+| 靈異經驗 | real experience posts, some weeks old; good for top |
+| 靈異故事 | podcasts and creators telling stories; today's posts with `recent` |
+| 魔神仔 | mountain stories with long threads |
+| 毛毛的 | horror films and games people found scary; popular posts |
+| 怪事 | mixed; some mountain and house stories |
+| 鬼壓床 | sleep paralysis posts, some pseudo-science; pick the ones asking "有遇過嗎" |
+| 講鬼故事 | short videos; the army night-guard post came from here |
+| 鬼故事 | mostly metaphors (職場、交友、裝潢鬼故事): skip |
+| 撞鬼、阿飄 | mostly metaphors and politics: skip |
+
+Topics that carry ghost talk without the word: 當兵站哨, 大夜班, 宿舍, 一個人住, 搬家, 老家, 醫院, 殯儀館,
+恐怖片 titles. A post that asks readers something ("你們當年是哪種") is the best target: its readers are already
+replying.
+
+Post URLs come from `find` "timestamp link to the post by <author>" on the results page (href
+`/@<author>/post/<code>`). On the post page, the top post's timestamp link is the post itself.
+
+## Instagram
+
+The web hashtag page (`/explore/tags/<tag>/`) failed to load. The keyword search works and shows a grid of popular
+posts, not today's:
+
+    https://www.instagram.com/explore/search/keyword/?q=<keyword>
+
+`find` "post links in the results grid" gives `/p/<code>/`. Codes are roughly in time order, so on 2026-10-19 codes
+starting `De` were from the last week or two and `Dc`, `Dd` older. Open a post to read its date, likes and comments;
+pick ones a few days old that still get comments. Keywords used: 靈異故事.
+
+Accounts found this way (horror picture stories, urban legends) are good fixed-list candidates: their posts get
+thousands of likes, and a reply near the top of the comments is seen.
