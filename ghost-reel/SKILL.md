@@ -47,7 +47,8 @@ engine draws panels with its `manga.py`).
      does not: 〈阿嬤〉 (37 panels, 10 pages) squeezed to 85 s lost its connecting narration and the owner found it
      too fast and not as smooth as the comic. Follow the comic's order and keep its narration, two to three
      subtitles a shot with 「／」, 4 to 5 s a shot; under 3 minutes it still goes on Reels, Shorts and TikTok. For
-     longer stories also make a part 1 and part 2 as cuts (`"cuts"` in shots.json, `make.py --cut part1`): part 1 ends
+     longer stories make a part 1 and part 2 as cuts — **the owner chose on 2026-10-20 to post a long story as
+     the two parts, not the long version** (〈阿嬤〉: 1:24 and 1:39) — (`"cuts"` in shots.json, `make.py --cut part1`): part 1 ends
      on the strongest turn before the reveal with 「下集待續」 on the end card; part 2 opens with a one-shot recap of
      that turn, then the title with 「（下）」.
    - subtitles in the story's words (the engine wraps at about 14 characters a line, two lines), spoken lines in

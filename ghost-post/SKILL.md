@@ -23,11 +23,11 @@ Obsidian note `Projects/ghost story/ghost story pipeline.md`). The parts this sk
 
 | File in `stories/<short name>/` | Posted to |
 |---|---|
-| `reels/full_v3_cinema/full_v3_cinema.mp4` | Instagram Reel, YouTube Shorts, TikTok, Facebook Page |
+| `reels/full_v3_cinema/full_v3_cinema.mp4`, or for a long story `reels/full_v3_cinema_part1/…_part1.mp4` and `_part2` (the owner's choice, 2026-10-20: two short parts, not one long video; part 2 a day after part 1) | Instagram Reel, YouTube Shorts, TikTok, Facebook Page |
 | `posts/ig/01.jpg … NN.jpg`, `posts/ig/caption.txt` (01.jpg stamped; `01_nonumber.jpg` is ghost-pack's backup, never posted) | Instagram carousel, Facebook Page |
 | `posts/threads/hook.txt`, `image.jpg`, `attachment.txt`, `link.txt` | Threads: hook with image → reply with attachment → reply with `link.txt` (the Instagram link) |
 | `posts/pinterest/00_cover.jpg`, `NN_page.jpg` (pages before the reveal), `pins.txt` | Pinterest |
-| `posts/cross_caption.txt` (`{ig_link}` filled after the Instagram post) | YouTube, TikTok, Facebook |
+| `posts/cross_caption.txt` (`{ig_link}` filled after the Instagram post), or `cross_caption_part1.txt` / `_part2.txt` for the two parts: sections IG Reel, YouTube, TikTok, Facebook | the Reel's caption on every platform |
 | `reels/teaser_A/`, `teaser_B/` | Instagram trial Reels (phone) |
 | `README.md`, `brand/ledger.json` | links recorded here |
 

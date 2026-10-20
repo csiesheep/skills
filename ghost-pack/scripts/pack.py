@@ -55,6 +55,26 @@ DEFAULTS = {
 }
 
 
+PART_LINES = {"first": "下集待續，追蹤 {handle} 看下集。", "next": "上集在主頁。"}
+
+
+def video_captions(br: dict, v: dict, part: str | None = None) -> str:
+    """What ghost-post copies for one video: the Instagram Reel caption (the brand's `reel.teaser_lines`, so
+    「全篇漫畫在主頁。」 rather than the carousel's reading-order line), YouTube title and description, TikTok, Facebook.
+    `part` adds the 「下集待續」 / 「上集在主頁」 line of a story told in two parts."""
+    cc = block(br, "cross")
+    tags = " ".join(br.get("reel", {}).get("tags") or br.get("caption", {}).get("tags", []))
+    extra = [fill(part, v)] if part else []
+    ig = [fill(cc["title"], v), ""] + [fill(x, v) for x in br.get("reel", {}).get("teaser_lines", ["{disclosure}"])]
+    ig += extra + ["", tags]
+    yt_title = fill(cc["title"], v)
+    yt = "\n".join([fill(x, v) for x in cc["youtube_lines"]] + extra) + "\n\n" + tags
+    tk = "\n".join([fill(x, v) for x in cc["tiktok_lines"]] + extra) + "\n" + tags
+    fb = "\n".join([fill(x, v) for x in cc["facebook_lines"]] + extra) + "\n\n" + tags
+    return ("== IG Reel ==\n" + "\n".join(ig) + f"\n\n== YouTube 標題（{len(yt_title)}）==\n{yt_title}\n\n"
+            f"== YouTube 說明 ==\n{yt}\n\n== TikTok ==\n{tk}\n\n== Facebook ==\n{fb}")
+
+
 def manga_module():
     """ghost-comic's manga.py, from the skill folder next to this one (the repo and ~/.claude/skills alike)."""
     d = HERE.parent.parent / "ghost-comic" / "scripts"
@@ -167,6 +187,12 @@ def main() -> int:
                     help="one or two sentences for Pinterest, YouTube, TikTok and Facebook (default: the README's "
                          "「一句話」, else the hook's first sentence)")
     ap.add_argument("--ledger", default=None, help="another ledger file (for a trial run); default: the brand file's")
+    ap.add_argument("--cuts", default=None, help="Reel cuts from reels/shots.json (e.g. part1,part2): one "
+                                                 "posts/cross_caption_<cut>.txt each, with the cut's title")
+    ap.add_argument("--cuts-only", action="store_true", help="write only the cuts' captions, for a story whose other "
+                                                             "posts are already out: nothing else is touched")
+    ap.add_argument("--ig-link", default=None, help="the Instagram carousel's link if it is already posted; it fills "
+                                                    "the {ig_link} slots")
     a = ap.parse_args()
 
     m = manga_module()
@@ -188,80 +214,87 @@ def main() -> int:
     if not logline and hook_p.exists():
         logline, src = first_sentence(hook_p.read_text(encoding="utf-8")), "鉤子第一句（沒給 --logline）"
     v = {"name": br["name"], "handle": br.get("handle", ""), "disclosure": br["disclosure"], "number": num,
-         "title": title, "logline": logline or "", "ig_link": "{ig_link}"}
+         "title": title, "logline": logline or "", "ig_link": a.ig_link or "{ig_link}"}
     report = []
+    cuts = [c for c in (a.cuts or "").split(",") if c]
+    shots = d / "reels" / "shots.json"
+    cut_titles = {k: c.get("title", title) for k, c in json.loads(shots.read_text(encoding="utf-8")).get("cuts", {}).items()}         if shots.exists() else {}
+    if a.cuts_only and not cuts:
+        raise SystemExit("--cuts-only needs --cuts")
 
-    # 2. the two covers
-    ig = posts / "ig"
-    if kind == "comic":
-        covers = sorted(p for p in ig.glob("*01.jpg") if "_nonumber" not in p.name)
-        for p in covers:
-            stamp_cover(p, br, n, m)
-        report.append(("IG 封面", f"蓋上「{m.brand_text(br.get('cover_strip', '{name}｜{number}'), br, n)}」：" +
-                       "、".join(p.name for p in covers)))
-        pin_cover = posts / "pinterest" / "00_cover.jpg"
-        if pin_cover.exists():
-            bk = pin_cover.with_name("00_cover_nonumber.jpg")
-            if not bk.exists():
-                shutil.copy2(pin_cover, bk)
-            m.pin_fit(Image.open(covers[0]), m.PIN_MARGIN["cover"], br["rgb"]["paper"]).save(pin_cover, quality=92)
-            report.append(("Pinterest 封面", "用蓋好號的 01.jpg 重做"))
+    if not a.cuts_only:  # a story whose carousel, Threads and pins are already out keeps them as posted
+        # 2. the two covers
+        ig = posts / "ig"
+        if kind == "comic":
+            covers = sorted(p for p in ig.glob("*01.jpg") if "_nonumber" not in p.name)
+            for p in covers:
+                stamp_cover(p, br, n, m)
+            report.append(("IG 封面", f"蓋上「{m.brand_text(br.get('cover_strip', '{name}｜{number}'), br, n)}」：" +
+                           "、".join(p.name for p in covers)))
+            pin_cover = posts / "pinterest" / "00_cover.jpg"
+            if pin_cover.exists():
+                bk = pin_cover.with_name("00_cover_nonumber.jpg")
+                if not bk.exists():
+                    shutil.copy2(pin_cover, bk)
+                m.pin_fit(Image.open(covers[0]), m.PIN_MARGIN["cover"], br["rgb"]["paper"]).save(pin_cover, quality=92)
+                report.append(("Pinterest 封面", "用蓋好號的 01.jpg 重做"))
 
-        # 3a. Instagram caption, as ghost-comic's export writes it
-        cfg = br.get("caption", {})
-        cap = [m.brand_text(cfg.get("title", "{number}｜{title}"), br, n, title), ""]
-        cap += [m.brand_text(x, br, n, title) for x in cfg.get("lines", ["{disclosure}"])]
-        cap += ["", " ".join(cfg.get("tags", []))]
-        t = write(ig / "caption.txt", "\n".join(cap))
-        report.append(("IG 文案 posts/ig/caption.txt", f"{len(t)} 字"))
+            # 3a. Instagram caption, as ghost-comic's export writes it
+            cfg = br.get("caption", {})
+            cap = [m.brand_text(cfg.get("title", "{number}｜{title}"), br, n, title), ""]
+            cap += [m.brand_text(x, br, n, title) for x in cfg.get("lines", ["{disclosure}"])]
+            cap += ["", " ".join(cfg.get("tags", []))]
+            t = write(ig / "caption.txt", "\n".join(cap))
+            report.append(("IG 文案 posts/ig/caption.txt", f"{len(t)} 字"))
 
-    # 3b. Threads
-    st = br.get("story", {})
-    heading = st.get("title", "{number}｜{title}").format(number=num, title=title, name=br["name"])
-    if hook_p.exists():
-        t = set_heading(hook_p, heading, title).rstrip("\n")
-        warn = f"，超過 {LIMITS['threads']}！重跑 ghost-story post --limit {LIMITS['threads'] - (len(t) - LIMITS['threads'])}" \
-            if len(t) > LIMITS["threads"] else ""
-        report.append(("Threads 鉤子 hook.txt", f"第一行「{heading}」，{len(t)} 字{warn}"))
-    else:
-        report.append(("Threads 鉤子 hook.txt", "沒有：ghost-story post --dest"))
-    if att_p.exists():
-        t = set_heading(att_p, heading, title).rstrip("\n")
-        report.append(("Threads 附件 attachment.txt", f"{len(t)} 字"))
-    t = write(posts / "threads" / "link.txt", fill(block(br, "threads")["link_post"], v))
-    report.append(("Threads 第 3 則 link.txt", t))
+        # 3b. Threads
+        st = br.get("story", {})
+        heading = st.get("title", "{number}｜{title}").format(number=num, title=title, name=br["name"])
+        if hook_p.exists():
+            t = set_heading(hook_p, heading, title).rstrip("\n")
+            warn = f"，超過 {LIMITS['threads']}！重跑 ghost-story post --limit {LIMITS['threads'] - (len(t) - LIMITS['threads'])}" \
+                if len(t) > LIMITS["threads"] else ""
+            report.append(("Threads 鉤子 hook.txt", f"第一行「{heading}」，{len(t)} 字{warn}"))
+        else:
+            report.append(("Threads 鉤子 hook.txt", "沒有：ghost-story post --dest"))
+        if att_p.exists():
+            t = set_heading(att_p, heading, title).rstrip("\n")
+            report.append(("Threads 附件 attachment.txt", f"{len(t)} 字"))
+        t = write(posts / "threads" / "link.txt", fill(block(br, "threads")["link_post"], v))
+        report.append(("Threads 第 3 則 link.txt", t))
 
-    # 3c. Pinterest
-    pdir = posts / "pinterest"
-    pins = sorted(p for p in pdir.glob("*.jpg") if "_nonumber" not in p.name) if pdir.exists() else []
-    if pins:
-        pc = block(br, "pinterest")
-        pages = len(list((d / "comic" / "out" / "pages").glob("page_*.png"))) or max(len(list(ig.glob("[0-9]*.jpg"))) - 2, 1)
-        text = "\n".join(fill(x, v) for x in pc["lines"]) + "\n" + " ".join(pc["tags"])
-        out = [f"板：{fill(pc['board'], v)}", "連結：{ig_link}（IG 那則輪播，ghost-post 發完 IG 後填）", ""]
-        for p in pins:
-            k = re.match(r"(\d+)_page", p.name)
-            ttl = fill(pc["title_page"], {**v, "k": int(k.group(1)), "pages": pages}) if k else fill(pc["title_cover"], v)
-            out += [f"== {p.name} ==", f"標題（{len(ttl)}）：{ttl}", f"說明（{len(text)}）：", text, ""]
-            if len(ttl) > LIMITS["pin_title"]:
-                report.append(("Pinterest 標題", f"{p.name} {len(ttl)} 字超過 100！"))
-        write(pdir / "pins.txt", "\n".join(out))
-        report.append(("Pinterest pins.txt", f"{len(pins)} 張"))
+        # 3c. Pinterest
+        pdir = posts / "pinterest"
+        pins = sorted(p for p in pdir.glob("*.jpg") if "_nonumber" not in p.name) if pdir.exists() else []
+        if pins:
+            pc = block(br, "pinterest")
+            pages = len(list((d / "comic" / "out" / "pages").glob("page_*.png"))) or max(len(list(ig.glob("[0-9]*.jpg"))) - 2, 1)
+            text = "\n".join(fill(x, v) for x in pc["lines"]) + "\n" + " ".join(pc["tags"])
+            out = [f"板：{fill(pc['board'], v)}", "連結：{ig_link}（IG 那則輪播，ghost-post 發完 IG 後填）", ""]
+            for p in pins:
+                k = re.match(r"(\d+)_page", p.name)
+                ttl = fill(pc["title_page"], {**v, "k": int(k.group(1)), "pages": pages}) if k else fill(pc["title_cover"], v)
+                out += [f"== {p.name} ==", f"標題（{len(ttl)}）：{ttl}", f"說明（{len(text)}）：", text, ""]
+                if len(ttl) > LIMITS["pin_title"]:
+                    report.append(("Pinterest 標題", f"{p.name} {len(ttl)} 字超過 100！"))
+            write(pdir / "pins.txt", "\n".join(out))
+            report.append(("Pinterest pins.txt", f"{len(pins)} 張"))
 
-    # 3d. YouTube, TikTok, Facebook
-    cc = block(br, "cross")
-    tags = " ".join(br.get("reel", {}).get("tags") or br.get("caption", {}).get("tags", []))
-    yt_title = fill(cc["title"], v)
-    yt = "\n".join(fill(x, v) for x in cc["youtube_lines"]) + "\n\n" + tags
-    tk = "\n".join(fill(x, v) for x in cc["tiktok_lines"]) + "\n" + tags
-    fb = "\n".join(fill(x, v) for x in cc["facebook_lines"]) + "\n\n" + tags
-    write(posts / "cross_caption.txt", f"== YouTube 標題（{len(yt_title)}）==\n{yt_title}\n\n== YouTube 說明 ==\n{yt}\n\n"
-                                       f"== TikTok ==\n{tk}\n\n== Facebook ==\n{fb}")
-    report.append(("YouTube、TikTok、FB posts/cross_caption.txt", f"YouTube 標題 {len(yt_title)} 字，IG 連結留 {{ig_link}}"))
+    # 3d. the video's captions: Instagram Reel, YouTube, TikTok, Facebook (and one file per cut of the Reel)
+    if not a.cuts_only:
+        t_ = write(posts / "cross_caption.txt", video_captions(br, v))
+        report.append(("影片文案 posts/cross_caption.txt",
+                       "IG Reel、YouTube、TikTok、FB" + ("，IG 連結留 {ig_link}" if "{ig_link}" in t_ else "")))
+    for k, cut in enumerate(cuts):
+        cv = {**v, "title": cut_titles.get(cut, f"{title}（{cut}）")}
+        part = PART_LINES["first"] if k == 0 and len(cuts) > 1 else PART_LINES["next"] if k > 0 else None
+        write(posts / f"cross_caption_{cut}.txt", video_captions(br, cv, part))
+        report.append((f"影片文案 posts/cross_caption_{cut}.txt", cv["title"]))
 
     # 4. README
-    update_readme(readme, f"{num}〈{title}〉", logline or "", dt.date.today().isoformat())
-    report.append(("README.md", f"# {num}〈{title}〉"))
+    if not a.cuts_only:
+        update_readme(readme, f"{num}〈{title}〉", logline or "", dt.date.today().isoformat())
+        report.append(("README.md", f"# {num}〈{title}〉"))
 
     print(f"{num}〈{title}〉  ({folder})")
     print(f"一句話（{src}）：{logline}")
