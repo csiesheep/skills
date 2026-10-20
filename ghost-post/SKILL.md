@@ -24,7 +24,7 @@ Obsidian note `Projects/ghost story/ghost story pipeline.md`). The parts this sk
 |---|---|
 | `reels/full_v3_cinema/full_v3_cinema.mp4` | Instagram Reel, YouTube Shorts, TikTok, Facebook Page |
 | `posts/ig/01.jpg … NN.jpg`, `posts/ig/caption.txt` (01.jpg stamped; `01_nonumber.jpg` is ghost-pack's backup, never posted) | Instagram carousel, Facebook Page |
-| `posts/threads/hook.txt`, `image.jpg`, `attachment.txt` | Threads: hook with image → reply with attachment → reply with the Instagram link |
+| `posts/threads/hook.txt`, `image.jpg`, `attachment.txt`, `link.txt` | Threads: hook with image → reply with attachment → reply with `link.txt` (the Instagram link) |
 | `posts/pinterest/00_cover.jpg`, `NN_page.jpg` (pages before the reveal), `pins.txt` | Pinterest |
 | `posts/cross_caption.txt` (`{ig_link}` filled after the Instagram post) | YouTube, TikTok, Facebook |
 | `reels/teaser_A/`, `teaser_B/` | Instagram trial Reels (phone) |
@@ -65,9 +65,10 @@ way). Stop there for those platforms until the user has done it; the others can 
 
 `py -X utf8 "<skill dir>/scripts/check_story.py" <story folder> --number N` lists every ready-to-post file and what is
 missing or wrong: the number not stamped, a caption missing, a Threads post over 500 characters, a pin not
-1000 × 1500, the Instagram link not yet in the cross-post caption. The number comes from the ledger
-(`ledger.py ... show`); if the story has none, it has not been packed. Do not fix anything here. Stop and tell the
-user what is missing and which skill makes it:
+1000 × 1500. An `{ig_link}` slot in the captions is ready, not missing (see below). The number comes from the ledger,
+which ghost-pack keeps: `py -X utf8 "<ghost-pack skill dir>/scripts/ledger.py" --brand-file <brand.json> show` (the
+ghost-pack folder sits next to this one); if the story has none, it has not been packed. Do not fix anything here.
+Stop and tell the user what is missing and which skill makes it:
 
 | Missing | Made by |
 |---|---|
@@ -77,8 +78,10 @@ user what is missing and which skill makes it:
 | Reel full | ghost-reel |
 
 The one exception: the Instagram link that the other platforms' captions point to only exists after the Instagram
-post. Ask ghost-pack's caption for its `{ig_link}` slot and fill that slot with the link when posting; that is
-posting, not preparing.
+post. ghost-pack leaves an `{ig_link}` slot in `posts/cross_caption.txt` (YouTube, Facebook), `posts/threads/link.txt`
+(the third Threads post) and the link line of `posts/pinterest/pins.txt`. After the Instagram carousel is up, put
+its link into those slots in the text you post (and write it into the files, so the record shows what went out);
+that is posting, not preparing.
 
 ### 3. Preview, ask
 
@@ -105,7 +108,7 @@ After each post: open it, confirm text, image or video and the AI label, copy th
 
 ### 5. Record
 
-`py -X utf8 "<skill dir>/scripts/ledger.py" --brand-file <brand.json> posted N <platform> --url <link>` for every post, and the links in the story's `README.md`. Tell the
+`py -X utf8 "<ghost-pack skill dir>/scripts/ledger.py" --brand-file <brand.json> posted N <platform> --url <link>` for every post, and the links in the story's `README.md`. Tell the
 user the first hour of replies is theirs (ghost-reply can draft them). After 48 hours, put views, completion,
 saves, shares and new followers into the brand's results table.
 

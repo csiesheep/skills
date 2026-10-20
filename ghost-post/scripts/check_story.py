@@ -78,9 +78,13 @@ def main():
         notes.append(f"hook.txt 沒有「{num}」（ghost-pack）")
     if len(att_t) > LIMITS["attachment"]:
         notes.append("attachment.txt 超過 10,000 字")
-    missing = [n for n, ok in (("hook.txt", hook_t), ("attachment.txt", att_t), ("image.jpg", (th / "image.jpg").exists())) if not ok]
+    link_t = read(th / "link.txt")
+    if link_t and "{ig_link}" not in link_t and "instagram.com" not in link_t:
+        notes.append("link.txt 沒有 {ig_link} 也沒有 IG 連結")
+    missing = [n for n, ok in (("hook.txt", hook_t), ("attachment.txt", att_t), ("image.jpg", (th / "image.jpg").exists()),
+                               ("link.txt（ghost-pack）", link_t)) if not ok]
     add("Threads posts/threads", True, not missing and not notes,
-        ("缺 " + "、".join(missing) + "；" if missing else "") + ("；".join(notes) if notes else ("OK" if not missing else "")))
+        "；".join(([("缺 " + "、".join(missing))] if missing else []) + notes) or "OK")
 
     # Pinterest
     pin = d / "posts" / "pinterest"
@@ -116,14 +120,18 @@ def main():
         f"{len(pins)} 張" + ("；pins.txt OK" if txt else "；沒有 pins.txt") + ("；" + "；".join(notes) if notes else ""))
 
     # captions for YouTube / TikTok / Facebook
+    # Before the Instagram post the link is an {ig_link} slot (ghost-pack writes it, ghost-post fills it): that is
+    # ready, not missing. Only a caption with neither the slot nor a link is wrong.
     cross = read(d / "posts" / "cross_caption.txt")
-    notes = []
+    notes, info = [], []
     if cross and num not in cross:
         notes.append(f"沒有「{num}」")
-    if cross and "instagram.com" not in cross:
-        notes.append("還沒有 IG 連結（IG 發出後補）")
-    add("YouTube、TikTok、FB 文案 posts/cross_caption.txt", True, bool(cross) and not notes[:1],
-        "；".join(notes) if notes else ("OK" if cross else "missing"))
+    if cross and "{ig_link}" in cross:
+        info.append("IG 連結留 {ig_link}，發完 IG 後填")
+    elif cross and "instagram.com" not in cross:
+        notes.append("沒有 {ig_link} 也沒有 IG 連結")
+    add("YouTube、TikTok、FB 文案 posts/cross_caption.txt", True, bool(cross) and not notes,
+        "；".join(notes + info) if notes or info else ("OK" if cross else "missing（ghost-pack）"))
 
     width = max(len(r[0]) for r in rows)
     bad = 0
