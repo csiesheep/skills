@@ -36,6 +36,12 @@ The post did not name the film; reading the top replies first gave the subject.
 
 The search hit was the author's own follow-up (a source link) in the thread; the reply went under the top post.
 
+**Removed by Threads** the next day: "We don't allow people to take actions at high volume that might bother
+others" (spam rules). It was the fourth Threads reply in three minutes from a zero-follower account, and the most
+generic of the four: it does not mention the couple, the mountain or the voices, and would fit under any ghost
+post. The user's lesson: longer gaps, and replies that fit the post. A version tied to the post: 「他們想跟上去結伴
+下山那段最毛。山裡會主動等你的聲音，通常不是在等你下山。」
+
 ## 5. Instagram: Japanese urban legend "the four corners game" (20k likes, 252 comments, 4 days old)
 
 - A：四個人玩，第五個拍你肩膀的時候，記得別回頭數。

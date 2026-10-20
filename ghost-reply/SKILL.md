@@ -32,8 +32,16 @@ brand folder.
 - **Skip** posts about real deaths, accidents, disasters or crimes, politics, someone venting about real trauma or
   illness, and posts that use 鬼故事 as a metaphor (職場鬼故事, 交友軟體鬼故事, 裝潢鬼故事): a ghost line under
   those is tone-deaf.
-- **One reply per post**, never the same line twice, five to ten posts a day at most. Many identical-looking
-  replies in a short time is what platforms flag as automation.
+- **Space the replies out.** On 2026-10-19 four Threads replies posted within three minutes from a new account
+  with no followers, and Threads removed the last one: "We don't allow people to take actions at high volume that
+  might bother others", under its spam rules. So: at least 15 minutes between two replies on the same platform,
+  three a day per platform in the first weeks (raise it slowly once the account has followers and no removals),
+  never the same line twice, one reply per post. Threads and Instagram count separately.
+- **Stay on the post's topic.** The removed reply was the generic one: a question that could sit under any ghost
+  post ("大家聽過最毛的是哪種？"). A reply has to answer this post: pick up a concrete detail from it (a name, a
+  place, an object, a line the author wrote, a top reply) and build on that. If a reply would still make sense
+  pasted under a different post, rewrite it. Question-style replies (C) are the most at risk of reading as
+  engagement bait; give them a detail from the post or drop them.
 
 ## Steps
 
@@ -62,6 +70,8 @@ Read the post and the top replies first, so the reply adds something instead of 
 
 - **A　冷句** — one line in the storyteller ghost's voice: quiet, short, no exclamation marks, no emoji, a turn at
   the end. It works by taking something in the post one step further.
+Every reply, whatever the style, must refer to something specific in that post.
+
 - **B　微型故事** — two or three sentences of a story told as heard, ending on the unsettling detail. It works when
   the post is itself a story or asks for stories.
 - **C　接話** — a question that people want to answer under the post, ideally one with a small chill in it. It
@@ -86,7 +96,14 @@ After the user's choice:
 - **Instagram**: on the post page, click "Add a comment…", type, press "Post". Reload and `find` the comment text
   under the brand's name.
 
-Post one at a time and confirm each before the next. Close the tab at the end.
+Post one at a time and confirm each before the next, then wait at least 15 minutes before the next one on the
+same platform (alternating Threads and Instagram is fine). A browser wait is at most 10 seconds, so for the gap
+schedule the next reply with the scheduled-task tool if this session has one, or post one now and leave the rest
+for the user to paste from the phone at their own pace; say which. Close the tab at the end.
+
+If a platform removes a reply, open the notice ("We removed your comment" → "See why"), write the reason and the
+reply into the day's file, and do not request a review or repost without the user's say. Post fewer and slower
+for the next days.
 
 ### 5. Record
 
