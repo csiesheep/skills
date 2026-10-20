@@ -43,9 +43,15 @@ engine draws panels with its `manga.py`).
 2. **Edit it as a director, with the story open.** The draft knows panels, not the story. On 〈阿嬤說我後面跟了三個人〉
    it kept every speech panel and dropped the narration that carries the plot (the three patients who died on her
    shift). Read `story.md` and the pages, then:
-   - choose the beats a stranger needs to follow the story and feel the turn; cut the rest. 80 to 95 s.
-   - one short subtitle per shot (at most about 18 characters a line; the engine wraps), in the story's words,
-     spoken lines in 「」; no subtitle where the picture says it.
+   - **Let the story set the length.** A short story (第 2 首, 33 panels, one turn) fits 80 to 90 s. A longer one
+     does not: 〈阿嬤〉 (37 panels, 10 pages) squeezed to 85 s lost its connecting narration and the owner found it
+     too fast and not as smooth as the comic. Follow the comic's order and keep its narration, two to three
+     subtitles a shot with 「／」, 4 to 5 s a shot; under 3 minutes it still goes on Reels, Shorts and TikTok. For
+     longer stories also make a part 1 and part 2 as cuts (`"cuts"` in shots.json, `make.py --cut part1`): part 1 ends
+     on the strongest turn before the reveal with 「下集待續」 on the end card; part 2 opens with a one-shot recap of
+     that turn, then the title with 「（下）」.
+   - subtitles in the story's words (the engine wraps at about 14 characters a line, two lines), spoken lines in
+     「」; no subtitle where the picture says it.
    - the cold open: the strangest line of the first half, said over its panel, before the title. Never the reveal.
    - the reveal gets about 5 s and, if the picture needs it, the one line that makes it land.
    - check every crop: a 9:16 frame cut from a wide or square panel misses the subject unless the panel's focus

@@ -306,11 +306,21 @@ def build_v3(R):
                 ImageDraw.Draw(tile).text((20, 10), txt, font=f, fill=(240, 240, 245), stroke_width=7, stroke_fill=(0, 0, 0))
             else:
                 tile = R.subtitle_tile(sub)
+        # "／" in a subtitle: several lines in turn on one shot, each on screen for a share of the shot that follows
+        # its length (a long panel of narration keeps all of it)
+        beats = []
+        if sub and not o.get("voice") and "／" in sub:
+            parts = [x for x in sub.split("／") if x]
+            total_len = sum(len(x) for x in parts)
+            at = 0.0
+            for x in parts:
+                beats.append((at, R.subtitle_tile(x)))
+                at += sec * len(x) / total_len
         voice = o.get("voice", False)
 
         first = not T.shots
 
-        def draw(i, img=img, cell=cell, o=o, tile=tile, n=n, voice=voice, first=first):
+        def draw(i, img=img, cell=cell, o=o, tile=tile, n=n, voice=voice, first=first, beats=beats):
             t = i / max(1, n - 1)
             focus = tuple(o.get("focus", cell.get("focus", (0.5, 0.5))))
             if o.get("clip"):
@@ -324,9 +334,16 @@ def build_v3(R):
             dx, dy = R.shake_offset(o.get("fx", []), i)
             if dx or dy:
                 g = Image.new("RGBA", (W, H), (0, 0, 0, 255)); g.paste(f, (dx, dy)); f = g
-            if tile is not None:
+            if beats:
+                now = i / FPS
+                k = max(j for j, (at, _) in enumerate(beats) if now >= at)
+                at, tile = beats[k]
+                nxt = beats[k + 1][0] if k + 1 < len(beats) else n / FPS
+                a = (1.0 if first and k == 0 else min(1, max(0, (now - at - (0.35 if k == 0 else 0.1)) / 0.3)))                     * min(1, max(0, (nxt - now) * FPS / 6))
+            if tile is not None and not beats:
                 now = i / FPS
                 a = (1.0 if first else min(1, max(0, (now - 0.35) / 0.4))) * min(1, max(0, (n - i) / 9))
+            if tile is not None:
                 if a > 0:
                     t2 = tile.copy(); t2.putalpha(t2.split()[3].point(lambda v: int(v * a)))
                     if voice:

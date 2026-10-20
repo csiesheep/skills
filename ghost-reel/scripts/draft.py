@@ -65,8 +65,9 @@ def main() -> int:
             pass
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("story")
-    ap.add_argument("--target", type=float, default=85.0, help="V3 length to aim for, seconds (Reels hold 3 min, "
-                                                                    "but completion falls after about 90 s)")
+    ap.add_argument("--target", type=float, default=85.0, help="V3 length to aim for, seconds. 85 suits a short story; "
+                                                                    "for a long one (more than about 30 panels) aim "
+                                                                    "at 150 to 175 and keep the narration (SKILL.md step 2)")
     ap.add_argument("--force", action="store_true", help="replace an existing reels/shots.json")
     a = ap.parse_args()
 

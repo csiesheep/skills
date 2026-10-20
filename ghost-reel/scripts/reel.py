@@ -282,8 +282,9 @@ def title_card(sub=True):
 def end_card():
     im = Image.new("RGBA", (W, H), (0, 0, 0, 255))
     d = ImageDraw.Draw(im)
-    lines = [("本首完", font(96, weight="Bold"), (245, 245, 245)),
-             ("追蹤，聽下一首", font(52), (200, 200, 200)),
+    top, second = (STORY.END + [""])[:2] if STORY.END else ("本首完", "追蹤，聽下一首")
+    lines = [(top, font(96, weight="Bold"), (245, 245, 245)),
+             (second, font(52), (200, 200, 200)),
              (STORY.HANDLE, font(46, "plain", None), RED),
              (STORY.DISCLOSURE, font(30, "plain", None), (120, 120, 120))]
     y = 760

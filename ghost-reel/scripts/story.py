@@ -11,7 +11,10 @@ The file is meant to be read and edited by hand (one shot per line). Its keys:
              "skip": [pids]}. Every panel is shown in reading order unless skipped; "say" replaces its lettering
              with shorter lines.
     v2       說書快剪 (shelved): [{"panel", "caption", options}]; "／" splits a caption into beats
-    v3       電影感: [{"panel", "sec", "sub", options}] in the order they play; panel "TITLE" is the title card
+    v3       電影感: [{"panel", "sec", "sub", options}] in the order they play; panel "TITLE" is the title card.
+             "／" in a sub shows its parts in turn on that shot.
+    cuts     other V3 cuts of the same comic: {name: {"v3": [...], "title", "end": [lines], "music", "v3_beds"}},
+             rendered with make.py --cut name (a long version, a part 1 and part 2)
 
 Options: motion (push, pull, pan_rtl, pan_down, static, snap), focus [x, y], fx (night, pulse, chroma, darken,
 shake, fadein, glitch), sfx [[name, at seconds, gain]], hold (extra seconds, v1), black (seconds of black before),
@@ -37,16 +40,25 @@ def _opts(d: dict, story_dir: Path, skip=()) -> dict:
     return o
 
 
-def load(story_dir: str | Path, brand: dict | None = None) -> SimpleNamespace:
-    """The shot list as the engine reads it (the attribute names of the prototype's per-comic Python file)."""
+def load(story_dir: str | Path, brand: dict | None = None, cut: str | None = None) -> SimpleNamespace:
+    """The shot list as the engine reads it (the attribute names of the prototype's per-comic Python file). With
+    `cut`, V3 and its title, end card, music and beds come from that entry of "cuts"."""
     d = Path(story_dir).resolve()
     j = json.loads((d / "reels" / "shots.json").read_text(encoding="utf-8"))
+    c = {}
+    if cut:
+        if cut not in j.get("cuts", {}):
+            raise SystemExit(f"shots.json has no cut {cut!r} (cuts: {', '.join(j.get('cuts', {})) or 'none'})")
+        c = j["cuts"][cut]
+        j = {**j, "v3": c["v3"], "title": c.get("title", j["title"]), "v3_beds": c.get("v3_beds", j.get("v3_beds", [])),
+             "music": {**j.get("music", {}), **({"v3": c["music"]} if c.get("music") else {})}}
     v1 = j.get("v1", {})
     return SimpleNamespace(
         DIR=d,
         COMIC=str((d / j.get("comic", "comic")).resolve()),
         TITLE=j["title"],
-        NUMBER=None,  # never a number inside a video: the owner's rule of 2026-10-20
+        NUMBER=None,
+        END=c.get("end"),  # the end card's lines, when a cut needs others (「下集待續」)  # never a number inside a video: the owner's rule of 2026-10-20
         SEAL=(brand or {}).get("seal"),
         HANDLE=(brand or {}).get("handle", ""),
         DISCLOSURE=(brand or {}).get("disclosure", "AI 輔助創作｜故事純屬虛構"),
@@ -70,7 +82,24 @@ def dump(doc: dict) -> str:
     for n, k in enumerate(keys):
         v = doc[k]
         end = "," if n < len(keys) - 1 else ""
-        if k in ("beds", "v3_beds", "v2", "v3") and isinstance(v, list):
+        if k == "cuts" and isinstance(v, dict):
+            out.append(' "cuts": {')
+            names = list(v)
+            for m, nm in enumerate(names):
+                cv = v[nm]
+                out.append(f'  "{nm}": {{')
+                ck = list(cv)
+                for q, kk in enumerate(ck):
+                    e3 = "," if q < len(ck) - 1 else ""
+                    if kk == "v3":
+                        out.append('   "v3": [')
+                        out += [f"    {one(x)}" + ("," if i < len(cv[kk]) - 1 else "") for i, x in enumerate(cv[kk])]
+                        out.append(f"   ]{e3}")
+                    else:
+                        out.append(f'   "{kk}": {one(cv[kk])}{e3}')
+                out.append("  }" + ("," if m < len(names) - 1 else ""))
+            out.append(f" }}{end}")
+        elif k in ("beds", "v3_beds", "v2", "v3") and isinstance(v, list):
             out.append(f' "{k}": [')
             out += [f"  {one(x)}" + ("," if i < len(v) - 1 else "") for i, x in enumerate(v)]
             out.append(f" ]{end}")

@@ -64,6 +64,8 @@ def main() -> int:
     ap.add_argument("--out", default=None, help="default: reels/<full_v3_cinema> in the story folder")
     ap.add_argument("--reuse", action="store_true", help="keep the silent picture from the last render; redo sound only")
     ap.add_argument("--check", action="store_true", help="validate the shot list and stop")
+    ap.add_argument("--cut", default=None, help="a V3 cut from shots.json's \"cuts\" (long, part1…): written to "
+                                                "reels/full_v3_cinema_<cut>/")
     a = ap.parse_args()
 
     import reel as R
@@ -74,7 +76,10 @@ def main() -> int:
     d = Path(a.story).resolve()
     bf = Path(a.brand_file) if a.brand_file else d.parent.parent / "brand" / "brand.json"
     brand = R.mg.load_brand(str(bf))
-    S = story.load(d, brand)
+    if a.cut and a.version != "v3":
+        print("--cut is for V3", file=sys.stderr)
+        return 2
+    S = story.load(d, brand, a.cut)
     R.setup(S, brand.get("name", "鬼唱詩"))
     problems = check(S, R, a.version)
     for p in problems:
@@ -86,20 +91,21 @@ def main() -> int:
         return 0
     SFX.use_samples(bf.parent / "sfx")
     music = a.music or (str(bf.parent / "music" / S.MUSIC[a.version]) if S.MUSIC.get(a.version) else None)
-    name = NAMES[a.version]
+    name = NAMES[a.version] + (f"_{a.cut}" if a.cut else "")
     out = Path(a.out) if a.out else d / "reels" / name
     out.mkdir(parents=True, exist_ok=True)
     mp4 = out / f"{name}.mp4"
-    n, total = R.produce(a.version, d / "drafts" / "reels" / "_work", mp4, out / f"{name}_frames.jpg",
+    n, total = R.produce(a.version, d / "drafts" / "reels" / "_work" / (a.cut or "main"), mp4, out / f"{name}_frames.jpg",
                          music=music, reuse=a.reuse)
     ff = R.mg.ffmpeg_exe()
     subprocess.run([ff, "-y", "-loglevel", "error", "-ss", "1.0", "-i", str(mp4), "-frames:v", "1", "-q:v", "2",
                     str(out / f"{name}_cover.jpg")], check=True)
     # 720p at about 0.85 Mbps: an 82 s film comes to about 9 MB, under the 10 MB a Claude in Chrome upload takes
-    kbps = max(400, int(9.2 * 8 * 1024 / max(total, 1)) - 128)
+    audio_k = 96 if total < 120 else 64
+    kbps = max(250, int(9.3 * 8 * 1024 / max(total, 1)) - audio_k)
     subprocess.run([ff, "-y", "-loglevel", "error", "-i", str(mp4), "-vf", "scale=720:1280:flags=lanczos",
                     "-c:v", "libx264", "-preset", "slow", "-b:v", f"{kbps}k", "-maxrate", f"{kbps * 2}k",
-                    "-bufsize", f"{kbps * 2}k", "-c:a", "aac", "-b:a", "96k", "-movflags", "+faststart",
+                    "-bufsize", f"{kbps * 2}k", "-c:a", "aac", "-b:a", f"{audio_k}k", "-movflags", "+faststart",
                     str(out / f"{name}_preview720.mp4")], check=True)
     buf = io.StringIO()
     with redirect_stdout(buf):
