@@ -138,9 +138,19 @@ are legitimate.
   characters ending on a sentence, with the whole story as a text attachment; `--mode chain`
   is numbered Threads posts of 500 at most, cut between paragraphs or sentences; `--mode ig` is
   an Instagram caption within 2,200. For an account with a brand file (the same `brand.json`
-  ghost-comic's export reads), add `--brand-file brand.json --number N`: the heading becomes the
-  brand's 「第 N 首｜title」, the disclosure and sign-off (鬼唱詩's 「收驚。」) and tags come from the
-  file. The number comes from the account's ledger (social-post); leave it out until assigned.
+  ghost-comic's export reads), add `--brand-file brand.json`: the disclosure and sign-off
+  (鬼唱詩's 「收驚。」) and tags come from the file, and the heading is the bare title. No number:
+  in the 鬼唱詩 pipeline ghost-pack numbers a story only when it is about to be posted and adds
+  「第 N 首」 itself; `--number N` still exists for a one-off.
+  The attach post opens on the hook, not the setup: by default the strongest sentence or colon
+  clause in the first third of the story (a rule, a voice calling, something that is not there;
+  if the line before it is also strong, such as the question that 「我回頭」 answers, it starts
+  there). Read what it picked. When it picked setup (it did for three of five 鬼唱詩 stories),
+  pass `--hook <the sentence to start at>` or `--hook <paragraph number>`. `--hook 1` gives the
+  old behaviour, the story from its first paragraph.
+  `--dest <story folder>` also writes the post and the attachment to `posts/threads/hook.txt` and
+  `posts/threads/attachment.txt`, the names in the folder contract
+  (`C:/Users/sheep/Pictures/gui_chang_shi/README.md`), where ghost-pack and ghost-post look.
 - **No real targets.** Keep places at the level the rules allow (縣市、區、路段、某國中)
   and never name a real person, a real business, or a specific temple or hospital as haunted.
 - **Don't copy.** The pool is paraphrase on purpose. Don't reconstruct a known marvel post,

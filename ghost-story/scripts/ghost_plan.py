@@ -420,19 +420,71 @@ def load_brand(path: str | None) -> dict | None:
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
+# What makes a sentence a hook: the first strange thing, a rule, a voice, something that is not there. Weights are
+# rough; the pick only looks at the first third of the story so the reveal never ends up in the hook.
+_HOOK_WORDS = {2: ("不要回", "不要應", "千萬", "全名", "叫你", "叫我", "突然", "回頭", "什麼都沒有", "沒有人", "不見了",
+                   "後面那", "背後", "敲門", "站著", "一動不動"),
+               1: ("不要", "不能", "規矩", "禁忌", "聲音", "影子", "半夜", "凌晨", "「")}
+_CLAUSE = re.compile(r"(?<=[。！？…：])(?![」』）])|(?<=[」』）])")
+
+
+def _hook_score(s: str) -> int:
+    return sum(w for w, words in _HOOK_WORDS.items() for k in words if k in s)
+
+
+def find_hook(body: str, hook: str | None = None) -> int:
+    """Where in `body` the hook post starts. `hook` is a paragraph number (1 = first paragraph after the title) or a
+    piece of text to start at; without it, the strongest sentence or colon clause in the first third of the story."""
+    if hook:
+        if hook.isdigit():
+            paras = [m.start() for m in re.finditer(r"(?m)^(?=\S)", body)]
+            if not 1 <= int(hook) <= len(paras):
+                raise ValueError(f"--hook {hook}: 故事只有 {len(paras)} 段")
+            return paras[int(hook) - 1]
+        at = body.find(hook)
+        if at < 0:
+            raise ValueError(f"--hook：故事裡找不到「{hook}」")
+        return at
+    pieces, cur = [], ""
+    for x in _CLAUSE.split(body):          # a quotation stays one piece
+        cur += x
+        if cur.count("「") <= cur.count("」"):
+            pieces.append(cur)
+            cur = ""
+    pieces += [cur] if cur else []
+    scored, pos = [], 0
+    for piece in pieces:
+        start = pos + len(piece) - len(piece.lstrip())
+        pos += len(piece)
+        if start > len(body) / 3:
+            break
+        scored.append((start, _hook_score(piece)))
+    if not scored or max(s for _, s in scored) == 0:
+        return 0
+    k = max(range(len(scored)), key=lambda i: (scored[i][1], -i))
+    while k > 0 and scored[k - 1][1] >= 2:  # 「我回頭，什麼都沒有」 answers the line before it: start at that line
+        k -= 1
+    return scored[k][0]
+
+
 def make_posts(text: str, mode: str = "attach", limit: int = 500, brand: dict | None = None,
-               number: int | None = None) -> dict:
-    """attach: one post (title, disclosure, the opening up to the limit, cut at a paragraph or sentence) plus the
-    whole story as a text attachment. chain: the story in numbered posts of at most `limit` characters, cut at
-    paragraphs or sentences. ig: one caption within Instagram's 2,200 characters with the opening and the disclosure.
-    With a brand file the heading, disclosure, sign-off and tags come from it; without one the title gets [創作]."""
+               number: int | None = None, hook: str | None = None) -> dict:
+    """attach: one post (title, disclosure, then the story from its hook up to the limit, cut at a paragraph or
+    sentence) plus the whole story as a text attachment; the hook is picked by find_hook. chain: the story in numbered
+    posts of at most `limit` characters, cut at paragraphs or sentences. ig: one caption within Instagram's 2,200
+    characters with the opening and the disclosure. With a brand file the heading, disclosure, sign-off and tags come
+    from it, and the heading carries the number only when one is given (ghost-pack numbers a story when it is about to
+    be posted); without a brand file the title gets [創作]."""
     title, _, body = text.strip().partition("\n")
     tags = "#鬼故事 #靈異 #怪談 #創作"
     if brand:
         st = brand.get("story", {})
-        num = brand.get("number", "第 {n} 首").format(n=number) if number else brand.get("name", "")
-        heading = st.get("title", "{number}｜{title}").format(number=num, title=_TAG.sub("", title).strip(),
-                                                             name=brand.get("name", ""))
+        clean = _TAG.sub("", title).strip()
+        if number is None:
+            heading = clean
+        else:
+            num = brand.get("number", "第 {n} 首").format(n=number)
+            heading = st.get("title", "{number}｜{title}").format(number=num, title=clean, name=brand.get("name", ""))
         head = f"{heading}\n{st.get('disclosure', brand.get('disclosure', DISCLOSURE))}\n\n"
         sign = st.get("sign_off", "")
         tags = " ".join(st.get("tags", [])) or tags
@@ -452,7 +504,18 @@ def make_posts(text: str, mode: str = "attach", limit: int = 500, brand: dict | 
         return {"posts": [head + _pack(_pieces(body, room), room)[0] + tail], "attachment": None}
     more = "……（全文在附件）"
     room = limit - len(head) - len(more)
-    return {"posts": [head + _pack(_pieces(body, room), room)[0] + more], "attachment": f"{head}{body}"}
+    opening = body[find_hook(body, hook):]
+    return {"posts": [head + _pack(_pieces(opening, room), room)[0] + more], "attachment": f"{head}{body}"}
+
+
+def write_threads(story_dir: str, r: dict) -> list[Path]:
+    """The Threads files of the folder contract: posts/threads/hook.txt and attachment.txt in the story folder."""
+    d = Path(story_dir) / "posts" / "threads"
+    d.mkdir(parents=True, exist_ok=True)
+    out = [(d / "hook.txt", r["posts"][0]), (d / "attachment.txt", r["attachment"])]
+    for p, t in out:
+        p.write_bytes((t.rstrip("\n") + "\n").encode("utf-8"))
+    return [p for p, _ in out]
 
 
 def describe() -> str:
@@ -492,7 +555,12 @@ def main(argv=None) -> int:
     po.add_argument("--mode", choices=["attach", "chain", "ig"], default="attach")
     po.add_argument("--limit", type=int, default=500, help="Threads 單篇上限")
     po.add_argument("--brand-file", default=None, help="帳號的品牌檔（和 ghost-comic 共用）：開頭、標示、結尾口令、標籤")
-    po.add_argument("--number", type=int, default=None, help="這首在帳號裡的編號（第 N 首）；還沒排定就不要給")
+    po.add_argument("--number", type=int, default=None,
+                    help="這首在帳號裡的編號（第 N 首）；預設不給，編號由 ghost-pack 在發文前蓋上")
+    po.add_argument("--hook", default=None,
+                    help="attach 模式的開頭：段落編號（1 = 標題後第一段）或要從哪句話開始；預設自動挑前三分之一裡最怪的一句")
+    po.add_argument("--dest", default=None,
+                    help="故事資料夾：attach 模式寫進 posts/threads/hook.txt 和 attachment.txt")
     a = ap.parse_args(argv)
     if a.cmd == "options":
         print(describe())
@@ -510,11 +578,22 @@ def main(argv=None) -> int:
         print("\n" + ("\n".join("- " + m for m in issues) if issues else "都在熱門文的範圍內"))
         return 0
     if a.cmd == "post":
-        r = make_posts(Path(a.file).read_text(encoding="utf-8"), a.mode, a.limit, load_brand(a.brand_file), a.number)
+        if a.dest and a.mode != "attach":
+            print("--dest 只用在 attach 模式（Threads 的 hook 加附件）", file=sys.stderr)
+            return 2
+        try:
+            r = make_posts(Path(a.file).read_text(encoding="utf-8"), a.mode, a.limit, load_brand(a.brand_file),
+                           a.number, a.hook)
+        except ValueError as e:
+            print(e, file=sys.stderr)
+            return 2
         for i, p in enumerate(r["posts"], 1):
             print(f"===== 第 {i} 則（{len(p)} 字）=====\n{p}\n")
         if r["attachment"]:
             print(f"===== 文字附件（{len(r['attachment'])} 字）=====\n{r['attachment']}")
+        if a.dest:
+            for p in write_threads(a.dest, r):
+                print(f"寫入 {p}")
         return 0
     if a.cmd != "plan":
         ap.print_help()
