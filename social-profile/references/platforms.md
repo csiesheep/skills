@@ -52,6 +52,8 @@ Contents: Instagram, Threads, Facebook Page, YouTube, TikTok, Pinterest, limits 
   "編輯個人簡介 / Edit bio" → textarea "自我介紹" with a counter `n/255` → "儲存 / Save". The old bio may
   end with a link line (the Threads URL was there): it becomes the clickable link under the bio, so
   keep link lines unless the user said to drop them.
+- Saving the bio can leave a "Leave site?" prompt on the next navigation even though the save took
+  (the About tab showed the new text); check the page, then navigate with `force`.
 - Chrome may already be acting as the Page when you open it (top-right avatar is the Page, buttons
   read 創作者主控板 and 編輯): no switch needed, and leave it that way at the end.
 - Switch back: top-right avatar → the list shows the Page, the personal profile and any other Pages
@@ -109,6 +111,8 @@ Contents: Instagram, Threads, Facebook Page, YouTube, TikTok, Pinterest, limits 
   characters by most sources and 500 by some; the page showed no counter.
 - Verify: `https://www.pinterest.com/<username>/` shows the avatar beside the name and the About
   text under it; `get_page_text` reads it.
+- Website: the field saves (shown as `http://...` afterwards) but the public profile showed no link
+  right away; Pinterest shows it once the site is claimed or verified (not tried).
 
 ## Limits
 
