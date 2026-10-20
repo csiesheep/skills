@@ -1,6 +1,6 @@
 ---
 name: ghost-reply
-description: Grow a ghost-story or horror brand account by replying under other people's posts. Finds today's ghost, paranormal and horror posts on Threads and Instagram through the user's Chrome, writes three replies per post in the brand's storyteller voice (a cold one-liner, a short story told as something heard, a question that invites answers), saves them to a dated file for the user to pick from, then posts the picked replies as the brand account only after the user's go, and records the links and the next day's numbers. Use whenever the user asks to reply to others, do the daily replies, 去別人底下回, 回覆別人的貼文, 互動, 留言, engagement, 養帳號, find posts to comment on, draft replies, run the 5 pm replies, or asks how to get the first followers with no budget, even if they do not name Threads or IG. Not for posting the brand's own stories (social-post), answering comments under the brand's own posts unless asked, profile changes (social-profile), or writing stories (ghost-story).
+description: Grow a ghost-story or horror brand account by replying under other people's posts. Finds today's ghost, paranormal and horror posts on Threads and Instagram through the user's Chrome, writes three replies per post in the brand's storyteller voice (a cold one-liner, a short story told as something heard, a question that invites answers), saves them to a dated file and gives the user each post's link with the recommended reply, so the user posts them from their own phone (the owner's choice, 2026-10-20: Claude does not post replies), and records the links and the next day's numbers. Use whenever the user asks to reply to others, do the daily replies, 去別人底下回, 回覆別人的貼文, 互動, 留言, engagement, 養帳號, find posts to comment on, draft replies, run the 5 pm replies, or asks how to get the first followers with no budget, even if they do not name Threads or IG. Not for posting the brand's own stories (social-post), answering comments under the brand's own posts unless asked, profile changes (social-profile), or writing stories (ghost-story).
 ---
 
 # Ghost reply
@@ -17,9 +17,10 @@ brand folder.
 
 ## What may and may not be done
 
-- **Nothing is posted without the user's pick.** A reply is a public message sent as the brand. Send the drafts,
-  wait for the user's choice for each post (they often answer in one line, like `AAACC` for posts 1 to 5, or with
-  their own wording), then post exactly that. A pick covers that reply on that post only.
+- **The user posts the replies, not Claude.** On 2026-10-20 the owner stopped Claude half way through posting
+  and decided: "show me the post link and recommended comment, then I will post them by myself". So this skill
+  finds, drafts, recommends and records; it does not type into a reply box. Only if the user explicitly asks
+  Claude to post a specific reply in that conversation does step 4's old procedure apply (kept below for that case).
 - **Check the signed-in account** before typing anything: the sidebar avatar or name must be the brand's. If it is
   the user's personal account, stop and say so.
 - **Fiction stays fiction.** The brand labels its stories as fiction, so a reply never presents a ghost story as the
@@ -99,11 +100,17 @@ Every reply, whatever the style, must refer to something specific in that post.
 Run `py -X utf8 "<skill dir>/scripts/log.py" new <engagement folder>` for today's file with the sections, then fill
 it: for each post, the platform, author, age and reach, the URL, two lines on what the post says, and the three
 replies. Send it with SendUserFile, and also list the posts and replies in the message so the user can pick from a
-phone. Say which one you would pick for each and why in a few words, then wait.
+phone. For each post the message gives, in this order: the link to open (the exact spot to reply: the author's
+pinned update or a comment's own page when that is where the reply goes, and say so), the recommended reply as
+plain text the user can copy in one press, then the two alternatives, and one line on why the recommended one.
+Remind the user of the spacing (at least 15 minutes between two replies on one platform, three a day per platform),
+and ask them to say which ones they posted so the results table can be filled.
 
-### 4. Post the picks
+### 4. The user posts; Claude records
 
-After the user's choice:
+The user posts from their phone and says which ones went out (and any wording they changed). Fill the result
+table from that; find each reply's link afterwards on `https://www.threads.com/@<brand>/replies` or under the
+Instagram post. Only if the user asks Claude to post a reply itself in that conversation:
 
 - **Threads**: on the post page, click the inline box "Reply to <author>...", type the reply, press the round
   "Reply" button beside it. Confirm on `https://www.threads.com/@<brand>/replies` that it is there, and copy its
@@ -131,4 +138,4 @@ the drafts that way.
 ## Daily schedule
 
 The user may want this every day at a fixed time (鬼唱詩: 17:00). A scheduled run does steps 1 to 3 and sends the
-file; posting waits for the user's answer in the conversation. Never post from a scheduled run without it.
+file with each post's link and recommended reply; the user posts them. A scheduled run never posts.
