@@ -65,6 +65,9 @@ Aim for five to seven posts that:
   its own story (taiwancasalin's 294-like story under a 46K-view thread had 4 replies). Reply there, not under the
   main post.
 
+**Instagram first** (owner, 2026-10-20): unless asked otherwise, the day's list is Instagram posts, about ten
+when the owner asks for a batch, ordered newest and least-commented first so they can post three a day.
+
 Mix sources: two or three from keyword search, the rest from the fixed list of accounts the user approved (kept at
 the bottom of the latest engagement file). Add any good account found today to the candidates there.
 

@@ -58,3 +58,23 @@ thousands of likes, and a reply near the top of the comments is seen.
 - Instagram: open the fixed-list accounts' profiles and take the newest post (the first `/p/` link); z.n_.studio
   and banmi.tw each had a post from the last 12 hours with 2,100 likes and 30 to 97 comments. The keyword search
   都市傳說 also surfaced banmi.tw's new post.
+
+## Instagram, the way that worked (2026-10-20, ten posts)
+
+Keyword search (`/explore/search/keyword/?q=`) returns popular posts, mostly weeks or months old; it is good for
+finding **accounts**, not today's posts. So:
+
+1. Collect post codes from a few keyword grids (靈異故事, 鬼故事, 恐怖故事, 都市傳說, 怪談, 台灣怪談, 真實靈異,
+   靈異, 鬼屋). Page loads clear page variables: keep the codes in `localStorage` between pages.
+2. Read every code's stats in one `javascript_tool` call: `fetch('/p/<code>/')` and the page's
+   `<meta name="description">` reads "N likes, M comments - <author> on <date>: ...". This names the active
+   accounts.
+3. Open each promising account's profile and take the post links after the first three (the first three are
+   pinned): those are the newest. Read their stats the same way and keep the last few days.
+4. Open the shortlisted posts with `get_page_text` for the caption and the top comments; drop off-topic ones (an
+   account that mixes horror with army life, mahjong or politics) and ones whose comments are about real harm.
+
+`/api/v1/users/web_profile_info/` answered with a login page; the profile HTML has no post links. Active accounts
+found: banmi.tw, z.n_.studio, alicechooooo, 02thinking, hiphop200177, x3laayrwk_. A brand-new post with one comment
+(banmi.tw, 02thinking) is the best spot; a days-old post is still worth it when its comments are few or when a top
+comment with hundreds of likes can take a reply.
