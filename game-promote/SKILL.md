@@ -20,8 +20,12 @@ Everything about the games (link, what a reply may claim, which posts fit, keywo
 - **The user approves every reply before it goes out.** Claude drafts and the user picks; post only the picked
   ones, in the user's wording if they changed it. Approval in one conversation does not carry to the next day's list.
 - **Post as csiesheep.games and put Chrome back.** Read which account Instagram and Threads are on before
-  touching anything, switch with `references/accounts.md`, check the handle on the page right before typing, and
-  leave both as found. Never type a password.
+  touching anything, switch with `references/accounts.md`, and leave both as found. Never type a password.
+- **Check the handle before every single reply** (owner, 2026-10-23), not once per session: on the post page,
+  right before clicking the reply box, read the signed-in handle (Instagram: the sidebar `/<handle>/` link;
+  Threads: the first `a[href^="/@"]`) and go on only if it is `csiesheep.games`. During a 20-minute gap the user or
+  the ghost brand's task may switch the account back. If it is anything else, do not type; skip that reply and
+  tell the user. Record the check in the 結果 row (「帳號已確認」).
 - **Chinese (Taiwan) posts only** (owner, 2026-10-22). No English, Cantonese or Simplified-Chinese threads.
 - **One reply per post, one link per reply, never the same text twice.** The reply has to be worth reading
   without the link: answer the post, use one concrete detail from it (a name, a line, a situation), then offer
@@ -31,8 +35,12 @@ Everything about the games (link, what a reply may claim, which posts fit, keywo
   platform, only in reading hours (12:00–13:30 and 19:30–23:00 Taiwan time). Threads and Instagram count
   separately; the count is for the brand, across all games. On 2026-10-19 the sister brand's fourth reply in
   three minutes was removed as spam, and a link makes a reply look more like spam, not less.
-- **Skip** each game's `skip` list, posts about real death, illness or trauma, and posts already past about 100
-  replies (a new account's reply sinks). For covervote, the reply stays neutral (games.json `neutral`); when the
+- **Skip** each game's `skip` list and posts about real death, illness or trauma. Under a post already past about
+  100 replies a new account's reply sinks, so do not reply under the main post; look instead for a spot many read
+  but few have answered — the author's pinned update, or a top reply (dozens of likes, few replies) whose point the
+  game fits — and reply there. If there is none, skip the post. The sister brand learned this on 2026-10-19/20:
+  replies under posts with 300–400 replies got nothing, while a reply that picked up what the top comments were
+  already saying got 9 likes and a reply. For covervote, the reply stays neutral (games.json `neutral`); when the
   post itself is partisan, say so in the list so the user decides whether the brand should appear there.
 
 ## Steps
@@ -65,15 +73,20 @@ One reply per post, Taiwanese Mandarin, one to three short sentences, then `👉
 clickable, so there write the bare `games.csiesheep.com/<game>`). Pick the angle from games.json that matches the
 post. Use the first-person plural for the maker (「我們做了一個…」): it is honest that the brand made it.
 
-Write the drafts into the day file and show the user a table (platform, linked post, what it says in one line,
-age and reach, any note), then each draft in full. Say how many each platform can still take today and which you
-would post today versus tomorrow. Ask which to post.
+Write two drafts per post: the recommended one and one with a different angle (or a different spot: the main
+post versus a top reply), so the user has a real choice and the results show which angles work. Read the top
+replies first and, where they share a joke or a complaint, let the reply pick it up: that is what readers of the
+replies like. Write the drafts into the day file and show the user a table (platform, linked post, what it says in
+one line, age and reach, any note), then each draft in full, the recommended one first with one line on why. Say
+how many each platform can still take today and which you would post today versus tomorrow. Ask which to post.
 
 ### 4. Post at a good time
 
-For the approved ones, run `py -X utf8 "<skill dir>/scripts/plan.py" slots <engagement folder> threads ig …` (one
-platform word per reply, in the order to post). It returns a time for each, already respecting the day's cap,
-the gap and the windows, rolling the rest to the next day.
+For the approved ones, run `py -X utf8 "<skill dir>/scripts/plan.py" slots <engagement folder> threads ig …
+--avoid C:/Users/sheep/Pictures/gui_chang_shi/engagement` (one platform word per reply, in the order to post). It
+returns a time for each, already respecting the day's cap, the gap and the windows, rolling the rest to the next
+day, and keeping 10 minutes clear of the ghost brand's posted or scheduled replies: both brands switch the same
+Instagram account in the same Chrome, and two tasks switching at once would post as the wrong brand.
 
 - A slot within the next few minutes: post it now (below).
 - Later slots: one `create_scheduled_task` per reply with `fireAt` at that time. The prompt must be self-contained:
@@ -85,7 +98,11 @@ the gap and the windows, rolling the rest to the next day.
   the task should then post only if the current time is inside a window, else reschedule itself for the next one).
 - Add each reply to the 結果 table as 排定 with its time.
 
-Posting itself:
+If the user says to post now (「現在發」), outside a window too: that overrides the window, not the gap. Post the
+first, then wait 20 minutes between the rest in this session (a background `sleep 1200` that wakes the session),
+and say so with the expected times.
+
+Posting itself, each time starting with the handle check above:
 
 - **Threads**: on the post page, click the inline box "Reply to <author>…", type, check the text in the box,
   press the round arrow button. Confirm with `a[href^="/@csiesheep.games/post/"]` on the page, and keep that link.
