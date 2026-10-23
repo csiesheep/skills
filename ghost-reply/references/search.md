@@ -78,3 +78,11 @@ finding **accounts**, not today's posts. So:
 found: banmi.tw, z.n_.studio, alicechooooo, 02thinking, hiphop200177, x3laayrwk_. A brand-new post with one comment
 (banmi.tw, 02thinking) is the best spot; a days-old post is still worth it when its comments are few or when a top
 comment with hundreds of likes can take a reply.
+
+## 2026-10-22 note: Instagram rate limit
+
+Reading about 170 post pages with `fetch('/p/<code>/')`, eight at a time, got HTTP 429 from Instagram after
+about 120: first the meta tags came back empty, then every page, profile and post, showed "HTTP ERROR 429" for
+the brand's session. Read at most about 40 codes per run, one at a time with a pause, and only the codes that
+look new (`De` + a late letter); never re-fetch a batch that came back empty. After a 429, stop for at least
+15 minutes.

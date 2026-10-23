@@ -31,8 +31,12 @@ Everything about the games (link, what a reply may claim, which posts fit, keywo
   platform, only in reading hours (12:00–13:30 and 19:30–23:00 Taiwan time). Threads and Instagram count
   separately; the count is for the brand, across all games. On 2026-10-19 the sister brand's fourth reply in
   three minutes was removed as spam, and a link makes a reply look more like spam, not less.
-- **Skip** each game's `skip` list, posts about real death, illness or trauma, and posts already past about 100
-  replies (a new account's reply sinks). For covervote, the reply stays neutral (games.json `neutral`); when the
+- **Skip** each game's `skip` list and posts about real death, illness or trauma. Under a post already past about
+  100 replies a new account's reply sinks, so do not reply under the main post; look instead for a spot many read
+  but few have answered — the author's pinned update, or a top reply (dozens of likes, few replies) whose point the
+  game fits — and reply there. If there is none, skip the post. The sister brand learned this on 2026-10-19/20:
+  replies under posts with 300–400 replies got nothing, while a reply that picked up what the top comments were
+  already saying got 9 likes and a reply. For covervote, the reply stays neutral (games.json `neutral`); when the
   post itself is partisan, say so in the list so the user decides whether the brand should appear there.
 
 ## Steps
@@ -65,15 +69,20 @@ One reply per post, Taiwanese Mandarin, one to three short sentences, then `👉
 clickable, so there write the bare `games.csiesheep.com/<game>`). Pick the angle from games.json that matches the
 post. Use the first-person plural for the maker (「我們做了一個…」): it is honest that the brand made it.
 
-Write the drafts into the day file and show the user a table (platform, linked post, what it says in one line,
-age and reach, any note), then each draft in full. Say how many each platform can still take today and which you
-would post today versus tomorrow. Ask which to post.
+Write two drafts per post: the recommended one and one with a different angle (or a different spot: the main
+post versus a top reply), so the user has a real choice and the results show which angles work. Read the top
+replies first and, where they share a joke or a complaint, let the reply pick it up: that is what readers of the
+replies like. Write the drafts into the day file and show the user a table (platform, linked post, what it says in
+one line, age and reach, any note), then each draft in full, the recommended one first with one line on why. Say
+how many each platform can still take today and which you would post today versus tomorrow. Ask which to post.
 
 ### 4. Post at a good time
 
-For the approved ones, run `py -X utf8 "<skill dir>/scripts/plan.py" slots <engagement folder> threads ig …` (one
-platform word per reply, in the order to post). It returns a time for each, already respecting the day's cap,
-the gap and the windows, rolling the rest to the next day.
+For the approved ones, run `py -X utf8 "<skill dir>/scripts/plan.py" slots <engagement folder> threads ig …
+--avoid C:/Users/sheep/Pictures/gui_chang_shi/engagement` (one platform word per reply, in the order to post). It
+returns a time for each, already respecting the day's cap, the gap and the windows, rolling the rest to the next
+day, and keeping 10 minutes clear of the ghost brand's posted or scheduled replies: both brands switch the same
+Instagram account in the same Chrome, and two tasks switching at once would post as the wrong brand.
 
 - A slot within the next few minutes: post it now (below).
 - Later slots: one `create_scheduled_task` per reply with `fireAt` at that time. The prompt must be self-contained:

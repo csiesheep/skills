@@ -21,8 +21,12 @@ brand folder.
   and decided: "show me the post link and recommended comment, then I will post them by myself". So this skill
   finds, drafts, recommends and records; it does not type into a reply box. Only if the user explicitly asks
   Claude to post a specific reply in that conversation does step 4's old procedure apply (kept below for that case).
-- **Check the signed-in account** before typing anything: the sidebar avatar or name must be the brand's. If it is
-  the user's personal account, stop and say so.
+- **Check the signed-in account** before typing anything: the sidebar profile link must be `/gui.chang.shi/`.
+  Chrome is shared with the games brand (csiesheep.games, game-promote), which switches the same Instagram account:
+  on 2026-10-23 Instagram was on csiesheep.games when ghost-reply came to post. Note which account Instagram and
+  Threads are on before touching anything, switch with game-promote's `references/accounts.md` (no password, with
+  gui.chang.shi as the brand), check the handle on the page right before typing, and put both back as found. If
+  the switch would need a password, stop and tell the user.
 - **Fiction stays fiction.** The brand labels its stories as fiction, so a reply never presents a ghost story as the
   brand's own real experience. Short stories are told as heard ("聽過一個……說", "老一輩說"), never "我那晚……".
 - **Reply in the post's language.** An English post gets an English reply. Chrome may show Chinese posts translated
@@ -106,8 +110,10 @@ replies. Send it with SendUserFile, and also list the posts and replies in the m
 phone. For each post the message gives, in this order: the link to open (the exact spot to reply: the author's
 pinned update or a comment's own page when that is where the reply goes, and say so), the recommended reply as
 plain text the user can copy in one press, then the two alternatives, and one line on why the recommended one.
-Remind the user of the spacing (at least 15 minutes between two replies on one platform, three a day per platform),
-and ask them to say which ones they posted so the results table can be filled.
+Remind the user of the spacing (at least 15 minutes between two replies on one platform, three a day per platform)
+and of the reading hours (12:00–13:30 and 19:30–23:00 Taiwan time, when a new reply is seen soonest), and ask them
+to say which ones they posted so the results table can be filled. Name the day file by the Taiwan date (log.py's
+default), since the audience and the games brand's files use it.
 
 ### 4. The user posts; Claude records
 
@@ -121,10 +127,23 @@ Instagram post. Only if the user asks Claude to post a reply itself in that conv
 - **Instagram**: on the post page, click "Add a comment…", type, press "Post". Reload and `find` the comment text
   under the brand's name.
 
-Post one at a time and confirm each before the next, then wait at least 15 minutes before the next one on the
-same platform (alternating Threads and Instagram is fine). A browser wait is at most 10 seconds, so for the gap
-schedule the next reply with the scheduled-task tool if this session has one, or post one now and leave the rest
-for the user to paste from the phone at their own pace; say which. Close the tab at the end.
+Time them with game-promote's slot planner, which keeps the daily cap, the gap and the reading hours, and stays
+clear of the games brand's replies from the same Chrome:
+
+    py -X utf8 "<game-promote dir>/scripts/plan.py" slots <engagement folder> ig ig --gap 15 \
+        --avoid C:/Users/sheep/Pictures/csiesheep_games/engagement
+
+(one platform word per reply, in order). It reads the result table's 平台, 狀態 and 時間 columns, so first add each
+approved reply there as 待發. A slot within the next few minutes: post it now. Each later slot: one
+`create_scheduled_task` with `fireAt` at that time, and a self-contained prompt: the post URL (and the comment to
+reply under), the exact approved text, that it posts as gui.chang.shi switching per game-promote's
+`references/accounts.md` and puts Chrome's accounts back, that it stops without posting if the handle check fails,
+the post is gone or the brand already replied there, and that it writes the outcome into the day file. One task per
+reply: on 2026-10-21 a single scheduled run meant to post three replies 15 minutes apart posted the first, started
+a background wait, and ended its turn, so the other two never went out. A task runs only while the Claude app is
+open; one that fires late posts only if it is inside the reading hours and the gap still holds, else it
+reschedules itself for the next slot.
+Mark each row 排定 with its time, then 已發 with the time and link. Close the tab at the end.
 
 If a platform removes a reply, open the notice ("We removed your comment" → "See why"), write the reason and the
 reply into the day's file, and do not request a review or repost without the user's say. Post fewer and slower
@@ -132,8 +151,9 @@ for the next days.
 
 ### 5. Record
 
-Fill the result table of the day's file: the style picked, the time, the link. The next day, before finding new
-posts, open yesterday's replies and fill the likes and replies after 24 hours, and the account's follower change.
+Fill the result table of the day's file: the account, the style picked, 狀態 (待發, 排定, 已發), the time, the
+link. The next day, before finding new posts, open yesterday's replies and fill the likes and replies after 24
+hours, and the account's follower change.
 `py -X utf8 "<skill dir>/scripts/log.py" summary <engagement folder>` totals picks and results by style across
 days; once a week, tell the user which style and which kind of post brought the most likes and follows, and lean
 the drafts that way.

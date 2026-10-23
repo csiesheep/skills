@@ -10,7 +10,11 @@ the result table. The same day file serves every game, so the daily cap counts a
 tables (rows whose 狀態 is 已發 or 排定), keeps the per-platform cap for the day, at least --gap minutes between two
 replies on the same platform (counted from the last posted or scheduled one), and only uses the hours people in
 Taiwan read social media (12:00-13:30, 19:30-23:00 local). What does not fit today rolls to tomorrow. Times print as
-ISO 8601 with +08:00, ready for the scheduled-task tool's fireAt. Standard library only.
+ISO 8601 with +08:00, ready for the scheduled-task tool's fireAt. `--avoid <folder>` (repeatable) names another
+brand's engagement folder that posts from the same Chrome (ghost-reply's gui_chang_shi/engagement uses the same
+result-table columns): no slot lands within --avoid-gap minutes (default 10) of one of its posted or scheduled
+replies on any platform, because both switch the same Instagram account. Day files are named by the Taiwan date.
+Standard library only.
 """
 import argparse
 import datetime as dt
@@ -109,6 +113,18 @@ def cmd_slots(a) -> None:
             state[key] = [w for p, w in booked(folder, day) if p == plat]
         return state[key]
 
+    # The other brand posts from the same Chrome and switches the same Instagram (and through it Threads) account,
+    # so two posts must not overlap there, whatever the platform; they do not count towards this brand's cap.
+    others: dict[dt.date, list[dt.datetime]] = {}
+
+    def clash(t: dt.datetime) -> dt.datetime | None:
+        if t.date() not in others:
+            others[t.date()] = [w for f in a.avoid for _, w in booked(Path(f), t.date()) if w]
+        for w in others[t.date()]:
+            if abs(t - w) < dt.timedelta(minutes=a.avoid_gap):
+                return w
+        return None
+
     for raw in a.platforms:
         plat = PLATFORMS.get(raw.lower())
         if not plat:
@@ -122,6 +138,10 @@ def cmd_slots(a) -> None:
             last = max([w for w in used if w], default=None)
             if last and t < last + dt.timedelta(minutes=a.gap):
                 t = next_in_window(last + dt.timedelta(minutes=a.gap + rng.randint(0, 9)))
+                continue
+            w = clash(t)
+            if w:
+                t = next_in_window(w + dt.timedelta(minutes=a.avoid_gap))
                 continue
             break
         used.append(t)
@@ -141,6 +161,9 @@ def main() -> None:
     s.add_argument("--now")
     s.add_argument("--cap", type=int, default=3)
     s.add_argument("--gap", type=int, default=20)
+    s.add_argument("--avoid", action="append", default=[], metavar="FOLDER",
+                   help="another brand's engagement folder sharing this Chrome; keep clear of its replies")
+    s.add_argument("--avoid-gap", type=int, default=10)
     a = ap.parse_args()
     {"new": cmd_new, "slots": cmd_slots}[a.cmd](a)
 
