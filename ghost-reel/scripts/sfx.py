@@ -201,7 +201,15 @@ def write_wav(path: Path, a: np.ndarray):
 
 
 # ---------------------------------------------------------------- recorded (generated) samples override the synths
-SAMPLE_DIR = Path(r"C:/Users/sheep/Pictures/gui_chang_shi/brand/sfx")
+SAMPLE_DIR = Path(".")  # the brand's generated sound effects (brand/sfx), set by use_samples()
+
+
+def use_samples(folder):
+    global SAMPLE_DIR
+    SAMPLE_DIR = Path(folder)
+    _samples.clear()
+
+
 SAMPLE_MAP = {"insects": "night_mountain", "rustle": "bamboo_rustle", "drone": "dark_drone", "heartbeat": "heartbeat",
               "stinger": "jumpscare", "riser": "riser", "whoosh": "whoosh", "ping": "phone_ping",
               "whisper": "whisper_name", "zipper": "tent_zipper", "footsteps": "footsteps_leaves", "page": "page_flip"}

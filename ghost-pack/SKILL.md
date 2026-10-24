@@ -35,7 +35,8 @@ number, so a rerun is safe), stamps the covers and writes the captions. What it 
 | `posts/threads/hook.txt`, `attachment.txt` | first line becomes 「第 N 首｜title」 (the brand's `story.title`) |
 | `posts/threads/link.txt` | the third Threads post, with an `{ig_link}` slot |
 | `posts/pinterest/pins.txt` | board, a title (100 at most) and description per pin |
-| `posts/cross_caption.txt` | YouTube title and description, TikTok, Facebook, with `{ig_link}` slots |
+| `posts/cross_caption.txt` | the video's captions: Instagram Reel (the brand's teaser lines), YouTube title and description, TikTok, Facebook, with `{ig_link}` slots |
+| `posts/cross_caption_<cut>.txt` | with `--cuts part1,part2`: the same per Reel cut, the cut's title (「（上）」「（下）」) and a 「下集待續」/「上集在主頁」 line; `--cuts-only` writes only these, for a story already posted elsewhere; `--ig-link` fills the slot when the carousel is out |
 | `README.md` | heading 「第 N 首〈title〉」, status, the logline (later runs reuse it) |
 | `brand/ledger.json` | the number, the title, the folder |
 

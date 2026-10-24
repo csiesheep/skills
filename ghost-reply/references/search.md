@@ -45,3 +45,44 @@ pick ones a few days old that still get comments. Keywords used: 靈異故事.
 
 Accounts found this way (horror picture stories, urban legends) are good fixed-list candidates: their posts get
 thousands of likes, and a reply near the top of the comments is seen.
+
+## 2026-10-20 notes
+
+- Threads "Top" for 靈異 returned months-old unrelated posts; the 鬼故事 custom feed in the sidebar returned
+  unrelated posts too. `filter=recent` on 靈異經驗 and 魔神仔 found the day's best: chen.kenn (673K views),
+  quietnavigator1985's new post, and story replies under hung.c.tsai's 魔神仔 post.
+- On a results page, `javascript_tool` with `[...document.querySelectorAll('a[href*="/post/"]')].map(a=>a.getAttribute('href'))`
+  lists every post and reply link at once (author in the path); faster than `find` per post.
+- Replies under a busy post are their own pages (`/@<replier>/post/<code>`): reply there to land in that comment
+  thread.
+- Instagram: open the fixed-list accounts' profiles and take the newest post (the first `/p/` link); z.n_.studio
+  and banmi.tw each had a post from the last 12 hours with 2,100 likes and 30 to 97 comments. The keyword search
+  都市傳說 also surfaced banmi.tw's new post.
+
+## Instagram, the way that worked (2026-10-20, ten posts)
+
+Keyword search (`/explore/search/keyword/?q=`) returns popular posts, mostly weeks or months old; it is good for
+finding **accounts**, not today's posts. So:
+
+1. Collect post codes from a few keyword grids (靈異故事, 鬼故事, 恐怖故事, 都市傳說, 怪談, 台灣怪談, 真實靈異,
+   靈異, 鬼屋). Page loads clear page variables: keep the codes in `localStorage` between pages.
+2. Read every code's stats in one `javascript_tool` call: `fetch('/p/<code>/')` and the page's
+   `<meta name="description">` reads "N likes, M comments - <author> on <date>: ...". This names the active
+   accounts.
+3. Open each promising account's profile and take the post links after the first three (the first three are
+   pinned): those are the newest. Read their stats the same way and keep the last few days.
+4. Open the shortlisted posts with `get_page_text` for the caption and the top comments; drop off-topic ones (an
+   account that mixes horror with army life, mahjong or politics) and ones whose comments are about real harm.
+
+`/api/v1/users/web_profile_info/` answered with a login page; the profile HTML has no post links. Active accounts
+found: banmi.tw, z.n_.studio, alicechooooo, 02thinking, hiphop200177, x3laayrwk_. A brand-new post with one comment
+(banmi.tw, 02thinking) is the best spot; a days-old post is still worth it when its comments are few or when a top
+comment with hundreds of likes can take a reply.
+
+## 2026-10-22 note: Instagram rate limit
+
+Reading about 170 post pages with `fetch('/p/<code>/')`, eight at a time, got HTTP 429 from Instagram after
+about 120: first the meta tags came back empty, then every page, profile and post, showed "HTTP ERROR 429" for
+the brand's session. Read at most about 40 codes per run, one at a time with a pause, and only the codes that
+look new (`De` + a late letter); never re-fetch a batch that came back empty. After a 429, stop for at least
+15 minutes.

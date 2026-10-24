@@ -1,8 +1,9 @@
-"""Three full-comic Reel versions from one ghost-comic folder (prototype engine).
+"""The engine: draws, times and mixes a whole-comic Reel from a story's shot list. Called by make.py.
 
-    py -X utf8 reel.py <version v1|v2|v3> <out dir> [--music file] [--preview]
+Kept from the 2026-10-20 prototype (〈半夜叫我全名的人〉); what used to be written into a per-comic Python file
+now comes from `reels/shots.json` (story.py) and the brand file.
 """
-import argparse, importlib.util, math, random, re, subprocess, sys
+import importlib.util, math, random, re, subprocess, sys
 from pathlib import Path
 
 import numpy as np
@@ -10,21 +11,34 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 sys.path.insert(0, str(Path(__file__).parent))
 import sfx as SFX
-import story_name_call as STORY
 
-spec = importlib.util.spec_from_file_location("manga", Path.home() / ".claude/skills/ghost-comic/scripts/manga.py")
-mg = importlib.util.module_from_spec(spec); spec.loader.exec_module(mg)
+# ghost-comic's manga.py, from the skill folder next to this one (the repo and ~/.claude/skills alike)
+_MANGA = Path(__file__).resolve().parent.parent.parent / "ghost-comic" / "scripts" / "manga.py"
+spec = importlib.util.spec_from_file_location("manga", _MANGA)
+mg = importlib.util.module_from_spec(spec)
+_argv, sys.argv = sys.argv, [sys.argv[0]]
+spec.loader.exec_module(mg)
+sys.argv = _argv
 
 W, H, FPS = 1080, 1920, 30
 RED = (184, 50, 42)
 PAPER = (242, 237, 228)
-random.seed(5); np.random.seed(5)
 ease = mg.ease
 
 # ---------------------------------------------------------------- assets
-mg.set_work(Path(STORY.COMIC))
-BOARD, CH = mg.load_board(), mg.load_choices()
+STORY = BOARD = CH = None
+BRAND_NAME = "鬼唱詩"
 _cache = {}
+
+
+def setup(story, brand_name="鬼唱詩"):
+    """Point the engine at one comic. Seeds are reset here so the same shot list always renders the same frames."""
+    global STORY, BOARD, CH, BRAND_NAME
+    STORY, BRAND_NAME = story, brand_name
+    random.seed(5); np.random.seed(5)
+    mg.set_work(Path(story.COMIC))
+    BOARD, CH = mg.load_board(), mg.load_choices()
+    _cache.clear()
 
 
 def panel(pid, diegetic=True):
@@ -256,11 +270,11 @@ def title_card(sub=True):
     if tw > W - 120:
         f = font(int(88 * (W - 120) / tw), weight="Bold"); tw = f.getlength(t)
     d.text(((W - tw) / 2, y), t, font=f, fill=(245, 245, 245))
-    s = f"鬼唱詩｜{STORY.NUMBER}" if STORY.NUMBER else "鬼唱詩"
+    s = f"{BRAND_NAME}｜{STORY.NUMBER}" if STORY.NUMBER else BRAND_NAME
     f2 = font(44)
     d.text(((W - f2.getlength(s)) / 2, y + 150), s, font=f2, fill=(170, 170, 170))
     f3 = font(30, "plain", None)
-    dis = "AI 輔助創作｜故事純屬虛構"
+    dis = STORY.DISCLOSURE
     d.text(((W - f3.getlength(dis)) / 2, y + 230), dis, font=f3, fill=(120, 120, 120))
     return im
 
@@ -268,10 +282,11 @@ def title_card(sub=True):
 def end_card():
     im = Image.new("RGBA", (W, H), (0, 0, 0, 255))
     d = ImageDraw.Draw(im)
-    lines = [("本首完", font(96, weight="Bold"), (245, 245, 245)),
-             ("追蹤，聽下一首", font(52), (200, 200, 200)),
-             ("@gui.chang.shi", font(46, "plain", None), RED),
-             ("AI 輔助創作｜故事純屬虛構", font(30, "plain", None), (120, 120, 120))]
+    top, second = (STORY.END + [""])[:2] if STORY.END else ("本首完", "追蹤，聽下一首")
+    lines = [(top, font(96, weight="Bold"), (245, 245, 245)),
+             (second, font(52), (200, 200, 200)),
+             (STORY.HANDLE, font(46, "plain", None), RED),
+             (STORY.DISCLOSURE, font(30, "plain", None), (120, 120, 120))]
     y = 760
     for text, f, col in lines:
         d.text(((W - f.getlength(text)) / 2, y), text, font=f, fill=col); y += round(f.size * 1.9)
@@ -326,39 +341,37 @@ def mux(video, wav, out):
                     "-ar", "48000", "-shortest", "-movflags", "+faststart", str(out)], check=True)
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("version")
-    ap.add_argument("out")
-    ap.add_argument("--music", default=None)
-    ap.add_argument("--preview", type=float, default=1.5, help="seconds between sampled frames for the sheet")
-    ap.add_argument("--reuse", action="store_true", help="keep the silent video if it exists; redo sound and sheet")
-    a = ap.parse_args()
+def produce(version, work, out_mp4, sheet_path, music=None, preview=1.5, reuse=False):
+    """Render `version` of the comic set up with setup(): the silent picture in `work` (kept, so --reuse can redo
+    only the sound), the mixed and loudness-normalised mp4 at `out_mp4`, a contact sheet at `sheet_path`.
+    Returns (frames, seconds)."""
     import versions
-    shots, events, ducks, music_gain = versions.build(a.version, sys.modules[__name__])
-    out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
-    silent = out / f"{a.version}_silent.mp4"
-    if a.reuse and silent.exists():
+    versions.use(STORY)
+    shots, events, ducks, music_gain = versions.build(version, sys.modules[__name__])
+    work = Path(work); work.mkdir(parents=True, exist_ok=True)
+    silent = work / f"{version}_silent.mp4"
+    if reuse and silent.exists():
         import imageio_ffmpeg
         n, _ = imageio_ffmpeg.count_frames_and_secs(str(silent))
         samples = []
-        tmpd = out / f"_frames_{a.version}"
+        tmpd = work / f"_frames_{version}"
         import shutil; shutil.rmtree(tmpd, ignore_errors=True); tmpd.mkdir()
-        subprocess.run([mg.ffmpeg_exe(), "-y", "-loglevel", "error", "-i", str(silent), "-vf", f"fps=1/{a.preview}",
+        subprocess.run([mg.ffmpeg_exe(), "-y", "-loglevel", "error", "-i", str(silent), "-vf", f"fps=1/{preview}",
                         str(tmpd / "f%04d.jpg")], check=True)
         for k, fp in enumerate(sorted(tmpd.glob("f*.jpg"))):
-            samples.append((int(k * a.preview * FPS), Image.open(fp).convert("RGB")))
+            samples.append((int(k * preview * FPS), Image.open(fp).convert("RGB")))
     else:
-        n, samples = render(shots, silent, int(a.preview * FPS))
+        n, samples = render(shots, silent, int(preview * FPS))
     total = n / FPS
-    music = SFX.read_audio(Path(a.music), mg.ffmpeg_exe()) if a.music else None
-    audio = SFX.mix(total, events, music, music_gain, ducks)
-    wav = out / f"{a.version}.wav"
+    track = SFX.read_audio(Path(music), mg.ffmpeg_exe()) if music else None
+    audio = SFX.mix(total, events, track, music_gain, ducks)
+    wav = work / f"{version}.wav"
     SFX.write_wav(wav, audio)
-    mux(silent, wav, out / f"{a.version}.mp4")
+    Path(out_mp4).parent.mkdir(parents=True, exist_ok=True)
+    mux(silent, wav, out_mp4)
     wav.unlink()
-    sheet(samples, out / f"{a.version}_sheet.jpg")
-    print(f"{a.version}: {n} frames, {total:.1f}s -> {out / (a.version + '.mp4')}")
+    sheet(samples, sheet_path)
+    return n, total
 
 
 
@@ -366,24 +379,25 @@ def main():
 _clip = {}
 
 
-def clip_frames(path):
+def clip_frames(path, mono=False):
     """All frames of a clip at 1080x1920 (cover crop, sharpened), cached one clip at a time."""
-    if path not in _clip:
+    key = (path, mono)
+    if key not in _clip:
         _clip.clear()
         cmd = [mg.ffmpeg_exe(), "-loglevel", "error", "-i", str(path), "-vf",
-               "scale=1080:1920:force_original_aspect_ratio=increase:flags=lanczos,crop=1080:1920,unsharp=5:5:0.7",
+               "scale=1080:1920:force_original_aspect_ratio=increase:flags=lanczos,crop=1080:1920,unsharp=5:5:0.7" + (",hue=s=0" if mono else ""),
                "-f", "rawvideo", "-pix_fmt", "rgb24", "-"]
         raw = subprocess.run(cmd, capture_output=True, check=True).stdout
         n = len(raw) // (1080 * 1920 * 3)
         arr = np.frombuffer(raw, np.uint8)[: n * 1080 * 1920 * 3].reshape(n, 1920, 1080, 3)
-        _clip[path] = arr
-    return _clip[path]
+        _clip[key] = arr
+    return _clip[key]
 
 
-def clip_frame(path, i, n, src_fps=24, offset=0.0):
+def clip_frame(path, i, n, src_fps=24, offset=0.0, mono=False):
     """Frame for output frame i of n: plays at natural speed from `offset` s, slowed down if the shot is longer than
     what is left of the clip."""
-    arr = clip_frames(path)
+    arr = clip_frames(path, mono)
     length = len(arr) / src_fps - offset
     shot = n / FPS
     speed = min(1.0, length / shot)
@@ -400,5 +414,3 @@ def title_overlay():
     return Image.fromarray(a, "RGBA")
 
 
-if __name__ == "__main__":
-    main()

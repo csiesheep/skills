@@ -4,7 +4,9 @@
     py -X utf8 log.py summary <engagement folder>
 
 `new` writes <folder>/<date>.md with the sections a day needs (posts, result table, list candidates) unless it
-exists. `summary` reads the result table of every day's file (the table whose header has 用哪個) and totals, per
+exists; files are named by the Taiwan date. The result table has 平台, 狀態 (待發/排定/已發) and 時間 columns, the
+ones game-promote's `plan.py slots` reads, so the same script can time Claude-posted replies. `summary` reads the
+result tables of every day's file (the tables whose header has 用哪個) and totals, per
 style A/B/C: how many were posted, and the likes, replies and follows filled in after 24 hours. Standard library
 only.
 """
@@ -29,9 +31,9 @@ TEMPLATE = """# {date} 回覆別人的貼文
 
 ## 結果（貼出後填，24 小時後補數字）
 
-| # | 平台 | 用哪個 | 貼出時間 | 24 小時讚 | 回覆 | 帶來追蹤 |
-|---|---|---|---|---|---|---|
-| 1 | | | | | | |
+| # | 平台 | 帳號 | 用哪個 | 狀態 | 時間 | 24 小時讚 | 回覆 | 帶來追蹤 |
+|---|---|---|---|---|---|---|---|---|
+| 1 | IG | | | 待發 | | | | |
 
 ## 固定名單候選
 
@@ -55,30 +57,38 @@ def number(cell: str) -> int | None:
 
 
 def result_rows(text: str):
+    """Each row of every result table (header has 用哪個) as {style, likes, replies, follows} cells, by header name,
+    so old tables (貼出時間, no 狀態) and new ones (狀態, 時間 for game-promote's plan.py slots) both read."""
     lines = text.splitlines()
     for i, line in enumerate(lines):
-        if line.startswith("|") and "用哪個" in line:
-            for row in lines[i + 2:]:
-                if not row.startswith("|"):
-                    break
-                cells = [c.strip() for c in row.strip().strip("|").split("|")]
-                if len(cells) >= 7:
-                    yield cells
-            return
+        if not (line.startswith("|") and "用哪個" in line):
+            continue
+        head = [c.strip() for c in line.strip().strip("|").split("|")]
+
+        def col(pred):
+            return next((k for k, h in enumerate(head) if pred(h)), None)
+
+        cs, cl, cr, cf = col(lambda h: h == "用哪個"), col(lambda h: "讚" in h), col(lambda h: h == "回覆"),             col(lambda h: "追蹤" in h)
+        for row in lines[i + 2:]:
+            if not row.startswith("|"):
+                break
+            cells = [c.strip() for c in row.strip().strip("|").split("|")]
+            get = lambda k: cells[k] if k is not None and k < len(cells) else ""
+            yield {"style": get(cs), "likes": get(cl), "replies": get(cr), "follows": get(cf)}
 
 
 def cmd_summary(a) -> None:
     totals: dict[str, dict[str, int]] = {}
     days = 0
     for p in sorted(Path(a.folder).glob("????-??-??.md")):
-        rows = [c for c in result_rows(p.read_text(encoding="utf-8")) if c[2][:1].upper() in ("A", "B", "C")]
+        rows = [c for c in result_rows(p.read_text(encoding="utf-8")) if c["style"][:1].upper() in ("A", "B", "C")]
         if rows:
             days += 1
         for cells in rows:
-            style = cells[2][:1].upper()
+            style = cells["style"][:1].upper()
             t = totals.setdefault(style, {"posted": 0, "measured": 0, "likes": 0, "replies": 0, "follows": 0})
             t["posted"] += 1
-            likes, replies, follows = number(cells[4]), number(cells[5]), number(cells[6])
+            likes, replies, follows = number(cells["likes"]), number(cells["replies"]), number(cells["follows"])
             if likes is not None:
                 t["measured"] += 1
                 t["likes"] += likes
@@ -100,7 +110,8 @@ def main() -> None:
     sub = ap.add_subparsers(dest="cmd", required=True)
     n = sub.add_parser("new")
     n.add_argument("folder")
-    n.add_argument("--date", default=dt.date.today().isoformat())
+    # Taiwan date: the audience's day, and the name game-promote's plan.py slots looks for.
+    n.add_argument("--date", default=dt.datetime.now(dt.timezone(dt.timedelta(hours=8))).date().isoformat())
     s = sub.add_parser("summary")
     s.add_argument("folder")
     a = ap.parse_args()
