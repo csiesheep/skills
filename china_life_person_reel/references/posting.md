@@ -78,3 +78,26 @@ header). The caption keeps 「肖像為 AI 繪製」.
 ## TikTok
 
 No account yet (2026-10-23). Keep the TikTok caption in captions.md for when there is one.
+
+## Links that people can tap (owner, 2026-10-24)
+
+The games report showed Instagram and Facebook sending almost nobody to the game (4 and 7 visitors a day vs. 121
+from Threads), so every post now carries a tappable link where the platform allows one:
+
+- Facebook: the link goes in the post text itself, not only in the comment.
+- Threads: the link is in the text, and after posting reply to our own thread with one line and the link
+  (「這一生是遊戲裡真的跑出來的，你也投胎一次 👉 https://games.csiesheep.com/china_life/」) so a preview card shows.
+- Instagram: captions cannot carry a tappable link. **Stories cannot be posted from desktop Instagram**, and the bio
+  links are mobile-only ("Editing your links is only available on mobile"); the bio link points at
+  games.csiesheep.com (the hub) as of 2026-10-24. Meta Business Suite (business.facebook.com) has 建立限時動態
+  with scheduling, but Instagram is not connected to the 小羊遊戲間 Page there yet, and its upload opens the
+  operating system's file picker (no input[type=file] in the page before the click), which Claude in Chrome
+  cannot drive. So an Instagram Story with a link sticker is the owner's to post from the phone until that changes.
+
+## Share cards
+
+`node scripts/record.mjs cards <out> <seed>[,<seed>...] --extra "&period=<id>[&sex=F]"` plays each seed to the end
+headlessly (internal=1, nothing reported) and saves `card_<seed>.png` (the card the ending screen shows),
+`card_<seed>_post.png` (1080×1350, via `window.__shareCard()`) and `card_<seed>_story.png` (1080×1920 with the
+QR, via `window.__storyCardBuild()`). The post card shows the age at death and the epitaph, so use it where the
+ending is the point (Threads card posts), not as a reel cover.
