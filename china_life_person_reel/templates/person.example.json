@@ -1,0 +1,17 @@
+{
+  "tag": "reel3",
+  "name": "高巧兒",
+  "base": "Half-body portrait of a 17-year-old Han Chinese peasant girl in the Qing dynasty, 1860s, Henan countryside, oval face, calm dark eyes, black hair parted in the middle and tied in a low bun, plain indigo cotton jacket with a side-fastening right lapel, looking slightly to the side.",
+  "ages": {
+    "03": "Redraw the same person as a 3-year-old toddler girl: thin small child with a round face and the same eyes, hair in two tiny tufts, patched padded cotton jacket, sitting on a doorstep of a mud-brick farmhouse, a hard famine year.",
+    "06": "Redraw the same person as a 6-year-old girl: same eyes and face shape, hair in two small braids, plain cotton jacket, sitting on a low wooden stool looking down quietly at long white cloth strips in her lap. Feet not shown.",
+    "15": "Redraw the same person as a 15-year-old girl: same face, long single braid over the shoulder, faded blue cotton jacket, standing by a courtyard gate, a little guarded expression.",
+    "17": "Redraw the same person at 17 on her wedding day: same face, wearing a red cotton wedding jacket with simple embroidery and a red flower in her hair, calm and a little uncertain.",
+    "27": "Redraw the same person at 27 as a young widow in mourning: same face a little thinner and tired, wearing a coarse white hemp mourning jacket, hair in a plain bun with a white cloth band, holding a small child against her shoulder.",
+    "30": "Redraw the same person at 30 fleeing a famine: same face weathered and thin, head wrapped in a cloth, carrying a cloth bundle on her back and leading a child by the hand along a dusty road, distant bare trees.",
+    "50": "Redraw the same person at 50: same face with lines around the eyes, grey streaks in her hair tied in a bun, dark cotton jacket, sitting in a doorway mending clothes.",
+    "70": "Redraw the same person at 70 as an old woman: deeply lined face with the same gentle eyes, white hair in a small bun, dark padded jacket, sitting on a bamboo chair holding a walking stick, peaceful expression."
+  },
+  "base_seed": 18460,
+  "age_seed": 46000
+}
