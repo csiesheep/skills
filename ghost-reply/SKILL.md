@@ -160,5 +160,15 @@ the drafts that way.
 
 ## Daily schedule
 
-The user may want this every day at a fixed time (鬼唱詩: 17:00). A scheduled run does steps 1 to 3 and sends the
-file with each post's link and recommended reply; the user posts them. A scheduled run never posts.
+The user may want this every day at a fixed time. By default a scheduled run does steps 1 to 3 and sends the file
+with each post's link and recommended reply; the user posts them, and the run posts nothing.
+
+鬼唱詩 since 2026-10-23: the owner set two daily runs, 05:00 Pacific (20:00 Taiwan, task `ghost-reply-daily-0500`)
+and 17:00 Pacific (08:00 Taiwan, task `ghost-reply-daily-1700-bypass`, which schedules for Taiwan lunch), and delegated the
+choice: 「IG and Threads, 各3則，你決定發什麼」, with the cap raised to six a day (「每天上限提高到6則」). Each run
+picks the posts and the reply itself and posts them, up to three per platform per run and six per platform per
+Taiwan day counting anything already posted or scheduled (`plan.py slots --cap 6`), one one-time task per later
+reply, with the handle check before every post. Instagram and Threads may go at the same time (「ig 和 threads 可以
+同時」): `plan.py slots --pair`, and an Instagram and a Threads slot that coincide are posted by one task, one after
+the other, never by two tasks firing together. Outside those runs the default above still applies, and the
+three-a-day pace above still applies to replies posted from a conversation.
