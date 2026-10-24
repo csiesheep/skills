@@ -13,7 +13,9 @@ Taiwan read social media (12:00-13:30, 19:30-23:00 local). What does not fit tod
 ISO 8601 with +08:00, ready for the scheduled-task tool's fireAt. `--avoid <folder>` (repeatable) names another
 brand's engagement folder that posts from the same Chrome (ghost-reply's gui_chang_shi/engagement uses the same
 result-table columns): no slot lands within --avoid-gap minutes (default 10) of one of its posted or scheduled
-replies on any platform, because both switch the same Instagram account. Day files are named by the Taiwan date.
+replies on any platform, because both switch the same Instagram account; the same gap is kept between this
+brand's Threads and Instagram slots booked by another run, since posting on Threads also switches Instagram. Slots
+given out in one call may share a time across platforms: the run posts the Instagram and the Threads reply back to back. Day files are named by the Taiwan date.
 Standard library only.
 """
 import argparse
@@ -139,7 +141,15 @@ def cmd_slots(a) -> None:
             if last and t < last + dt.timedelta(minutes=a.gap):
                 t = next_in_window(last + dt.timedelta(minutes=a.gap + rng.randint(0, 9)))
                 continue
-            w = clash(t)
+            # This brand's own replies on the other platform: a Threads post switches Instagram too, so keep
+            # --avoid-gap minutes between any two of them whatever the platform.
+            # --pair: the owner allows an Instagram and a Threads reply at the same time (ghost-reply, 2026-10-23);
+            # the caller then posts slots within --avoid-gap of each other from ONE task, one after the other.
+            # With --pair, slots from this call may share a time across platforms, but replies another run already
+            # booked in the day file still get the gap (two runs switching the same Instagram at once).
+            mine = ([w for p2, w in booked(folder, t.date()) if w and p2 != plat] if a.pair else
+                    [w for (p2, d2), ws in state.items() if d2 == t.date() and p2 != plat for w in ws if w])
+            w = clash(t) or next((m for m in mine if abs(t - m) < dt.timedelta(minutes=a.avoid_gap)), None)
             if w:
                 t = next_in_window(w + dt.timedelta(minutes=a.avoid_gap))
                 continue
@@ -164,6 +174,8 @@ def main() -> None:
     s.add_argument("--avoid", action="append", default=[], metavar="FOLDER",
                    help="another brand's engagement folder sharing this Chrome; keep clear of its replies")
     s.add_argument("--avoid-gap", type=int, default=10)
+    s.add_argument("--pair", action="store_true",
+                   help="allow this brand's Instagram and Threads replies at the same time (post them from one task)")
     a = ap.parse_args()
     {"new": cmd_new, "slots": cmd_slots}[a.cmd](a)
 
