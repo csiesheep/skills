@@ -48,9 +48,14 @@ def decision(frm, to, caption, t_card, t_tap, inset, hold=1.5):
 
 
 segments = [
-    # 開場：基準臉的肖像卡 + 戶帖（card_ready ~2 秒、begin 的 tap ~7 秒）
-    {**card(BASE, "<姓名>", "<西元年>年，生在<地方>的<身分>家", dur=2.4), "fade_in": 0.4},
-    seg(2.4, 8.4, 3.6, "<一句問題當鉤子>", sfx_at=[("start", 7.5)]),
+    # 冷開場（Reel 3 v3 的教訓：v2 從黑畫面淡入，2 秒就走了 6 成的人）：第一格就是最強的轉折——肖像加一行大字，
+    # 再閃兩三個轉折，每張 0.8–1.0 秒、推近 12%、直接切（dissolve 0，溶接會讓兩行字疊在一起）
+    {**card(P("03"), "", "", dur=1.0), "caption": "<3 歲，最強的那件事>", "cap_y": 1450, "push": 0.12, "dissolve": 0},
+    {**card(P("06"), "", "", dur=0.8), "caption": "<下一個轉折>", "cap_y": 1450, "push": 0.12, "dissolve": 0},
+    {**card(P("15"), "", "", dur=0.8), "caption": "<再下一個>", "cap_y": 1450, "push": 0.12, "dissolve": 0},
+    # 她是誰：基準臉 + 名字，再接戶帖（card_ready ~2 秒、begin 的 tap ~7 秒）
+    {**card(BASE, "<姓名>", "<西元年>年，生在<地方>的<身分>家", dur=1.2), "dissolve": 0},
+    seg(4.4, 8.4, 2.2, "<一句話把人帶進她的一生>", sfx_at=[("start", 7.5)]),
     # 每個年紀：card(...) 接 decision(...) 或 seg(..., inset=P("NN"), freeze_at=[...])
     # card(P("06"), "6 歲", "<那一年的事>"),
     # decision(28.4, 32.6, "<字幕>", 28.8, 31.3, P("06"), hold=1.8),

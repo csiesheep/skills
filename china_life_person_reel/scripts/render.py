@@ -73,7 +73,16 @@ class Rec:
         self.t = [f["t"] - start for f in fr]
         self.f = [d / "frames" / f["f"] for f in fr]
         self.taps = [(e["t"] - start, e["x"] * DPR, e["y"] * DPR) for e in ev if e["type"] == "tap"]
+        self.ages = [(e["t"] - start, e["age"]) for e in ev if e["type"] == "age"]
         self.cache: dict[int, Image.Image] = {}
+
+    def age_at(self, t: float) -> str | None:
+        cur = None
+        for tt, a in self.ages:
+            if tt > t:
+                break
+            cur = a
+        return cur
 
     def at(self, t: float) -> Image.Image:
         i = max(0, bisect.bisect_right(self.t, t) - 1)
@@ -183,6 +192,22 @@ def stamp_layer(i: int, ok: bool, level: str, age: float) -> Image.Image:
     return layer
 
 
+AGETAG = None   # plan["agetag"]：{"name": "高巧兒", "y": 58}；錄影段上方固定一條「姓名｜N 歲」，年紀取 events.json 的 age
+
+
+def agetag_layer(name: str, age: str | None, y: int = 58) -> Image.Image:
+    layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    if age is None:
+        return layer
+    d = ImageDraw.Draw(layer)
+    text = f"{name}｜{age} 歲"
+    f = font(44)
+    w = d.textlength(text, font=f)
+    d.rounded_rectangle([(W - w) / 2 - 30, y - 34, (W + w) / 2 + 30, y + 34], 34, fill=(150, 36, 28, 235))
+    d.text((W / 2, y), text, font=f, anchor="mm", fill=(255, 246, 234, 255))
+    return layer
+
+
 def caption_layer(text: str, alpha: float, y: int = 250) -> Image.Image:
     layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     if not text or alpha <= 0:
@@ -261,7 +286,7 @@ def render_portrait(seg: dict, fps: int, out_frames: list, sfx_out: list, t_now:
     big, small = font(132, KAI), font(50, bold=False)
     for k in range(n):
         u = k / max(n - 1, 1)
-        s = 1.0 + 0.05 * u
+        s = 1.0 + seg.get("push", 0.05) * u
         bg = Image.new("RGBA", (W, H), PAPER + (255,))
         def place(im):
             r = im.resize((round(pw * s), round(ph * s)), Image.BILINEAR)
@@ -282,6 +307,8 @@ def render_portrait(seg: dict, fps: int, out_frames: list, sfx_out: list, t_now:
             d.text((W / 2, y + 175), seg["sub"], font=small, anchor="mm", fill=(70, 55, 42, int(255 * ta)))
         if seg.get("fade_in") and k < seg["fade_in"] * fps:
             img = Image.blend(Image.new("RGBA", (W, H), (0, 0, 0, 255)), img, k / (seg["fade_in"] * fps))
+        if seg.get("caption"):   # 冷開場的閃卡：肖像上疊一行大字（第一格就要在，不淡入）
+            img = Image.alpha_composite(img, caption_layer(seg["caption"], 1.0, seg.get("cap_y", 1500)))
         img = img.convert("RGB")
         out_frames.append(img.resize((round(W * scale), round(H * scale)), Image.BILINEAR) if scale != 1 else img)
     for name, p in seg.get("sfx", []):
@@ -391,6 +418,8 @@ def render_segment(seg: dict, fps: int, recs: dict, out_frames: list, sfx_out: l
         img = Image.alpha_composite(img, over)
         if seg.get("caption"):
             img = Image.alpha_composite(img, caption_layer(seg["caption"], cap_alpha(k / max(len(plan) - 1, 1), seg.get("cap_at", [0.05, 0.97]), total), seg.get("cap_y", 250)))
+        if AGETAG and rec and seg.get("src") == "life" and not seg.get("no_agetag"):
+            img = Image.alpha_composite(img, agetag_layer(AGETAG["name"], rec.age_at(st), AGETAG.get("y", 58)))
         if seg.get("bigmap") and rec:
             bm = seg["bigmap"]
             zc = interp(bm["cam_t"], st)   # 鏡頭跟著錄影時間走（變速、定格都不影響）
@@ -506,19 +535,21 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("plan")
     ap.add_argument("--preview", action="store_true")
+    ap.add_argument("--name", default="reel", help="輸出檔名（out/<name>.mp4）；預覽一律叫 preview")
     a = ap.parse_args()
     global ROOT
     ROOT = Path(a.plan).resolve().parent
     plan = json.loads(Path(a.plan).resolve().read_text(encoding="utf-8"))
-    global SCOREBOARD
+    global SCOREBOARD, AGETAG
     SCOREBOARD = plan.get("scoreboard")
+    AGETAG = plan.get("agetag")
     fps = 15 if a.preview else plan.get("fps", 30)
     scale = 0.5 if a.preview else 1.0
     recs = {s["src"]: None for s in plan["segments"] if "src" in s}
     recs = {k: Rec(k) for k in recs}
     out = ROOT / "out"
     out.mkdir(exist_ok=True)
-    name = "preview" if a.preview else "reel"
+    name = "preview" if a.preview else a.name
     silent = out / f"{name}_silent.mp4"
     proc = subprocess.Popen([FF, "-y", "-v", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{round(W*scale)}x{round(H*scale)}",
                              "-r", str(fps), "-i", "-", "-c:v", "libx264", "-preset", "medium", "-crf", "18" if not a.preview else "26",

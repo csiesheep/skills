@@ -74,8 +74,10 @@ mood, `98.seconds` and `94.duration` to the video length + 15, `94.bpm`, `94.key
 
 ### 5. Plan and render
 
-Copy `templates/build_plan.py` to `<reel>/tools/`, fill the segments from the timeline (one portrait card per age, then
-that age's decision or rows with `inset=P(age)`), and, if the reel has numbers, make the stats card with
+Copy `templates/build_plan.py` to `<reel>/tools/`, fill the segments from the timeline: **start cold** (the first
+frame is a portrait with a big line of the strongest turn, then two or three more turns at 0.8 s each with hard cuts;
+no fade from black, no setup first; lessons.md has the data), then the name card and the life, one portrait card per
+age followed by that age's decision or rows with `inset=P(age)`, and, if the reel has numbers, make the stats card with
 `cards.py stats`. Then:
 
     py -X utf8 <reel>/tools/build_plan.py
@@ -102,6 +104,7 @@ Write `<reel>/captions.md` for Threads, Instagram, YouTube (title + description)
 `reels/china_life/3/captions.md`. **Every caption leaves suspense** (owner, 2026-10-23): the hook, the person and the
 first one or two turns, then 「她後來怎麼了？影片看到最後」, the link, 「肖像為 AI 繪製」 and the 遊戲模擬 note; never the
 ending or how long they lived. Show the texts; post only after the user says so, one platform at a time, as
-小羊遊戲間 / csiesheep.games, turning on each platform's AI label, then put every account back.
+小羊遊戲間 / csiesheep.games, leaving the platforms' AI-label toggles **off** (the portraits are ink-wash paintings, not
+realistic; owner 2026-10-24; the caption line 「肖像為 AI 繪製」 is enough), then put every account back.
 `references/posting.md` has the exact flow per site (cover upload, Original crop on Instagram, Threads' 15-minute edit
 window, where Facebook hides 編輯貼文) and how to edit a caption after posting. Record the links in captions.md.

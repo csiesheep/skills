@@ -1,8 +1,8 @@
 """Reel 收尾與檢查。
 
     py -X utf8 finish.py check <reel>/out/preview.mp4 2.0 6.5 11 ...   # 抽這些秒數的格，拼成 out/check.jpg（每格 240 寬）
-    py -X utf8 finish.py final <reel>/out/reel.mp4                      # 音量拉到 -14 LUFS（只動音軌）、量 true peak、出 reel_720p.mp4
-    py -X utf8 finish.py upload <reel>/out/reel.mp4 [--mb 9.5]          # 出 reel_upload.mp4：720p 兩段式編碼，壓在 9.5 MB 內
+    py -X utf8 finish.py final <reel>/out/reel.mp4                      # 音量拉到 -14 LUFS（只動音軌）、量 true peak、出 <名>_720p.mp4
+    py -X utf8 finish.py upload <reel>/out/reel.mp4 [--mb 9.5]          # 出 <名>_upload.mp4：720p 兩段式編碼，壓在 9.5 MB 內
                                                                        # （Claude in Chrome 的 file_upload 一次最多 10 MB；94 秒的 720p crf25 是 11.6 MB）
 
 render.py 混音時的 loudnorm 加 limiter 常讓成品落在 -14.6 到 -15.6 LUFS；final 依量到的值補增益，
@@ -57,7 +57,7 @@ def final(video):
     print(f"loudness {i:.1f} → {i2:.1f} LUFS（+{g} dB），true peak {p2:.1f} dBFS")
     if p2 > -1.0:
         print("警告：true peak 高於 -1 dBFS，把 plan 的 music_gain_db 調低 1–2 dB 重渲染")
-    small = video.with_name("reel_720p.mp4")
+    small = video.with_name(f"{video.stem}_720p.mp4")   # reel.mp4 → reel_720p.mp4，reel_v3.mp4 → reel_v3_720p.mp4
     subprocess.run([FF, "-v", "error", "-y", "-i", str(video), "-vf", "scale=720:1280", "-c:v", "libx264", "-crf", "25", "-preset", "slow",
                     "-c:a", "copy", "-movflags", "+faststart", str(small)], check=True)
     print(f"{small}  {small.stat().st_size / 1e6:.1f} MB")
@@ -70,7 +70,7 @@ def upload(video, mb=9.5):
     h, m, s = re.search(r"Duration: (\d+):(\d+):([\d.]+)", r).groups()
     dur = int(h) * 3600 + int(m) * 60 + float(s)
     vk = int((mb * 8 * 1024 * 0.97 / dur) - 128)
-    out = video.with_name("reel_upload.mp4")
+    out = video.with_name(f"{video.stem}_upload.mp4")
     log = video.with_name("_2pass")
     base = [FF, "-v", "error", "-y", "-i", str(video), "-vf", "scale=720:1280", "-c:v", "libx264", "-b:v", f"{vk}k", "-preset", "slow", "-passlogfile", str(log)]
     subprocess.run(base + ["-pass", "1", "-an", "-f", "mp4", "NUL" if sys.platform == "win32" else "/dev/null"], check=True)

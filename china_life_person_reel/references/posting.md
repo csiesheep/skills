@@ -34,8 +34,8 @@ the Page's 立即切換; back via avatar → 切換為<name>). Check the handle 
 
 Sidebar Create → Post → `find` the file input → upload. The crop step defaults to 1:1: open the crop icon
 (bottom-left) and pick **Original**. Next → the Edit step has **Cover photo → Select from computer** (a file input:
-upload the cover). Next → caption box (`find` "Add a caption"; typing with `\n` makes line breaks), turn on
-**Add AI label** when portraits are AI, check that "Share to" does not cross-post, Share, wait for
+upload the cover). Next → caption box (`find` "Add a caption"; typing with `\n` makes line breaks), leave
+**Add AI label** off (see AI labels below), check that "Share to" does not cross-post, Share, wait for
 "Your reel has been shared". Link: newest `/reel/<code>/` on `instagram.com/csiesheep.games/reels/`.
 Edit later: open `instagram.com/p/<code>/` (not `/reel/`, which opens the reels feed), More options → Edit,
 ctrl+a, Delete, type, Done.
@@ -56,10 +56,24 @@ Save, reload to check.
 ## Facebook Page
 
 As the Page, `facebook.com/reels/create` → file input → in the uploaded item click **封面** → 選擇縮圖 dialog →
-scroll down → its file input (上傳) takes the cover. Type the description in 「介紹你的 Reel」, 繼續, turn on
-**新增 AI 標籤**, 發佈. The reel appears on the Page's Reel tab after about a minute.
+scroll down → its file input (上傳) takes the cover. Type the description in 「介紹你的 Reel」, 繼續, leave
+**新增 AI 標籤** off, 發佈. The reel appears on the Page's Reel tab after about a minute.
 Edit later: the reel player's ⋯ menu has no edit; use the Page timeline post's ⋯ → **編輯貼文**, change, 儲存,
 and wait for 儲存中 to finish before navigating (a 「Leave site?」 dialog blocks it otherwise).
+
+## Comments with the link
+
+After posting, leave one comment as the brand with the game link (Facebook makes it a link card; Instagram shows the bare
+URL as text). **Pinning is app-only**: the web comment menus on Instagram (Delete/Cancel) and on Facebook Reels, from the
+player and from the Page timeline (編輯/刪除/檢舉留言), have no pin. Ask the user to pin from the app if other comments
+arrive first.
+
+## AI labels
+
+Leave Facebook's 「新增 AI 標籤」 and Instagram's "Add AI label" off (owner, 2026-10-24: 「fb 不加上 ai 標簽，我們沒有產生
+逼真的東西」). The platforms require them for realistic AI imagery; the ink-wash portraits are not. On Reel 3 they
+were switched on at first; editing the Facebook post's text later reset its label to off (the 「AI 內容」 tag left the
+header). The caption keeps 「肖像為 AI 繪製」.
 
 ## TikTok
 

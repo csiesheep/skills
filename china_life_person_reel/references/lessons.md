@@ -21,6 +21,15 @@ in `C:/Users/sheep/Pictures/csiesheep_games/reels/china_life/3` and `/4`. Their 
 - **Upload size.** Claude in Chrome's file_upload takes at most 10 MB; the 94 s 720p copy was 11.6 MB. `finish.py upload`
   makes a two-pass ≤ 9.5 MB copy.
 
+- **The opening lost the viewers** (Facebook data for Reel 3 v2, 2026-10-24: 125 views, 85% non-followers, 41% left
+  by 0:02, 80% by 0:05, average watch 3 s of 94 s). The first 4 s were a fade from black, the 17-year-old's face and the
+  household card: no event, no question. v3 opens cold: frame one is the 3-year-old with a big line 「3 歲，她差點被送走」,
+  then three more turns at 0.8 s each (6, 15, 27), hard cuts, a 12% push on each card, then the name card and the game.
+  Do this from the first cut: **the first 3 seconds show the strongest turns, not the setup**. Reading speed still
+  applies after the cold open. v3 also dropped one card and a row and came to 76 s.
+  Result: the owner reported on 2026-10-24 that v3 performs better than v2 (same story, same captions, posted the
+  day after on Instagram and Facebook). The cold open is confirmed; keep it the default.
+
 ## Gotchas
 
 - **Engine city ≠ screen city.** The engine said 南陽 for 高巧兒; the game screen and share card said 開封 and 濟南府.
