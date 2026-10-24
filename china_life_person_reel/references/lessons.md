@@ -15,6 +15,11 @@ in `C:/Users/sheep/Pictures/csiesheep_games/reels/china_life/3` and `/4`. Their 
   223x279 px plus frame) in the bottom-right corner, including on decision cards, where it only touches the edge of the
   second option box.
 - The owner liked: portrait cards per age, same face across ages, the map changing dynasty under the route.
+- **Captions told the whole story.** The first captions listed every age down to the death; the owner wanted suspense
+  on every platform (「所有文案都留懸念」). The Threads post had to be deleted and reposted (edit window 15 minutes);
+  IG, YouTube and Facebook were edited in place. See posting.md.
+- **Upload size.** Claude in Chrome's file_upload takes at most 10 MB; the 94 s 720p copy was 11.6 MB. `finish.py upload`
+  makes a two-pass ≤ 9.5 MB copy.
 
 ## Gotchas
 

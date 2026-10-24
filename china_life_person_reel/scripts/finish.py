@@ -2,6 +2,8 @@
 
     py -X utf8 finish.py check <reel>/out/preview.mp4 2.0 6.5 11 ...   # 抽這些秒數的格，拼成 out/check.jpg（每格 240 寬）
     py -X utf8 finish.py final <reel>/out/reel.mp4                      # 音量拉到 -14 LUFS（只動音軌）、量 true peak、出 reel_720p.mp4
+    py -X utf8 finish.py upload <reel>/out/reel.mp4 [--mb 9.5]          # 出 reel_upload.mp4：720p 兩段式編碼，壓在 9.5 MB 內
+                                                                       # （Claude in Chrome 的 file_upload 一次最多 10 MB；94 秒的 720p crf25 是 11.6 MB）
 
 render.py 混音時的 loudnorm 加 limiter 常讓成品落在 -14.6 到 -15.6 LUFS；final 依量到的值補增益，
 補完 true peak 要低於 -1 dBFS（否則印警告，請把 plan 的 music_gain_db 調低重渲染）。
@@ -61,7 +63,28 @@ def final(video):
     print(f"{small}  {small.stat().st_size / 1e6:.1f} MB")
 
 
+def upload(video, mb=9.5):
+    """兩段式編碼到目標大小：音訊 128k，其餘給影像，留 3% 給容器。"""
+    video = Path(video)
+    r = subprocess.run([FF, "-hide_banner", "-i", str(video)], capture_output=True, text=True, errors="replace").stderr
+    h, m, s = re.search(r"Duration: (\d+):(\d+):([\d.]+)", r).groups()
+    dur = int(h) * 3600 + int(m) * 60 + float(s)
+    vk = int((mb * 8 * 1024 * 0.97 / dur) - 128)
+    out = video.with_name("reel_upload.mp4")
+    log = video.with_name("_2pass")
+    base = [FF, "-v", "error", "-y", "-i", str(video), "-vf", "scale=720:1280", "-c:v", "libx264", "-b:v", f"{vk}k", "-preset", "slow", "-passlogfile", str(log)]
+    subprocess.run(base + ["-pass", "1", "-an", "-f", "mp4", "NUL" if sys.platform == "win32" else "/dev/null"], check=True)
+    subprocess.run(base + ["-pass", "2", "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", str(out)], check=True)
+    for f in video.parent.glob("_2pass*"):
+        f.unlink()
+    print(f"{out}  {out.stat().st_size / 1e6:.1f} MB（影像 {vk} kbps）")
+
+
 if __name__ == "__main__":
+    if sys.argv[1] == "upload":
+        mb = float(sys.argv[sys.argv.index("--mb") + 1]) if "--mb" in sys.argv else 9.5
+        upload(sys.argv[2], mb)
+        sys.exit()
     if sys.argv[1] == "check":
         check(sys.argv[2], [float(x) for x in sys.argv[3:]])
     elif sys.argv[1] == "final":

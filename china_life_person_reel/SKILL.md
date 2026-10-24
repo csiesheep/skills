@@ -1,6 +1,6 @@
 ---
 name: china_life_person_reel
-description: Make a 9:16 Reel about one person's life in 生在中國 (games.csiesheep.com/china_life) — a seed from the game's engine played and recorded in headless Chrome, with ink-wash portraits of that person growing up drawn on the local ComfyUI (one face from childhood to old age), a full-screen portrait card at each age and the same small portrait in the bottom-right corner of the gameplay, decision cards at reading speed, optional big route map from high-res map captures, generated music cut into a continuous bed, a stats card from engine simulations, 0.5 s dissolves, -14 LUFS, a 720p copy and a portrait-grid cover. Use whenever the user asks for a reel / short / 影片 about a person, a life, 一生, 某個人的一生, 古代女生的一生, 一生走了多遠, 從農民到當官, 同年同月生, or any of the china_life reel ideas that follow one life, or says "make a reel of seed N", even if they only describe the kind of life they want. Not for reels of other games (covervote), posting the reel (game-promote, social posts), or the ghost brand (ghost-reel).
+description: Make a 9:16 Reel about one person's life in 生在中國 (games.csiesheep.com/china_life) — a seed from the game's engine played and recorded in headless Chrome, with ink-wash portraits of that person growing up drawn on the local ComfyUI (one face from childhood to old age), a full-screen portrait card at each age and the same small portrait in the bottom-right corner of the gameplay, decision cards at reading speed, optional big route map from high-res map captures, generated music cut into a continuous bed, a stats card from engine simulations, 0.5 s dissolves, -14 LUFS, a 720p copy, a ≤9.5 MB upload copy and a portrait-grid cover, plus captions that leave suspense and posting to Instagram, Threads, YouTube and the Facebook Page when asked. Use whenever the user asks for a reel / short / 影片 about a person, a life, 一生, 某個人的一生, 古代女生的一生, 一生走了多遠, 從農民到當官, 同年同月生, or any of the china_life reel ideas that follow one life, or says "make a reel of seed N", even if they only describe the kind of life they want. Not for reels of other games (covervote), posting the reel (game-promote, social posts), or the ghost brand (ghost-reel).
 ---
 
 # China life person reel
@@ -87,10 +87,21 @@ showing the route, no stray frames. Fix and preview again; then the full render 
 
     py -X utf8 <skill>/scripts/render.py <reel>/plan.json
     py -X utf8 <skill>/scripts/finish.py final <reel>/out/reel.mp4
+    py -X utf8 <skill>/scripts/finish.py upload <reel>/out/reel.mp4      # reel_upload.mp4 ≤ 9.5 MB for posting from Chrome
     py -X utf8 <skill>/scripts/cards.py cover <reel>/out/reel_cover.jpg "<大標>" "<副標>" <4 portraits with :年紀>
 
 ### 6. Deliver
 
 Send `out/reel_720p.mp4` and the cover with SendUserFile; say the length, loudness, and anything that is not the game's
-(a real-world distance, a merged music bed). Offer captions for IG / YouTube / Facebook / TikTok in the format of
-`reels/china_life/2/captions.md`. The user's notes go back into the plan; durable ones go into `references/lessons.md`.
+(a real-world distance, a merged music bed). The user's notes go back into the plan; durable ones go into
+`references/lessons.md`.
+
+### 7. Captions and posting (when the user asks)
+
+Write `<reel>/captions.md` for Threads, Instagram, YouTube (title + description), Facebook and TikTok in the format of
+`reels/china_life/3/captions.md`. **Every caption leaves suspense** (owner, 2026-10-23): the hook, the person and the
+first one or two turns, then 「她後來怎麼了？影片看到最後」, the link, 「肖像為 AI 繪製」 and the 遊戲模擬 note; never the
+ending or how long they lived. Show the texts; post only after the user says so, one platform at a time, as
+小羊遊戲間 / csiesheep.games, turning on each platform's AI label, then put every account back.
+`references/posting.md` has the exact flow per site (cover upload, Original crop on Instagram, Threads' 15-minute edit
+window, where Facebook hides 編輯貼文) and how to edit a caption after posting. Record the links in captions.md.
