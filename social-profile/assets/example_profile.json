@@ -1,5 +1,5 @@
 {
-  "_comment": "The run this skill came from (鬼唱詩, 2026-10-18). Copy next to your picture and edit. Leave out a field to keep it as it is; \"photo\": false keeps a site's photo.",
+  "_comment": "The run this skill came from (鬼唱詩, 2026-10-18). Copy next to your picture and edit. Leave out a field to keep it as it is; \"photo\": false keeps a site's photo. Optional: facebook \"cover\" (picture path, made 1640x624), youtube \"banner\" (made 2560x1440) and youtube \"links\" ([[title, url], ...]).",
   "image": "C:/Users/sheep/Pictures/gui_chang_shi/brand/avatar/final/avatar_1024.png",
   "sites": {
     "instagram": {

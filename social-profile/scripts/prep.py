@@ -4,6 +4,10 @@ nothing important sits in the corners the sites crop away, and every bio counted
     py -X utf8 prep.py profile.json            # writes avatar_1024.png, avatar_800.png beside profile.json
     py -X utf8 prep.py profile.json --only instagram,tiktok
 
+Wide pictures are optional per site: "facebook": {"cover": "C:/path/cover.png"} writes cover_1640x624.png,
+"youtube": {"banner": "C:/path/banner.png", "links": [["全部遊戲", "https://..."]]} writes
+banner_2560x1440.png. Both are cropped from the centre to the site's shape; look at the result.
+
 profile.json (see assets/example_profile.json):
     {"image": "C:/path/logo.png",
      "sites": {"instagram": {"handle": "gui.chang.shi", "bio": "line one\\nline two"},
@@ -31,8 +35,8 @@ SITES = {
                 "name": "a Name row is in Edit profile (untested); it keeps its own photo and bio"},
     "facebook": {"bio": 255, "seen": "bio", "edit": "https://www.facebook.com/{handle}",
                  "name": "Page name changes go to Facebook's review"},
-    "youtube": {"bio": 1000, "seen": "", "edit": "https://studio.youtube.com/",
-                "name": "channel name changes are limited (reported); nothing is live until Publish"},
+    "youtube": {"bio": 1000, "seen": "bio, name", "edit": "https://www.youtube.com/@{handle} -> Customize channel",
+                "name": "the name can change twice in 14 days (Studio says so); nothing is live until Publish"},
     "tiktok": {"bio": 80, "seen": "bio, name", "edit": "https://www.tiktok.com/@{handle}",
                "name": "the nickname can change once every 7 days; the save asks to confirm"},
     "pinterest": {"bio": 160, "seen": "", "edit": "https://www.pinterest.com/settings/",
@@ -40,6 +44,17 @@ SITES = {
 }
 SIZES = {"avatar_1024.png": 1024, "avatar_800.png": 800}  # 800 for YouTube (min 98, max 4 MB), 1024 for the rest
 YOUTUBE_MAX_BYTES = 4 * 1024 * 1024
+
+# Wide pictures: (site, profile key) -> output size, smallest the site takes, byte limit, what to keep clear.
+# Seen 2026-10-21/22: Facebook's cover editor and YouTube Studio's "Customize banner art" dialog.
+WIDE = {
+    ("facebook", "cover"): {"file": "cover_1640x624.png", "size": (1640, 624), "min": (820, 312),
+                            "max_bytes": None,
+                            "safe": "phones crop the left and right sides: keep text off the outer edges"},
+    ("youtube", "banner"): {"file": "banner_2560x1440.png", "size": (2560, 1440), "min": (2048, 1152),
+                            "max_bytes": 6 * 1024 * 1024,
+                            "safe": "every device shows only the centre 1546 x 423: name, URL and face go there"},
+}
 
 
 def border_colour(im: Image.Image) -> tuple[int, int, int]:
@@ -117,6 +132,33 @@ def prepare_image(path: Path, out_dir: Path) -> tuple[list[str], list[str]]:
     return notes, problems
 
 
+def prepare_wide(src: Path, spec: dict, out_dir: Path) -> tuple[list[str], list[str]]:
+    """Crop a wide picture from the centre to the site's shape and size; report how much was cut."""
+    notes, problems = [], []
+    if not src.exists():
+        return notes, [f"picture not found: {src}"]
+    im = Image.open(src).convert("RGB")
+    tw, th = spec["size"]
+    w, h = im.size
+    if w * th > h * tw:  # wider than the site's shape: cut the sides
+        cw, ch = round(h * tw / th), h
+    else:                # taller: cut top and bottom
+        cw, ch = w, round(w * th / tw)
+    left, top = (w - cw) // 2, (h - ch) // 2
+    im = im.crop((left, top, left + cw, top + ch))
+    if cw < spec["min"][0]:
+        problems.append(f"{src.name} gives only {cw}x{ch} after cropping; the site wants at least "
+                        f"{spec['min'][0]}x{spec['min'][1]}")
+    dest = out_dir / spec["file"]
+    im.resize((tw, th), Image.LANCZOS).save(dest, optimize=True)
+    notes.append(f"wrote {dest} ({dest.stat().st_size // 1024} KB); "
+                 f"{1 - cw * ch / (w * h):.0%} of the {w}x{h} original cropped away from the edges")
+    notes.append(spec["safe"])
+    if spec["max_bytes"] and dest.stat().st_size > spec["max_bytes"]:
+        problems.append(f"{dest} is over {spec['max_bytes'] // (1024 * 1024)} MB")
+    return notes, problems
+
+
 def count(text: str) -> int:
     """Characters as the sites count them: line breaks count, as on Instagram's counter (65/150 for 62
     characters on four lines)."""
@@ -151,7 +193,7 @@ def main() -> None:
         cfg, lim = sites[s], SITES[s]
         handle = cfg.get("handle", "")
         changes = (["photo"] if prof.get("image") and cfg.get("photo", True) else []) + \
-                  [f for f in ("name", "bio") if cfg.get(f)]
+                  [f for f in ("name", "bio", "cover", "banner", "links") if cfg.get(f)]
         print(f"- {s}: account {handle or '(no handle: cannot check the account, add one)'}; "
               f"change {', '.join(changes) or 'nothing'}")
         print(f"    open {lim['edit'].format(handle=handle)}")
@@ -166,6 +208,16 @@ def main() -> None:
                 problems.append(f"{s} bio is {n} characters, limit {lim['bio']}")
             if cfg["bio"] != cfg["bio"].strip():
                 print("    bio starts or ends with spaces or a line break; strip it")
+        for (site, key), spec in WIDE.items():
+            if site == s and cfg.get(key):
+                notes, probs = prepare_wide(Path(cfg[key]), spec, pf.parent)
+                for n in notes:
+                    print(f"    {key}: {n}")
+                problems += probs
+        for title, url in cfg.get("links", []):
+            print(f"    link \"{title}\" -> {url}")
+            if not url.startswith(("http://", "https://")):
+                problems.append(f"{s} link {url!r} needs http:// or https://")
         if not handle:
             problems.append(f"{s} has no handle to check the signed-in account against")
 
