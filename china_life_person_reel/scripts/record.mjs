@@ -3,7 +3,8 @@
 //        照種子玩一生：按「開始這一生」、遇到抉擇停 2 秒再點自動那一項（與引擎 policy=auto 同一生），錄到結局，存分享卡 end_card.png。
 //        --mapshots：另外每 0.2 秒把地圖 SVG 用 2.5 倍截一張（mapshots/），做大地圖用。副作用：screencast 會混進裁過的格子，render.py 會濾掉。
 //   node record.mjs home  <out>   首頁 8 秒
-//   node record.mjs cards <out> seed1,seed2,...   每個種子直接跑到結局，存分享卡（限時動態 9:16）
+//   node record.mjs cards <out> seed1,seed2,... [--extra "&period=qing_mid"]   每個種子直接跑到結局，存結局畫面的卡 card_<seed>.png，
+//        另存 card_<seed>_post.png（貼文 1080×1350）與 card_<seed>_story.png（限時動態 1080×1920，含 QR）
 // 每段輸出：frames/000001.jpg…、frames.json（每格的時間）、events.json（點擊、抉擇、年齡、紀錄列的時間）。
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
@@ -148,9 +149,14 @@ try {
     await sleep(1500); await startRec(); await sleep(8000); await stopRec();
   } else if (mode === 'cards') {
     for (const seed of extra.split(',')) {
-      await navigate(`${BASE}?internal=1&seed=${seed}&cv=v13&policy=auto&speed=instant&autostart=1`);
+      await navigate(`${BASE}?internal=1&seed=${seed}${LIFE_EXTRA}&cv=v13&policy=auto&speed=instant&autostart=1`);
       await sleep(1500);
       log('card', { seed, ...(await saveEndCard(path.join(OUT, `card_${seed}.png`))) });
+      // 兩種格式都另存：貼文 4:5（window.__shareCard）與限時動態 9:16（window.__storyCardBuild，含 QR）
+      for (const [fn, suffix] of [['__shareCard', 'post'], ['__storyCardBuild', 'story']]) {
+        const b64 = await js(`(()=>{const c=window.${fn}&&window.${fn}();return c?c.toDataURL('image/png').split(',')[1]:null})()`);
+        if (b64) fs.writeFileSync(path.join(OUT, `card_${seed}_${suffix}.png`), Buffer.from(b64, 'base64'));
+      }
     }
   }
 } finally {
