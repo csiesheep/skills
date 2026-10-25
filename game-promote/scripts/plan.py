@@ -2,6 +2,7 @@
 
     py -X utf8 plan.py new   <engagement folder> <game> [--date 2026-10-23]
     py -X utf8 plan.py slots <engagement folder> <platform> [<platform> ...] [--now 2026-10-23T14:05] [--cap 3] [--gap 20]
+                             [--windows 07:30-08:25,12:00-13:00,19:30-22:00]
 
 `new` adds a section for <game> to <folder>/<date>.md (creating the file if needed) with the candidate list and
 the result table. The same day file serves every game, so the daily cap counts all of the brand's replies.
@@ -9,7 +10,8 @@ the result table. The same day file serves every game, so the daily cap counts a
 `slots` gives one time per approved reply, in order, e.g. `slots <folder> threads ig ig`. It reads today's result
 tables (rows whose 狀態 is 已發 or 排定), keeps the per-platform cap for the day, at least --gap minutes between two
 replies on the same platform (counted from the last posted or scheduled one), and only uses the hours people in
-Taiwan read social media (12:00-13:30, 19:30-23:00 local). What does not fit today rolls to tomorrow. Times print as
+Taiwan read social media (12:00-13:30, 19:30-23:00 local, or the blocks given with --windows, Taiwan time;
+the schedule of 2026-10-25 gives each run its own block so the two brands never share Chrome). What does not fit today rolls to tomorrow. Times print as
 ISO 8601 with +08:00, ready for the scheduled-task tool's fireAt. `--avoid <folder>` (repeatable) names another
 brand's engagement folder that posts from the same Chrome (ghost-reply's gui_chang_shi/engagement uses the same
 result-table columns): no slot lands within --avoid-gap minutes (default 10) of one of its posted or scheduled
@@ -139,7 +141,7 @@ def cmd_slots(a) -> None:
                 continue
             last = max([w for w in used if w], default=None)
             if last and t < last + dt.timedelta(minutes=a.gap):
-                t = next_in_window(last + dt.timedelta(minutes=a.gap + rng.randint(0, 9)))
+                t = next_in_window(last + dt.timedelta(minutes=a.gap + rng.randint(0, 9 if a.gap >= 20 else 3)))
                 continue
             # This brand's own replies on the other platform: a Threads post switches Instagram too, so keep
             # --avoid-gap minutes between any two of them whatever the platform.
@@ -176,7 +178,11 @@ def main() -> None:
     s.add_argument("--avoid-gap", type=int, default=10)
     s.add_argument("--pair", action="store_true",
                    help="allow this brand's Instagram and Threads replies at the same time (post them from one task)")
+    s.add_argument("--windows", help="comma-separated HH:MM-HH:MM blocks (Taiwan time) replacing the default windows")
     a = ap.parse_args()
+    if getattr(a, "windows", None):
+        global WINDOWS
+        WINDOWS = [tuple(tuple(int(x) for x in hm.split(":")) for hm in blk.split("-")) for blk in a.windows.split(",")]
     {"new": cmd_new, "slots": cmd_slots}[a.cmd](a)
 
 
