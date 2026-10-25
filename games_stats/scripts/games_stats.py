@@ -125,6 +125,9 @@ def collect(yesterday=False):
         for k, (a, b) in spans.items():
             parts[f"g{gi}_{k}_play"] = (a, b, g["play"], "POST", False)
             parts[f"g{gi}_{k}_page"] = (a, b, g["page"], None, True)
+    # D1 first: wrangler refreshes the OAuth token on that call; the GraphQL request reuses the token from
+    # wrangler's config, so asking Cloudflare first with an expired token gives 401 (seen 2026-10-25 00:07).
+    d1(GAMES[0]["db"], "SELECT 1 AS n", GAMES[0]["repo"])
     z = cf_batch(parts)
     seen = est = 0
     for gi, g in enumerate(GAMES):
