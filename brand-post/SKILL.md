@@ -13,8 +13,13 @@ One topic in, one post out: `C:/Users/sheep/code/obsidian/Projects/auto promotio
 - **popular** — 熱門遊戲介紹: a game that is popular right now among Taiwan players (web or mobile, the last 30
   days: Threads/IG talk, app store charts, news). The post gives real value first (what it is, why people love it,
   one clever design detail, a tip), told through 小羊 playing it, then one short natural bridge to our games
-  (「玩完這個，我做了……」 only where it truly connects). Never use the other game's screenshots, logo or art (their
-  copyright and trademark): use cards with our own text, numbers and locally generated illustrations instead.
+  (「玩完這個，我做了……」 only where it truly connects). **Use plenty of the game's own images** (owner, 2026-10-25:
+  「介紹熱門遊戲時，多用那遊戲的圖」): most cards and thread parts carry an official image of that game — its press kit /
+  media kit, the official site, its App Store / Google Play screenshots, or the official trailer's frames. Download them
+  into posts/<#>/src/ (the owner approved downloading official game images for these posts), keep them unedited apart
+  from cropping and resizing, never remove watermarks or logos, and credit them on the card and in the text
+  (「圖片來源：<遊戲名> 官方／<發行商>」). No fan art, no other creators' videos or screenshots, no leaked material, nothing
+  that suggests a partnership. Our own game's images still go on the card that bridges to our game.
 - **devnote** — 開發日記 of one of our games (生在中國 china_life, 蓋牌投票箱 covervote, 天地會 tiandihui, or a game
   in ~/code with a live page on games.csiesheep.com): one concrete thing from building it — a design decision, a bug,
   a number the engine produced, a player reaction, a tool (AI agents, ComfyUI) — with real details from the repo
@@ -40,13 +45,13 @@ One topic in, one post out: `C:/Users/sheep/code/obsidian/Projects/auto promotio
      characters, ends with 「連結在主頁」 and 3–5 hashtags (no hashtag walls).
    - Facebook (Page): one long post with headings or emoji section markers, the link in the text, the same cards as
      an album.
-5. **Images.** Sources, in order of preference: our games' own screens (headless recordings: china_life
+5. **Images.** popular: the game's official images first (see Types), one per card where it fits, credited. devnote and the bridge card: our games' own screens (headless recordings: china_life
    record.mjs `cards` / `life`, or a Playwright/CDP screenshot of games.csiesheep.com with `?internal=1`), engine
    numbers drawn as a `big` card, era illustrations from the game's assets, new illustrations generated on the local
    ComfyUI (ink-wash or flat style, no real people, no other games' characters). Render the cards with
    `py -X utf8 <skill>/scripts/cards.py <spec.json>`; look at `contact.jpg` and fix anything clipped or unreadable.
 6. **Polish (打磨).** Send a fresh subagent judge the three versions, the sources and `references/rubric.md`. Apply
-   its edits that keep the facts true, re-score. Ready = all items ≥ 8 and average ≥ 8.5; at most 4 rounds, else mark
+   its edits that keep the facts true, re-score. Ready = every item ≥ 7 and average ≥ 8.0 (owner, 2026-10-25); at most 4 rounds, else mark
    the post 退回 with the notes. Record each round's scores in the file.
 7. **Save** with status 待發 (or 退回). Report the id, title, type, scores and the contact sheet path.
 
@@ -94,6 +99,5 @@ score: 8.7
 ## Rules
 
 Brand accounts only post through the posting tasks or when the user asks. Facts need sources; 小羊's personal life
-details only from what the owner wrote. No political stance (covervote stays neutral). No other games' copyrighted
-images. No AI-label toggles on IG/FB (owner's rule: the illustrations are not realistic); add 「圖為 AI 繪製」 when a
+details only from what the owner wrote. No political stance (covervote stays neutral). Other games' images only from their official sources, credited (see Types). No AI-label toggles on IG/FB (owner's rule: the illustrations are not realistic); add 「圖為 AI 繪製」 when a
 post uses generated illustrations.
