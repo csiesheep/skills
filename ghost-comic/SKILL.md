@@ -229,9 +229,12 @@ Time on an RTX 3090: a panel with references takes 47 to 115 s per image and one
 - **Fiction only, no real people.** Characters are invented; never draw a real, identifiable
   person or a recognisable business, temple or hospital. If the user supplies a photo of a real
   person as a character, decline that part.
-- **Paneling, not style.** Borrow paneling principles from manga the owner names; never put an
-  author's name or a work's title into an image prompt, and do not imitate a living artist's
-  drawing style.
+- **Learn from artists, fuse them, write techniques.** Study the artists and works the owner names
+  (paneling, line, hatching, blacks, faces) and fuse what they do into the comic's own style; the
+  owner's words (2026-11-06): 「我不是要模仿，而是學習和融合不同的畫家」. Prompts describe the
+  techniques ("dense cross-hatching like an engraving", "hair drawn strand by strand"), not the
+  artist's name or a work's title: a name pulls in its famous pictures whole, while techniques
+  can be taken apart and recombined.
 - **The ghost stays restrained by default.** Even at ghost cap 3, the ghost is smaller than the
   living characters and its face mostly in shadow. The owner prefers 留白 and asked for exactly
   this after seeing a large, clear one. Draw it clearly only if the user asks.
