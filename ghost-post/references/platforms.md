@@ -45,14 +45,45 @@ profile to the brand's Meta account (an account merge the user declined on 2026-
 
 - On an English Chrome the post page shows "Translated from Chinese": `get_page_text` returns the translation, while
   the tab title holds the original text. Check the wording against the title or a zoomed screenshot.
-- **Image and full text in one go (tested 2026-10-20, 第 2 首).** In the New thread dialog: post 1 = hook text +
+- **Three separate posts (owner, 2026-10-23, after 第 6 首: 「Threads 故事，漫畫，reel 分別是3個貼文」).** Story:
+  New thread → paste the hook → topic 鬼故事 → "Attach text" on the same post (no media) → paste the whole
+  attachment → Done → Post. Comic: New thread → paste the carousel caption → topic → file input with all pages → Post.
+  Reel: New thread → paste the IG Reel caption → topic → the 720p mp4 → Post. Verify each post's length+hash before
+  its Post, and record the story post's link as the Threads link in the ledger (the other two in README.md).
+- **Video, comic and full text in one thread (第 6 首, 2026-10-23; superseded by the three posts above; the owner: 「threads 也 post 文案，漫畫，動畫」).**
+  Post 1 = hook (paste) + the topic 鬼故事 + `full_v3_cinema_preview720.mp4` on the dialog's file input; "Add to
+  thread" → post 2 = 「全篇漫畫，由右往左、由上往下讀。」 + all carousel pages (`posts/ig/01..NN.jpg`, nine went in one
+  file_upload) → "Add to thread" → post 3 "Attach text" with the whole attachment (empty post text) → "Add to thread" →
+  post 4 = `link.txt`. One "Post" publishes all four. Before pasting into the "Text attachment" editor, click inside it
+  and check `document.activeElement` is the editor (aria-placeholder "Say even more..."): the first paste of 第 6 首
+  went nowhere because focus was still on the button. Verify every post's length+hash before "Post".
+- **Image and full text in one go (tested 2026-10-20, 第 2 首; superseded by the four-post thread above).** In the New thread dialog: post 1 = hook text +
   image (the dialog's file input); "Add to thread" → post 2/2 shows "Attach text" (it is only gone from the post that
   has the image) → the "Text attachment" editor: type the whole `attachment.txt` line by line in the body, "Done";
   post 2's own text can stay empty → "Add to thread" → post 3/3 = `link.txt`. One "Post" publishes all three,
   each with the topic tag. Record the first post's link (`/@<handle>/post/<code>`). The hook's last line reads
   「……（全文在下一則）」 since the attachment is in the next post (owner's wording, 第 2 首).
 - Topic: type 鬼故事 in "Community or topic" and pick 「鬼故事」 from the list.
+- **Switching to the brand (第 5 首, 2026-10-23; the owner said 「Threads 也自己切帳號」).** Chrome's Threads was
+  signed in as csiesheep.games. Threads' web menu has no "Switch accounts": menu (≡) → "Log out" → the login page
+  offers the Instagram session's account (鬼唱詩 gui.chang.shi, when Instagram is on the brand) → click it, no
+  password. Never use the username and password Chrome autofills on that page.
+- **Do not log out of Threads at the end of a run (第 12 首, 2026-10-28).** Threads' "Log out" also logged Chrome's
+  Instagram out of every account; gui.chang.shi came back without a password, csiesheep.games asked for one and the
+  owner had to sign in. Leave Threads signed in as the brand; the next task switches it with the route above.
+  If Instagram ever shows "Save your login info?", that is the owner's choice: answer "Not now" and tell the owner.
+- **Paste instead of typing (第 5 首).** Focus a post body (or the "Text attachment" editor), then javascript_tool:
+  `const dt=new DataTransfer(); dt.setData('text/plain', text); document.activeElement.dispatchEvent(new
+  ClipboardEvent('paste',{clipboardData:dt,bubbles:true,cancelable:true}))`. The editor takes it with its line
+  breaks: the 1,505-character attachment went in one call instead of four typing batches. The text in the call is
+  still copied by hand, so the hash check is not optional: it caught 牵 for 牽. Fix by ctrl+a, Delete, paste again.
 - Two halves (上半首 21:30, 下半首 23:00) are still untried: the second half would be a reply in the same thread.
+- **Check the typed text against the file before "Post" (第 3 首, 2026-10-21).** Read each post's
+  `contenteditable` back with javascript_tool: its `<p>` elements are the lines (innerText doubles the newlines),
+  join them with `
+` and compare length and a simple hash with the file's (`h = h*31 + codepoint`, 32-bit, in the
+  page and in Python). It caught a wrong character (a typing slip, 瀧 for 瀏) in the 1,982-character attachment.
+  The attachment editor takes Enter for a new line and two for a blank one; typing it took four batches.
 
 ## Instagram (instagram.com) — tested 2026-10-18, 第 1 首 carousel
 
@@ -87,6 +118,13 @@ profile to the brand's Meta account (an account merge the user declined on 2026-
 - Clicking outside the dialog (to close the crop menu) also opened "Discard post?": answer "Cancel". Click blank space
   inside the dialog's dark margin instead.
 - Trial Reels are a toggle in the phone app's Reel options only.
+- **The signed-in account can change between sessions (第 4 首 part 2, 2026-10-22).** The day after posting as
+  gui.chang.shi, Chrome's Instagram was signed in as csiesheep.games: the brand profile showed "Follow", and the
+  caption step's header named csiesheep.games. Check the handle above the caption box before "Share"; if it is not
+  the brand, discard and switch: More → Switch accounts → gui.chang.shi switched without a password (the owner said to, 2026-10-22). If it asks for a password, stop: that is the owner's.
+- 第 3 首 (2026-10-21) went as documented: Reel then carousel, crop "Original", the Reel cover through the Edit
+  step's "Cover photo" file input, "Share to" Threads left off. The grid on `/<handle>/reels/` needed a few seconds
+  before `find` saw the new `/reel/` link.
 
 ## Pinterest (pinterest.com) — tested 2026-10-18, 第 1 首 cover pin
 
@@ -109,7 +147,37 @@ profile to the brand's Meta account (an account merge the user declined on 2026-
    `https://www.pinterest.com/pin/<id>/`.
 
 - Sections inside a board were not tried; the 第 1 首 pin went to the board without one.
-- Spread a comic's page pins over several days rather than all at once, and pin no page that shows the reveal.
+- ~~Spread a comic's page pins over several days, and pin no page that shows the reveal.~~ Replaced 2026-10-28
+  (owner: the whole comic and the Reel, one board per story; reveal pages titled 「結局」). See below.
+
+## Pinterest story board — tested 2026-10-28, 第 8 首 (board + video + 8 pages + cover, 08:30–08:52)
+
+Files: `posts/pinterest/NN_page.jpg` for every page (`manga.py pins --dest ..` from the comic folder for a story
+exported before 10/28) and `pins.txt` (`pack.py --pins-only --ig-link <carousel>`): board name, board text, every
+title, the video section and the pinning order.
+
+1. Board: profile → the red "Create" at the bottom right → "Board" (the "+" at the top right is the profile cover
+   image, not a board) → name from `pins.txt` → "Create" → "Done". Board text: board page → "…" → "Edit info and
+   settings" → Description (a textarea, Enter makes a line) → "Done".
+2. Order: a new pin goes FIRST on the board, which reads left to right. Pin the video, then the last page down to
+   page 1, then open the existing cover pin and save it to this board (its board picker → the story board; it
+   becomes a new pin id on that board). Result on 第 8 首: cover, 1/8 … 8/8, video.
+3. Each pin on `/pin-creation-tool/`: tag the file input with an aria-label in JS, `find` it, `file_upload` (the
+   720p Reel copy, 8.7 MB, uploads as a video pin, 1:32 kept); the board picker keeps the last board used.
+   Title, then description: line 1, Enter, the disclosure line. Typing `@gui.chang.shi` opens a mention list:
+   click blank space, WAIT 1 s, click back into the description, ctrl+End, wait 1 s, and only then Enter and the
+   tags. On page 4 an Enter pressed while the list was still open swapped the handle for "@asos".
+   Link, then the AI switches (clicking the checkbox labelled "Mark as AI-Modified", then "This Pin includes an
+   AI-generated person", works from JS).
+4. Before Publish, compare in JS: title in the inputs, the contenteditable's innerText equal to the file's text,
+   the link, both AI boxes checked, the board name on the page; throw if any differ (that check caught the @asos).
+5. Publish stays grey while the link field has focus: click blank space, wait 2 s, then "Publish". Done when the
+   empty "Upload your media" form comes back. No published-pin link is shown: read the ids off the board page
+   (`a[href*="/pin/"]`, each link's aria-label is the title).
+- A pin page shows its own "Impressions" (last 30 days) to the owner, so the stats run can read pins there.
+- "Publish at a later date" exists on the form (not used).
+- 第 3 首's cover pin (2026-10-21) went as documented. In step 1 the profile's accessibility tree had no "Edit
+  profile"; `get_page_text` showing "Your saved ideas" and the brand's own bio was the proof.
 
 
 ## YouTube Shorts — tested 2026-10-20, 第 2 首
@@ -127,6 +195,11 @@ profile to the brand's Meta account (an account merge the user declined on 2026-
 4. Audience: "No, it's not made for kids". "Show more": Paid promotion "No"; **AI use** ("Was AI used to generate or
    edit your content…") → "Yes" (it adds YouTube's AI label). Next ×3 → Visibility "Public" → "Publish".
 5. "Video published" dialog shows the link; open `https://www.youtube.com/shorts/<id>` to check title and channel.
+- **"Switch account" did not take (第 4 首, 2026-10-22).** Twice the avatar stayed on the owner's channel and Studio
+  kept opening it. `https://studio.youtube.com/?authuser=3` (the brand's Google account is the 4th in Chrome) opened
+  "Your channel 鬼唱詩" directly and left youtube.com on the owner's channel, so nothing needed switching back.
+- The Description box can show a red outline with empty alerts right after typing; it is not an error ("Checks
+  complete. No issues found." and Publish went through, 第 3 首).
 
 ## TikTok — tested 2026-10-20, 第 2 首
 
@@ -143,6 +216,11 @@ profile to the brand's Meta account (an account merge the user declined on 2026-
    link is the post's href: `https://www.tiktok.com/@guichangshi/video/<id>`.
 - Profile links: TikTok removed the Instagram/YouTube fields (reportedly 2025-11; the owner's app has none either);
   the website field needs 1,000 followers. The bio names the handle instead: 「全篇漫畫在 IG @gui.chang.shi」.
+- **The description editor drops text (第 3 首, 2026-10-21).** Typed in one call, the logline line vanished; typed
+  again, everything after its full-width comma 「，」 was lost. Type 「，」 as its own `type` call and the rest after
+  it, then zoom on the description and compare it with the file before "Post". The AI-generated content switch
+  turned on directly this time, without the "Turn on" dialog. Step 1: the profile's buttons have no names in the
+  accessibility tree; a screenshot shows "Edit profile".
 
 ## Facebook Page — tested 2026-10-20, 第 2 首 (posting as the Page)
 
@@ -157,5 +235,16 @@ profile to the brand's Meta account (an account merge the user declined on 2026-
    Text, then 「已關閉 AI 標籤」 → "新增 AI 標籤" switch (click by position; the ref click did not take) → 「知道了」
    → the header reads 「已開啟 AI 標籤」 → "繼續" → "發佈". Dismiss the "make a Reel from your photos" offer with
    「稍後再說」. Link: the post's id from the feed → `https://www.facebook.com/gui.chang.shi/posts/<id>`.
-4. Switch back: top-right avatar → the personal profile's name in the list; a toast 「已切換為…」.
+4. Switch back: top-right avatar → the personal profile's name in the list (`find` 「切換為<name>」; a click by position on 第 6 首 landed on another Page, 小羊遊戲間); a toast 「已切換為…」. Check the composer on facebook.com reads 「<personal name>，在想些什麼？」.
 - `navigate` in Claude in Chrome has no force option: a page stuck behind "Leave site?" needs the owner, or a new tab.
+- **New composer (第 3 首, 2026-10-21).** 「在想些什麼？」 on the Page now opens a full page `/post/create`: its
+  「新增相片或影片」 file input took one image, then a second file input (「新增更多」) took the other ten in one
+  call, no 「載入中……」 hang. Type the text with the 「，」 split as on TikTok, then the AI switch (click by position)
+  → "發佈". A 「直接與用戶對話」 offer to add a contact button follows: 「稍後再說」. The post's link: on the Page,
+  hover the post's 「剛剛」 timestamp, then read the `a[href*="/posts/"]` href (`/gui.chang.shi/posts/pfbid…`) with
+  javascript_tool; it is empty until hovered.
+- A new Reel shows in the Page's Reel tab after about 20 s; `/reel/<id>/` shows 「AI 內容」.
+- **The sidebar is not proof (第 4 首, 2026-10-22).** The Page showed 「管理粉絲專頁」 in the left menu while Chrome was
+  still acting as the personal profile; the Reel dialog had reached its last step before the account menu (top-right
+  avatar) showed the personal name on top. Check the avatar is the seal, or the composer reads 「鬼唱詩，在想些什麼？」,
+  before uploading. Switching from inside the dialog discards the draft. Switch back afterwards from the same menu.

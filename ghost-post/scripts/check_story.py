@@ -108,11 +108,16 @@ def main():
             cells = [x for row in page.get("rows", []) for c in row.get("cells", []) for x in c.get("stack", [c])] + page.get("insets", [])
             if any(x.get("reveal") for x in cells):
                 reveal_page = k; break
+    late = []
     if reveal_page:
         late = [p_.name for p_ in pins if re.match(r"(\d+)_page", p_.name) and int(re.match(r"(\d+)_page", p_.name).group(1)) >= reveal_page]
-        if late:
-            notes.append(f"揭露在第 {reveal_page} 頁，這些不能釘：{'、'.join(late)}")
     txt = read(pin / "pins.txt")
+    if reveal_page and late:
+        # Owner 2026-10-28: every page is pinned, the reveal included, titled 「結局」 from the reveal page on.
+        blocks = dict(re.findall(r"== (\S+) ==\s*標題[^：]*：(.+)", txt))
+        untitled = [n for n in late if "結局" not in blocks.get(n, "")]
+        if untitled:
+            notes.append(f"揭露在第 {reveal_page} 頁，這些的標題要標「結局」：{'、'.join(untitled)}")
     for t in re.findall(r"標題[^：]*：(.+)", txt):
         if len(t.strip()) > LIMITS["pin_title"]:
             notes.append(f"標題超過 100 字：{t[:20]}…")

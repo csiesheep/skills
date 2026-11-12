@@ -1,0 +1,473 @@
+{
+ "out": "reel_v20",
+ "title": "靠門的下鋪",
+ "music": "music/score_a.flac",
+ "music_gain": 0.27,
+ "duck": 0.5,
+ "amb_gain": 0.18,
+ "vo_gain": 1.5,
+ "vo_speed": 1.15,
+ "lead": 0.15,
+ "gap": 0.18,
+ "tail": 0.3,
+ "vo_picks": "picks.json",
+ "end_lines": null,
+ "music_cuts": [
+  [
+   76.06913832199542,
+   81.53480725623578
+  ],
+  [
+   126.35698412698405,
+   146.85698412698406
+  ]
+ ],
+ "shots": [
+  {
+   "id": "hook_open",
+   "clip": "../clips/f2_00001_.mp4",
+   "lines": [
+    "N01"
+   ],
+   "lead": 0.3,
+   "tail": 0.1,
+   "lift": 0.72,
+   "sub_y": 0.8,
+   "sfx": [
+    [
+     "heartbeat",
+     0.0,
+     0.45
+    ]
+   ]
+  },
+  {
+   "id": "hook_feet",
+   "still": "src/g1n.png",
+   "motion": "snap",
+   "lines": [
+    "N02"
+   ],
+   "lead": 0.1,
+   "tail": 0.25,
+   "lift": 0.85,
+   "tint": [
+    1.0,
+    0.98,
+    0.96
+   ],
+   "fx": [
+    "negflash",
+    "shake"
+   ],
+   "sfx": [
+    [
+     "stinger",
+     0.0,
+     0.85
+    ]
+   ]
+  },
+  {
+   "id": "s1",
+   "clip": "clips/f1_s107.mp4",
+   "motion": "push",
+   "amt": 0.1,
+   "focus": [
+    0.55,
+    0.35
+   ],
+   "lines": [
+    "N03b"
+   ],
+   "lead": 2.4,
+   "lift": 0.8,
+   "sfx": [
+    [
+     "whoosh",
+     0.0,
+     0.4
+    ]
+   ],
+   "tail": 0.2,
+   "title_fx": 1,
+   "title_fx_dur": 3.6
+  },
+  {
+   "id": "s1b",
+   "still": "src/f1.png",
+   "motion": "push",
+   "zoom": 0.55,
+   "focus": [
+    0.62,
+    0.2
+   ],
+   "amt": 0.08,
+   "lines": [
+    "N05b"
+   ],
+   "lift": 0.8,
+   "fx": [
+    "shake"
+   ],
+   "lead": 0.15
+  },
+  {
+   "id": "s2",
+   "clip": "clips/g6n_s611.mp4",
+   "lines": [
+    "N06b"
+   ],
+   "lift": 0.72,
+   "sfx": [
+    [
+     "heartbeat",
+     0.2,
+     0.4
+    ]
+   ]
+  },
+  {
+   "id": "s3",
+   "clip": "clips/f3g_s502.mp4",
+   "lines": [
+    "N07",
+    "N08"
+   ],
+   "sfx": [
+    [
+     "whoosh",
+     0.0,
+     0.3
+    ]
+   ]
+  },
+  {
+   "id": "s4",
+   "still": "src/f4.png",
+   "motion": "push",
+   "amt": 0.08,
+   "lines": [
+    "N09"
+   ]
+  },
+  {
+   "id": "s5",
+   "clip": "clips/f5_s303.mp4",
+   "tag": "對面床的小傑",
+   "tag_sec": 2.5,
+   "max_t": 4.6,
+   "lines": [
+    {
+     "clip_speech": [
+      0.9,
+      4.9
+     ],
+     "text": "「欸，你最近半夜都會坐起來。」"
+    }
+   ],
+   "lead": 0.9,
+   "tail": 0.0,
+   "zoom": 0.15,
+   "focus": [
+    0.5,
+    0.47
+   ]
+  },
+  {
+   "id": "s6",
+   "clip": "clips/f6g_s403.mp4",
+   "max_t": 3.9,
+   "lines": [
+    "N11",
+    "N12"
+   ],
+   "lift": 1.12,
+   "zoom": 0.58,
+   "focus": [
+    0.5,
+    0.69
+   ]
+  },
+  {
+   "id": "s7",
+   "clip": "clips/f7_s105.mp4",
+   "tag": "宿舍管理員",
+   "tag_sec": 2.4,
+   "lines": [
+    {
+     "clip_speech": [
+      2.65,
+      5.1
+     ],
+     "text": "「那個床位本來就不排，沒有什麼學長。」"
+    }
+   ],
+   "lead": 2.05,
+   "offset": 0.6,
+   "tail": 0.3,
+   "zoom": 0.75,
+   "focus": [
+    0.47,
+    0.58
+   ]
+  },
+  {
+   "id": "s8a",
+   "clip": "clips/f8_s104.mp4",
+   "max_t": 1.4,
+   "min_speed": 0.3,
+   "lines": [
+    "N14"
+   ],
+   "zoom": 0.5,
+   "focus": [
+    0.5,
+    0.56
+   ]
+  },
+  {
+   "id": "s8b",
+   "clip": "clips/f8_s104.mp4",
+   "offset": 1.4,
+   "lines": [
+    {
+     "clip_speech": [
+      3.2,
+      5.05
+     ],
+     "text": "「你睡你的就好，不要去碰它。」"
+    }
+   ],
+   "lead": 1.8,
+   "tail": 0.15,
+   "sfx": [
+    [
+     "riser",
+     0.8,
+     0.55
+    ]
+   ],
+   "zoom": 0.5,
+   "focus": [
+    0.5,
+    0.56
+   ]
+  },
+  {
+   "id": "s9a",
+   "still": "src/f1.png",
+   "motion": "push",
+   "focus": [
+    0.55,
+    0.72
+   ],
+   "zoom": 0.3,
+   "amt": 0.06,
+   "black": 0.25,
+   "lines": [
+    "N15"
+   ],
+   "lift": 0.75,
+   "fx": [
+    "darken"
+   ],
+   "sfx": [
+    [
+     "heartbeat",
+     0.0,
+     0.6
+    ]
+   ],
+   "lead": 0.3,
+   "tail": 0.3
+  },
+  {
+   "id": "s9b",
+   "clip": "clips/f9_s101.mp4",
+   "max_t": 4.0,
+   "lines": [
+    "N16a",
+    "N16b",
+    "N17"
+   ],
+   "lift": 0.82,
+   "fx": [
+    "shake"
+   ],
+   "sfx": [
+    [
+     "stinger",
+     0.0,
+     0.95
+    ],
+    [
+     "drone",
+     0.0,
+     0.5
+    ]
+   ],
+   "lead": 0.5,
+   "min_speed": 0.35
+  },
+  {
+   "id": "s10a",
+   "clip": "clips/fall_fl2va_g.mp4",
+   "max_t": 2.2,
+   "min_speed": 0.3,
+   "lines": [
+    "N18"
+   ],
+   "lift": 0.75,
+   "tail": 0.15,
+   "sfx": [
+    [
+     "heartbeat",
+     0.0,
+     0.5
+    ]
+   ]
+  },
+  {
+   "id": "s10b",
+   "clip": "clips/fall_fl2va_g.mp4",
+   "offset": 2.2,
+   "speed": 0.85,
+   "lines": [
+    "N19"
+   ],
+   "lift": 0.75,
+   "lead": 0.1,
+   "tail": 1.3,
+   "fx": [],
+   "sfx": [
+    [
+     "knock",
+     0.85,
+     1.0
+    ],
+    [
+     "stinger",
+     0.75,
+     0.6
+    ]
+   ]
+  },
+  {
+   "id": "s11",
+   "clip": "clips/g13b_s1312.mp4",
+   "lines": [
+    "N20"
+   ],
+   "lift": 0.72,
+   "amb": 0.4,
+   "lead": 0.2,
+   "tail": 0.5
+  },
+  {
+   "id": "s12a",
+   "clip": "clips/g7_s602.mp4",
+   "max_t": 3.0,
+   "zoom": 0.12,
+   "focus": [
+    0.5,
+    0.4
+   ],
+   "lines": [
+    "N21"
+   ]
+  },
+  {
+   "id": "s12b",
+   "clip": "clips/g7_s602.mp4",
+   "offset": 3.0,
+   "zoom": 0.12,
+   "focus": [
+    0.5,
+    0.4
+   ],
+   "lines": [
+    "N22",
+    "N23"
+   ],
+   "tail": 2.2,
+   "ghost_blend": {
+    "mode": "curve",
+    "curve": [
+     [
+      0,
+      0
+     ],
+     [
+      0.8,
+      0
+     ],
+     [
+      4.0,
+      0.38
+     ],
+     [
+      5.6,
+      0.22
+     ],
+     [
+      8.0,
+      0.62
+     ],
+     [
+      -2.3,
+      0.85
+     ],
+     [
+      -0.01,
+      0.85
+     ]
+    ],
+    "ref_t": 3.0,
+    "region": [
+     0.2,
+     0.14,
+     0.8,
+     0.48
+    ],
+    "feather": 0.09,
+    "outside_ref": true,
+    "tint": [
+     1.3,
+     1.45,
+     1.75
+    ],
+    "scale": 0.65,
+    "anchor": [
+     0.5,
+     0.0
+    ]
+   },
+   "sfx": [
+    [
+     "riser",
+     1.5,
+     0.35
+    ]
+   ]
+  },
+  {
+   "id": "end",
+   "end": true,
+   "dur": 12.5,
+   "xfade": 8,
+   "bg_clip": "clips/g7_s602.mp4",
+   "bg_t": 5.9,
+   "bg_zoom": 0.12,
+   "theme": "C:/Users/sheep/Pictures/gui_chang_shi/brand/music/licensed/end_theme_12s.wav",
+   "theme_gain": 1.2,
+   "theme_at": 0.15
+  }
+ ],
+ "sub_y": 0.76,
+ "sub_size": 68,
+ "headline_y": 0.115,
+ "end_question": "你的椅子，今天在哪？",
+ "music_level": true,
+ "min_speed": 0.35
+}
