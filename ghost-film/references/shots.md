@@ -43,3 +43,22 @@ A shot:
 
 A line id can reuse part of another line's take: add it to vo/script.json with the shorter text, to picks.json with
 the same file, and to spans.json with the start of the kept words (ASR word times). render.py trims to the span.
+
+## clip_notes.json and make_shots.py (assets/example_*)
+
+`clip_notes.json` holds what was learned by looking at each clip, keyed by a source name the plan uses:
+
+| key | meaning |
+|---|---|
+| `clip` | the picked seed's file |
+| `offset`, `max_t`, `zoom`, `focus`, `motion`, `amt`, `lift`, `tint`, `amb`, `speed` | copied onto the shot |
+| `speech` | `[a, b]`: where the clip's own lip-synced line starts and ends (words.py plus an energy read) |
+| `me_at` | in a two-person clip, the second at which the other person's mouth starts to move: a narrator-voice take is laid there |
+| `lead`, `tail` | seconds kept before the first line and after the last |
+
+`make_shots.py`'s plan is one row per shot: `(shot id, source, lines, extra keys)`. `lines` is a list of narrator
+ids, `"say"` (the clip's own line, text from `SAY`), or a tuple for a two-person clip: `("say", "M1")` when the
+clip's speaker goes first, `("M2", "say")` when the narrator-voice line goes first; the script works out `offset`,
+`lead` and `gap` from `speech`, `me_at` and the take's length so both lines sit on their lip movement.
+The same clip used twice in a row (a rise, then a fast push-in) is two sources pointing at one file with touching
+`offset` / `max_t` and the same `zoom` and `focus`.

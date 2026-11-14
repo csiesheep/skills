@@ -14,7 +14,8 @@ if sys.argv[1] == "pause":
             f.touch(); made.append(f.name)
     P.write_text(json.dumps(made, indent=1)); print("paused", len(made))
 else:
-    keep = set(json.loads(Path("door_placeholders.json").read_text()))
+    K = Path("door_placeholders.json")   # optional: placeholders another script made and still needs
+    keep = set(json.loads(K.read_text())) if K.exists() else set()
     n = 0
     for f in json.loads(P.read_text()):
         p = Path("clips") / f

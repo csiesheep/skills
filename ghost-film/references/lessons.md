@@ -1,3 +1,16 @@
+# Where to look (the file below is in the order things were learned)
+
+| Before you… | Read |
+|---|---|
+| draw stills or build the board | 「Stills」 (upper_bunk), 「Comic from a screenplay」 (setup, prompt rules, fixes without a redraw), 「A set's architecture is one text block and two pictures」 |
+| write H3 prompts or run clips | 「H3 moving shots」 (the prompt template), 「Reel from a screenplay」 → Dialogue clips, 氣窗 → 「H3」 and 「Things H3 would not do」, 墾丁 → 「What the owner sent back」 |
+| record voices | 「Voice」 (upper_bunk), 氣窗 → 「Voice」, 墾丁 → 「H3, voice and GPU」 |
+| share the GPU or leave a long run | 「GPU shared with other sessions」, the Process line at the end of 「Reel from a screenplay」 |
+| build music and place sounds | 「Music levels」, 「A music bed by situation」, 「Stock sound effects」, 「A real silence before a scare」 |
+| render and mix | 「Mix and render」, 「render.py fixes in this round」, 墾丁 → 「Render and mix」 |
+| cut a long film or make it scarier | 「Cutting a long reel」, 「Scarier without new footage」, 「The ending」 |
+| run review rounds | 氣窗 → 「Review rounds」, 「Blind polish review」 |
+
 # What upper_bunk taught (2026-11-06 to 11-07)
 
 ## Stills
@@ -305,3 +318,77 @@ and the crops, `polite.py` runs one GPU job at a time, `make_shots.py` builds `s
   - a swap to the black-mirror transom clip under 「腦袋想的全是那片黑色的鏡子」.
 - Zoom did not crop the chair out of two door shots. It sits too low in the source; that needs a regenerate or
   acceptance.
+
+# 〈墾丁民宿的敲門聲〉 (鬼唱詩劇場｜第 2 部, v1 to v12, 2026-11-12 to 11-13)
+
+Second reference run: `backlog/kenting_knock/film/` (`reel/plan.py`, `clip_notes.json`, `make_shots11.py`,
+`music/build_bed.py`, fix_*.py for Qwen edits (now `scripts/edit_stills.py`), `vo/fxlines.py` (now `scripts/voice_fx.py`), and the one-off post tools `cheeks.py`, `noteblur.py`, `hidebody.py`,
+`mouthwarp.py`, each with its masks written for one clip: copy and re-aim, do not run as is). About 80 H3 clips,
+2:36, posted as one cut.
+
+## What the owner sent back (v8 and v10 notes), as rules
+- **Long takes, not a cut every line.** 「改成連續的畫面，不要段落一直切」. A scene that is one action (looking through
+  the peephole, a friend coming in, a talk on the bed) is one clip of 8 to 11 s. Make it with FL2VA when the start and
+  end are known (the peephole take, the entry), and cut inside it with `offset` / `max_t` only.
+- **People in the room talk to each other.** 「改成主角跟朋友的對話，主角現在說話像旁白」. A line the narrator-character says
+  to someone on screen is lip-synced in a two-person H3 clip. Her take is still the narrator's reference voice
+  (`speak.py` over her lip movement at `me_at` in clip_notes), so the voice stays one person; the friend's line is the
+  clip's own speech. Narration is for what nobody says aloud.
+- **A door is the same door from both sides.** 「要從房間外走進房間，確保是同一個門」. The entry is FL2VA from the
+  corridor-side still to the room-side still of the same set block; a new angle drawn free is a different door.
+- **One prop, one size, everywhere.** The peephole was a coin in one shot and a saucer in the next, a door had a lit
+  gap on the hinge side, a balcony lamp was on in one shot only. Before the clips, put every still that shows the set
+  on one sheet and compare the fixed parts; fix the odd ones with a same-framing Qwen edit (`manga.job("repaint", …)`,
+  three candidates), not with a new prompt.
+- **A peephole view is an eye filling the circle.** 「應該看出去一個眼睛塞滿，但現在還看的到一圈走廊」: no corridor ring
+  around it at the close beat.
+- **Who is in the background is part of the twist.** The police-call shot had the friend sitting up awake behind the
+  phone: a spoiler one minute early (review of v11). 「朋友不見了，應該要躺在床上」. For every shot after the ghost is in
+  the room, write where she is and what she is doing, even when the shot is about something else.
+- A scene the owner calls weak is cut, not repaired (the wet footprints: 「刷掉」).
+
+## The ending (seven owner rounds)
+- What was accepted: she turns → near silence (music cut, `amb` 0.2) → the ghost's head rises from **directly
+  behind her**, body hidden → a fast push-in to the face filling the screen with a hit (0.7 s, push `amt` 2.4) →
+  black → the voice line → end card. Rise and push-in are the **same continuous clip** used twice (「確保鏡頭要連續」),
+  so nothing jumps between them.
+- Rejected on the way: the face slowly smiling on the pillow (「不夠恐怖」), a ghost entering from the frame edge
+  (「不是從畫面右邊出現，是從主角背後出現」), a second flash after the black.
+- **The ghost must be recognisable as the character** (same bun, fringe, collar) with one wrong thing on the face
+  (white eyes, the crash wound). An anonymous horror face scares less and loses the story.
+- Offer the face as three drawn options and let the owner pick; then trim every second in which nothing happens
+  before the rise (1.6 s came out).
+- A mouth wider than human: Qwen edits and H3 both pull it back to a human smile. A tracked warp in post works
+  (`mouthwarp.py`), but grow it toward one side only or the jaw line kinks.
+
+## H3, voice and GPU
+- **Run voice as one block.** `speak.py` / ref2va jobs interleaved with i2v clips reload the models every job: 50 s
+  a clip became 110 to 280 s.
+- `speak.py`'s `space` is one of studio, close, across_table, living_room, bedside, stage; anything else fails.
+- Clips are 576×1024 (some 640×1120). The 1080p master is an upscale, so the 720p copy holds all the picture detail;
+  re-encoding the upload copy at 1080p or a higher bitrate inside 10 MB changed SSIM by 0.004. Only the 185 MB
+  master, picked by the owner in the site's file dialog, looks better.
+- H3 dialogue clips redden cheeks (「像巴掌印」) and add a mumble under silent shots: desaturate the red in post
+  (`cheeks.py`) and set the shot's `amb` to 0.
+- `pause.py resume` no longer needs `door_placeholders.json` (fixed 2026-11-13).
+
+## Render and mix
+- `motion: "static"` ignores `zoom`. For a fixed crop use the default push with `amt` 0. Give consecutive shots of
+  one clip the same `zoom` and `focus`, or the frame jumps at the cut.
+- `--reuse` (sound-only remix) is valid only while no shot's timing changed.
+- A sound effect laid on a muffled or filtered line hides it (the knock at 0 s over 「開門啊」). Put it after the line.
+- **ASR by windows.** Whisper on the whole mix skipped stretches of 2 to 30 s. Check each line in a window around
+  its timeline position. A laugh or a giggle cannot be checked by ASR: say so, the owner listens.
+- A bed built by sections crashes on a section shorter than the crossfade: cap the crossfade at a third of the
+  section (`build_bed.py`).
+- `package.py` is single-pass and lands under its target (6.1 MB for 2:36); that is fine, see the SSIM note above.
+
+
+## Tools that came out of this run (2026-11-13)
+- `edit_stills.py <jobs.json>`: the twelve fix_*.py copies as one runner (same-framing Qwen edits, set blocks, three
+  candidates, waits for an empty queue). Tested with one real edit (41 s).
+- `asr_lines.py <mp4>`: one ASR window per subtitle line from `_timeline.txt`. On v12: 36 lines, 35 read back; the
+  door-muffled 「開門啊」 at 71.9 s read as 「太忙了」 (the same take passes in the cold open, where nothing lies on it).
+  A LOW on a filtered line is a listen, not a retake by default.
+- `voice_fx.py phone=… door=…`: fxlines.py with the line ids as arguments.
+- `assets/example_make_shots.py` + `example_clip_notes.json`: the shot-list builder with two-person dialogue clips.

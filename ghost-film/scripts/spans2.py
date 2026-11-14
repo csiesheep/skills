@@ -2,8 +2,9 @@
 (ref2va takes of short lines often start with a few words of the reference voice's own sentence), then the cut is
 transcribed again. Writes takes.json: line -> [{file, span, sim, cut_sim, text}], and picks.json/spans.json with the
 best take per line (cut_sim first, then shorter).
-py -X utf8 spans2.py   (in <story>/film/vo)"""
-import difflib, glob, json, re, subprocess
+py -X utf8 spans2.py <PREFIX>   (in <story>/film/vo; PREFIX is the story prefix of the take files, TW for TW_N01_00001.flac)
+Hand picks go in overrides.json (line -> [file, [start, end]]); the file is optional."""
+import difflib, glob, json, re, subprocess, sys
 from pathlib import Path
 import numpy as np
 from faster_whisper import WhisperModel
@@ -20,7 +21,9 @@ def ratio(a, b):
     return difflib.SequenceMatcher(None, a, b).ratio()
 
 
-for f in sorted(glob.glob("C:/Users/sheep/code/ComfyUI/output/ghost_film_vo/TW*_[NFMWB][0-9]*.flac")):
+if len(sys.argv) < 2:
+    sys.exit("usage: spans2.py <PREFIX>   e.g. spans2.py KK")
+for f in sorted(glob.glob(f"C:/Users/sheep/code/ComfyUI/output/ghost_film_vo/{sys.argv[1]}*_*.flac")):
     f = f.replace("\\", "/")
     stem = Path(f).stem
     if "aud" in stem or f in seen:
@@ -60,7 +63,8 @@ for name, ts in T.items():
     picks[name], spans[name] = b["file"], b["span"]
     if b["cut_sim"] < 0.9:
         bad.append(f"{name} {b['cut_sim']} {b['text']}")
-for k, (f, sp_) in json.loads(Path("overrides.json").read_text(encoding="utf8")).items():   # hand picks after listening by ASR
+OV = json.loads(Path("overrides.json").read_text(encoding="utf8")) if Path("overrides.json").exists() else {}
+for k, (f, sp_) in OV.items():   # hand picks after listening by ASR
     picks[k], spans[k] = f, sp_
 Path("picks.json").write_text(json.dumps(picks, ensure_ascii=False, indent=1), encoding="utf8")
 Path("spans.json").write_text(json.dumps(spans, indent=1), encoding="utf8")

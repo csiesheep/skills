@@ -9,8 +9,27 @@ Built on the first full run, 第 25 首〈靠門的下鋪〉 (2026-11-06 to 11-0
 〈社辦門上的氣窗〉 v1 to v11 (2026-11-08 to 11-10), posted as 鬼唱詩劇場｜第 1 部 on 2026-11-11. The working folders of
 upper_bunk and grandpa_wake were deleted on 2026-11-11 to free disk; the complete reference run is now
 `C:/Users/sheep/Pictures/gui_chang_shi/backlog/transom_window/film/` (screenplay, board, vo, reel with make_v10/v11.py,
-make_ig.py, music/build_bed.py). Every rule below came from a round; the why is in `references/lessons.md`. Read that
+make_ig.py, music/build_bed.py); the second, 〈墾丁民宿的敲門聲〉 (第 2 部, 2:36, one cut, 2026-11-13), is
+`backlog/kenting_knock/film/` (two-person dialogue clips, long FL2VA takes, a jump-scare ending). Every rule below came from a round; the why is in `references/lessons.md`. Read that
 file before the first H3 shot and before writing narration.
+
+## What it is for, and what the numbers say
+
+The film exists to grow the 鬼唱詩 accounts: a stranger stops, watches to the end, shares or saves, follows. Judge
+every choice (length, hook, where a part ends) by that, in this order: new follows, (shares + saves) / reach, average
+watch time on the Instagram Reel. Numbers: Obsidian `Projects/games stats/social_posts.csv` (24 h, rows titled
+鬼唱詩劇場) and `brand/taste.md`.
+
+- 第 1 部（上）, 24 h on Instagram: 1,853 views, 59 follows, 37 shares, 16 saves, average watch 35 s. The manga Reels'
+  median is 0.5 follows and 0.8 % quality, so one film part brought more follows than the manga line's best story
+  (16). It is one film: a lead, not a rule. Read the newest 鬼唱詩劇場 rows before step 0 and update this list when a
+  film's numbers are in.
+- 第 1 部（下） got half of that (913 views, 17 follows). A second part loses half the audience, so a story that fits
+  in 3 minutes is one cut (step 8), and a two-part film puts its strongest scare before the cut, not after.
+- Average watch was 35 to 41 s of about 3 minutes, and 7 s on the Facebook Reel. Most viewers leave in the first
+  half minute: the reveal flash, the person-plus-strange-thing first frame and the first rule of the setup all have to
+  land inside it (lessons.md → 「Review rounds」, 「Scarier without new footage」).
+- Threads (7 views) and YouTube (2) did nothing for the video itself; do not spend GPU on a 16:9 version for them.
 
 ## Before starting
 
@@ -51,7 +70,20 @@ Scripts live in `<skill>/scripts/`; run them with `py -X utf8` from the folder n
    time), action in brackets, every line with its speaker (a Taiwanese line is still spoken in Mandarin in the video), the narrator as VO, a cast list and a
    **place map** (how the rooms connect, the route people walk, a sound that marks entrances, such as the screen
    door's 嘎——啪). Keep the story's backstory and flashbacks as scenes of their own, and list at the end what was
-   added (a minor character, an inserted memory). Send it and wait for the owner. The first 〈幫阿公守夜〉 comic (15
+   added (a minor character, an inserted memory). Write it as a film, not as a read-aloud (第 2 部's first cut was
+   sent back for both): **a line said to someone in the room is dialogue with a speaker, and narration is only what
+   nobody says aloud**; a scene that is one action is **one take** (mark it 「一鏡」), not a cut per sentence; and from
+   the scene where the ghost is in the room, each scene says where she is and what she is doing, even when the scene
+   is about something else. Write the ending as beats with seconds (lessons.md → 「The ending」).
+   **A film that goes up whole as one Reel (3 minutes or less)** is written to `references/screenplay_short.md`
+   (`assets/example_screenplay_short.md`): the time budget first (target 2:45 to 2:52, 280 to 320 characters of
+   narration, seconds on every scene heading), the strongest picture with the hook as big text at second 0, the end
+   promised by second 8, the first wrong thing by 0:25, the reveal held in silence instead of read aloud, and the
+   last shot reusing the shot that planted the twist, with no end card. **Before the owner sees any screenplay**,
+   give it with the story to a fresh subagent (ghost-story's `references/review_brief.md`, part 4), fix what comes
+   back, and run a second reviewer who has seen nothing: the first draft of 〈一中街的無人拍貼店〉 ran 3:05 against a
+   3:00 limit, opened on a picture too small for a phone and read its own reveal aloud, and its writer had noticed
+   none of the three. Then send it, with the rounds as a table, and wait for the owner. The first 〈幫阿公守夜〉 comic (15
    panels cut straight from the story) was rejected: 「漫畫少了很多故事的細節，像前情提要，阿公摺蓮花的背景，進出屋子的常見換的動作」;
    the comic cut from the screenplay (80 panels) read 8/10 with two blind readers.
 1. **Stills, in both shapes.** Build the board from the screenplay, scene by scene (characters with features, sets;
@@ -76,21 +108,38 @@ Scripts live in `<skill>/scripts/`; run them with `py -X utf8` from the folder n
 2. **Voice.** Write the narration in the story's words as short lines (`vo/script.json`, one id per line, 10 to 25
    characters). Voices are H3's own speech nodes (no TTS service; `speak.py`): pick a narrator among three described
    voices, then render every line with that take as the reference voice (`ref2va` model), so it stays one person.
-   Check every take with `check.py` (faster-whisper large-v3-turbo) and retake or rewrite until it reads back right;
-   then `spans.py` stores where speech starts and ends in each take, which render.py uses to trim. Characters' lines
+   Submit them with `polite.py speech <jobs.json>` (Rules: the GPU is shared), with a story prefix on every take name
+   (`KK_N01`). Check every take with `check.py` (faster-whisper large-v3-turbo) and retake or rewrite until it reads
+   back right; then `spans2.py <PREFIX>` picks the best take per line and stores where the line starts and ends in
+   it, which render.py uses to trim (ref2va takes often open with words of the reference sentence; the older
+   `spans.py` only takes first word to last word of takes already in picks.json). Characters' lines
    are spoken inside their own H3 clip (lip sync); find their start and end with `words.py` and an energy read.
+   When the narrator is also a character, her spoken lines are takes in the narrator's reference voice laid on her
+   lip movement in the clip (step 5, `me_at`), so she stays one voice. **Run all voice jobs as one block**: mixed in
+   with i2v clips they reload the models every job (50 s a clip became 110 to 280 s). A caller on a phone or a voice
+   behind a door: `voice_fx.py phone=P1,P2 door=Q4` after the spans.
 3. **First frames and moving shots.** `crops.py` makes `src/<name>.png` from the portrait stills (zoom 1, nothing to
    cut). Write one H3 prompt per shot in `prompts/` (template in references/lessons.md: the look line, three timed
-   beats, the sound, 「畫面中沒有任何文字」), run `run_clips.sh name:seconds:seed ...` in the background, one loop at a
-   time, two or three seeds for anything with a body in motion. Look at every clip as a frame strip before using it.
+   beats, the sound, 「畫面中沒有任何文字」). Past a dozen shots, write the prompts from a `reel/plan.py`
+   (`assets/example_plan.py`, 第 2 部: the look, cast, set and light as named text blocks, one `sh(...)` row per shot,
+   `plan.py prompts` and `plan.py list <round>`; pause.py reads it). Run `polite.py clips name:seconds:seed ...` in
+   the background, one loop at a time (`run_clips.sh` is the same loop without the queue check: only when nothing
+   else uses the GPU), two or three seeds for anything with a body in motion. Look at every clip as a frame strip
+   (`strips.py`) before using it.
    **Every shot is a clip**: a still with a push-in read as 「定格的圖，很奇怪」 to the owner, and so does a clip's held
    last frame (render.py warns about both). Characters speak Mandarin on screen, never H3's Taiwanese (owner,
    2026-11-08: 「台語的部份，配音很奇怪，改成說中文」). A line H3 gets wrong twice is spoken by `speak.py` over the
    muted clip instead; details in lessons.md 「Reel from a screenplay」.
    When image-to-video keeps getting an action wrong, pin both ends with `fl2va.py` (a first frame and a last frame).
+   FL2VA is also how a **long take** is made (8 to 11 s: looking through the peephole until the eye fills it, a
+   person coming in through the door seen from outside and then inside); cut inside it with `offset` and `max_t`
+   only. A conversation is one **two-person clip** per exchange, both faces in frame, the prompt giving who speaks
+   when. **Before any clip, put every still that shows the same set on one sheet** and compare the fixed parts (the
+   door, its peephole and lock, lamps on or off); fix the odd ones with `edit_stills.py` (a jobs file of same-framing
+   Qwen edits, the set's text block as a `{BLOCK}`, three candidates each), not with a new prompt.
    Video-only stills (a normal-feet version, a new angle, the end state for FL2VA) are drawn in `reel/fx/`, a small
    board of their own, as same-framing edits of picked stills.
-4. **Music and sound.** Score: ACE-Step 1.5 (`music.py`; check with the spectrum, not ASR, which hallucinates lyrics on
+4. **Music and sound.** Score: ACE-Step 1.5 (`polite.py music name seed seconds`, which runs `music.py`; check with the spectrum, not ASR, which hallucinates lyrics on
    instrumentals). The 鬼唱詩 end theme is outside music the owner chose: Pixabay 〈小さなおばけのワルツ Waltz of Little
    Ghosts〉 (naginomori), first 12 s, in `brand/music/licensed/end_theme_12s.wav`. Or a bed cut from the brand's
    licensed library by situation (開場、一般生活、不安、懸疑、很緊張、餘韻; table in Obsidian `Projects/ghost story/
@@ -99,12 +148,17 @@ Scripts live in `<skill>/scripts/`; run them with `py -X utf8` from the folder n
    ghost-reel's sfx.py names (knock …), each clip's own H3 sound, and the stock picks in `brand/music/licensed/sfx/`
    as `file:` entries, trimmed into `sfx/cuts/` first; about 15 to 20 in a 5 to 6 minute reel, each tied to a shot.
 5. **Shot list and render.** `shots_vN.json` (format in references/shots.md; `assets/example_shots.json` is the final
-   upper_bunk cut). `render.py shots_vN.json` times every shot from its voice lines, draws one subtitle at a time on a
+   upper_bunk cut). Past a dozen shots, do not edit that file by hand: keep each clip's pick, offset and in-clip
+   speech times in `clip_notes.json` and the order, lines and sounds in a `make_shots.py N` that writes the shot list
+   (`assets/example_make_shots.py`, `assets/example_clip_notes.json`: 第 2 部, with dialogue clips). A new seed or a
+   re-cut is then one edit, and every version stays reproducible. `render.py shots_vN.json` times every shot from its voice lines, draws one subtitle at a time on a
    dark band at 0.76 of the height, ducks music and room sound under the voice, mixes to -14 LUFS and writes
    `out/reel_vN/` (mp4, `_frames.jpg`, `_timeline.txt`); `--reuse` remixes the sound only, in about a minute.
    Before a scare, a shot's `music_cut` makes a real silence (music and room sound).
-   `package.py` writes the 720p copy under 10 MB. Transcribe the mix (`check.py` style ASR on the mp4): every line
-   must read back whole.
+   `package.py` writes the 720p copy under 10 MB. Check the mix line by line with `asr_lines.py out/reel_vN/reel_vN.mp4`
+   (one ASR window per subtitle line; a whole-file pass skips stretches). Every line must read back; a LOW on a
+   muffled or filtered line (「開門啊」 behind a door read as 「太忙了」) and any laugh or scream are for the owner's ears:
+   say which.
 6. **Title and cover.** The title shot uses the poster title, animated (`title_fx.py`: 1 霧中浮現 is the owner's pick,
    2 訊號干擾, 3 垂吊搖晃), with the icon and 鬼唱詩 under it. The cover is a film poster (`poster.py`): the D title
    treatment (標楷, worn edges, cold glow; `scary_title.py` has A to D), a tagline at the top, and under the title one
@@ -112,16 +166,22 @@ Scripts live in `<skill>/scripts/`; run them with `py -X utf8` from the folder n
    2026-11-10: 「poster 不要有清楚的鬼，不能爆雷」); use an ambiguous early image and a rule from the setup. For a body-horror object the owner liked a blend of the normal and the ghost version, normal
    where the light falls (`blend.py`, mode 2 光束 for 上鋪的腳).
 7. **Review rounds.** Give the mp4, timeline and ASR to a fresh subagent with `references/review_brief.md` each round
-   (it cannot hear: say so); it scores 1 to 10 for 「能不能直接公布」. upper_bunk went 5 → 6 → 6.5 → 7 → 7 over v1 to
+   (fill every `{…}` in the brief for this film; it cannot hear: say so); it scores 1 to 10 for 「能不能直接公布」
+   and names the second a stranger most likely swipes away and the scene worth sharing. Fix the swipe-away second
+   before anything after it: average watch on 第 1 部 was 35 s. upper_bunk went 5 → 6 → 6.5 → 7 → 7 over v1 to
    v9, then the owner's own notes drove v10 to v20. Reviewers contradict each other on taste (a bright or a dark first
    frame, a headline or none); the owner decides those. Report numbers, send the 720p file, and say plainly that the
    voice, music and lip sync need the owner's ears.
+   **Owner notes come as a numbered list** (12 on 第 2 部's v10). Answer each by number in the next cut's report:
+   what changed, at which second, or why not. A scene the owner calls weak is cut, not repaired. For a choice of look
+   (the ghost's face, the poster), draw three options and let the owner pick before spending clips on one.
    **Polish pass** (「再打磨一次，看有沒有…不合理…不連貫…不流暢」): `review_sheets.py` and two blind reviewers, one for
    the picture and one for the text (`references/review_split.md`). Verify every claim on a full-size frame before
    acting: v10's "two extra people" were a backpack and a cabinet. Free fixes (offset, zoom, lift, a clip swap,
    subtitle text) first, regenerations as one batch.
 
-8. **Instagram parts and packing.** Over 3 minutes (the Reels limit), cut two parts at a cliffhanger, each under
+8. **Instagram parts and packing.** A film of 3 minutes or less is one cut everywhere (第 2 部, 2:36: Reel, Short,
+   FB Reel, Threads video, Pinterest video pin); skip the parts. Over 3 minutes (the Reels limit), cut two parts at a cliffhanger, each under
    3:00: part 1 ends on 「上集完／下集：…」 (`end_title`, `end_question`), part 2 opens on the hook flash and the
    title shot with `headline` 「下集」. The music is the full bed sliced at the same point, with `music_gain`
    rescaled (transom_window's `make_ig.py`). Each part needs its own `_preview720.mp4` (`package.py`) under 10 MB:
@@ -129,8 +189,25 @@ Scripts live in `<skill>/scripts/`; run them with `py -X utf8` from the folder n
    ghost-pack-film for the number 「鬼唱詩劇場｜第 N 部」 and the captions. Pinterest takes videos up to 300 s, so a
    film's video pin is IG part 1 when the full cut is longer (pack_film.py picks it).
 
+## Scripts (`<skill>/scripts/`, each docstring has the full usage)
+
+| Step | Script | What |
+|---|---|---|
+| 1 | `film.py` (`uc.py`), `stills_both.py` | manga.py commands with the film model and colour pages; every cell again as a 9:16 (and `--wide` 16:9) page |
+| 1, 3 | `edit_stills.py` | same-framing Qwen edits from a jobs file, three candidates |
+| 2 | `speak.py`, `check.py`, `spans2.py`, `spans.py`, `voice_fx.py` | takes; ASR check against script.json; best take and trim; phone and door filters |
+| 3 | `crops.py`, `fl2va.py` (`fl_polite.sh` waits for an empty queue), `strips.py` | first frames; a shot pinned at both ends; frame strips of clips |
+| 3 | `words.py`, `words2.py` | where a clip's own line starts and ends; every word with its time (for `speech`, `me_at`) |
+| 2 to 4 | `polite.py speech / clips / music`, `pause.py pause / resume` | every GPU job, one at a time on an empty queue; hold a clip loop (needs the story's `plan.py`) |
+| 4 | `music.py` | ACE-Step score |
+| 5 | `render.py`, `package.py`, `asr_lines.py`, `asr_mix.py` | the reel; the 720p copy; ASR per subtitle line; ASR of the whole mix with times (what the reviewers read) |
+| 6 | `title_fx.py`, `scary_title.py`, `poster.py`, `blend.py` | animated title; title treatments; poster; normal and ghost stills blended |
+| 7 | `review_sheets.py` | sheets and shots.txt for the two blind reviewers |
+
 ## Rules
 
+- **Every GPU run and every wait is a background task that reports back when it ends.** 38 clips finished at 00:44
+  with nothing to wake the session, and the owner found it idle 6.5 hours later.
 - **One set, one architecture.** Before drawing a set, write its fixed parts as one text block (the door, the window, what
   is on that wall) and pick one inside and one outside reference picture; put the block in every still, edit and H3 prompt
   whose frame shows it, and only there. 〈社辦門上的氣窗〉 drew the door three different ways and 26 reel stills, 18 comic
@@ -144,4 +221,11 @@ Scripts live in `<skill>/scripts/`; run them with `py -X utf8` from the folder n
   dead grey-blue feet only at the reveal (owner, 2026-11-07: 「腳隨著影片慢慢變鬼腳」).
 - When a cut removes a line, search the rest of the script for anything that depended on it (橘子 and 雞排 callbacks).
 - Hidden ghosts for a rewatch must agree with the twist (outside, if she was outside all along) and be findable at 720p.
+- **Long takes and real dialogue** (owner on 第 2 部): a scene that is one action is one clip, not a cut per line, and
+  a line said to someone in the room is lip-synced in a two-person clip, not read as narration. lessons.md → 「What the
+  owner sent back」.
+- **After the ghost is in the room, every shot says where she is.** A background figure doing the wrong thing gives
+  the twist away early.
+- A jump-scare ending is one continuous clip: the ghost, recognisable as the character, rises from behind, a fast
+  push-in to the full-screen face, black, the last line. lessons.md → 「The ending」.
 - Fiction only; no real people or places that can be identified.
