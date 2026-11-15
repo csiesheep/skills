@@ -13,6 +13,8 @@ ghost-pack                             numbers the story, stamps the covers, wri
 ghost-post                             checks platforms and files, posts, records links
 ```
 
+Realistic videos from ghost-film are numbered apart (「鬼唱詩劇場｜第 N 部」, `brand/film_ledger.json`) by ghost-pack-film.
+
 Material is made without a number so it can wait in stock and the posting order can change. The number appears
 only when a story is about to be posted, and only in captions, the Threads heading, the YouTube title, Pinterest
 titles and the two cover strips; never inside a video (the owner decided on 2026-10-20).
@@ -76,3 +78,7 @@ Words live in `brand.json`, not here. Pack reads `name`, `handle`, `disclosure`,
 blocks, the ones 鬼唱詩 used for 第 1 and 2 首.
 
 Needs Pillow and ghost-comic installed next to this skill (it draws the strip with ghost-comic's `manga.py`).
+
+## 審稿後修改 (since 2026-11-02)
+
+Every 鬼唱詩 story is reviewed by the owner on https://monitor.csiesheep.com/ghost/review/ before it posts. Comments on captions (target 文案：<platform>) are fixed by rerunning pack.py (a new `--logline`, or after story/comic changes; the same title keeps its number) or by editing that one caption file by hand after pack (keep `{ig_link}`, the disclosure and the tags). A new title asked for in a comment is the owner's yes to change the ledger title for that number. The whole loop: ~/.claude/skills/auto_promotion/references/ghost_revise.md.

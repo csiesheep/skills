@@ -42,6 +42,10 @@ DEFAULTS = {
         "board": "{name}｜台灣怪談漫畫",
         "title_cover": "台灣怪談漫畫｜{number} {title}",
         "title_page": "台灣怪談漫畫｜{title}（{k}/{pages}）",
+        "title_page_end": "台灣怪談漫畫｜{title}（{k}/{pages}・結局）",
+        "title_video": "台灣怪談｜{number} {title}（影片版）",
+        "story_board": "{number}｜{title}",
+        "story_board_lines": ["{logline}", "依序看：封面、第 1 到 {pages} 頁，最後是影片版。", "{disclosure}。"],
         "lines": ["{logline}", "{disclosure}。全篇在 IG {handle}。"],
         "tags": ["#台灣怪談", "#鬼故事", "#恐怖漫畫", "#漫畫", "#鬼唱詩"],
     },
@@ -172,6 +176,47 @@ def update_readme(path: Path, heading: str, logline: str, today: str) -> None:
     path.write_bytes("\n".join(lines).encode("utf-8"))
 
 
+def write_pins(d: Path, posts: Path, br: dict, v: dict, report: list) -> None:
+    """posts/pinterest/pins.txt: the story's own board (owner, 2026-10-28: one board per story, the whole comic and
+    the Reel), every pin's title and text, and the order to pin them in. The reveal page and those after it are
+    titled 「結局」 so nobody opens the ending first from a feed."""
+    pdir = posts / "pinterest"
+    pins = sorted(p for p in pdir.glob("*.jpg") if "_nonumber" not in p.name) if pdir.exists() else []
+    if not pins:
+        return
+    pc = block(br, "pinterest")
+    ig = posts / "ig"
+    pages = len(list((d / "comic" / "out" / "pages").glob("page_*.png"))) or max(len(list(ig.glob("[0-9]*.jpg"))) - 2, 1)
+    reveal = None
+    bj = d / "comic" / "board.json"
+    if bj.exists():
+        reveal, _ = manga_module().reveal_point(json.loads(bj.read_text(encoding="utf-8")))
+    text = "\n".join(fill(x, v) for x in pc["lines"]) + "\n" + " ".join(pc["tags"])
+    board_text = "\n".join(fill(x, {**v, "pages": pages}) for x in pc["story_board_lines"])
+    videos = sorted((d / "reels").glob("full_v3_cinema*/*_preview720.mp4"))
+    out = [f"板：{fill(pc['story_board'], v)}", f"板說明（{len(board_text)}）：", board_text,
+           f"封面也存到總板：{fill(pc['board'], v)}", "連結：{ig_link}".format(ig_link=v["ig_link"]) +
+           ("（IG 那則輪播，ghost-post 發完 IG 後填）" if v["ig_link"] == "{ig_link}" else ""),
+           "釘的順序：影片先、最後一頁、……、第 1 頁，最後把已發的封面 pin 存進這個板（新釘的排在最前面；2026-10-28 第 8 首實測：板子由左到右讀成封面、1…8、影片）", ""]
+    for vid in videos:
+        ttl = fill(pc["title_video"], v) + (f"（{vid.parent.name.rsplit('_', 1)[-1]}）" if "part" in vid.parent.name else "")
+        out += [f"== 影片 {vid.relative_to(d).as_posix()} ==", f"標題（{len(ttl)}）：{ttl}", f"說明（{len(text)}）：", text, ""]
+    for p in pins:
+        k = re.match(r"(\d+)_page", p.name)
+        if k:
+            kk = int(k.group(1))
+            tpl = pc["title_page_end"] if reveal and kk >= reveal else pc["title_page"]
+            ttl = fill(tpl, {**v, "k": kk, "pages": pages})
+        else:
+            ttl = fill(pc["title_cover"], v)
+        out += [f"== {p.name} ==", f"標題（{len(ttl)}）：{ttl}", f"說明（{len(text)}）：", text, ""]
+        if len(ttl) > LIMITS["pin_title"]:
+            report.append(("Pinterest 標題", f"{p.name} {len(ttl)} 字超過 100！"))
+    write(pdir / "pins.txt", "\n".join(out))
+    report.append(("Pinterest pins.txt", f"板「{fill(pc['story_board'], v)}」，{len(pins)} 張圖、{len(videos)} 支影片"
+                   + (f"，第 {reveal} 頁起標結局" if reveal else "，board 沒標揭露格")))
+
+
 def main() -> int:
     for s in (sys.stdout, sys.stderr):
         try:
@@ -191,6 +236,8 @@ def main() -> int:
                                                  "posts/cross_caption_<cut>.txt each, with the cut's title")
     ap.add_argument("--cuts-only", action="store_true", help="write only the cuts' captions, for a story whose other "
                                                              "posts are already out: nothing else is touched")
+    ap.add_argument("--pins-only", action="store_true", help="write only posts/pinterest/pins.txt (the story's board, "
+                                                             "every page, the video pin), for a story already posted")
     ap.add_argument("--ig-link", default=None, help="the Instagram carousel's link if it is already posted; it fills "
                                                     "the {ig_link} slots")
     a = ap.parse_args()
@@ -222,7 +269,9 @@ def main() -> int:
     if a.cuts_only and not cuts:
         raise SystemExit("--cuts-only needs --cuts")
 
-    if not a.cuts_only:  # a story whose carousel, Threads and pins are already out keeps them as posted
+    if a.pins_only:  # a story already posted: only posts/pinterest/pins.txt is written
+        write_pins(d, posts, br, v, report)
+    elif not a.cuts_only:  # a story whose carousel, Threads and pins are already out keeps them as posted
         # 2. the two covers
         ig = posts / "ig"
         if kind == "comic":
@@ -264,35 +313,21 @@ def main() -> int:
         report.append(("Threads 第 3 則 link.txt", t))
 
         # 3c. Pinterest
-        pdir = posts / "pinterest"
-        pins = sorted(p for p in pdir.glob("*.jpg") if "_nonumber" not in p.name) if pdir.exists() else []
-        if pins:
-            pc = block(br, "pinterest")
-            pages = len(list((d / "comic" / "out" / "pages").glob("page_*.png"))) or max(len(list(ig.glob("[0-9]*.jpg"))) - 2, 1)
-            text = "\n".join(fill(x, v) for x in pc["lines"]) + "\n" + " ".join(pc["tags"])
-            out = [f"板：{fill(pc['board'], v)}", "連結：{ig_link}（IG 那則輪播，ghost-post 發完 IG 後填）", ""]
-            for p in pins:
-                k = re.match(r"(\d+)_page", p.name)
-                ttl = fill(pc["title_page"], {**v, "k": int(k.group(1)), "pages": pages}) if k else fill(pc["title_cover"], v)
-                out += [f"== {p.name} ==", f"標題（{len(ttl)}）：{ttl}", f"說明（{len(text)}）：", text, ""]
-                if len(ttl) > LIMITS["pin_title"]:
-                    report.append(("Pinterest 標題", f"{p.name} {len(ttl)} 字超過 100！"))
-            write(pdir / "pins.txt", "\n".join(out))
-            report.append(("Pinterest pins.txt", f"{len(pins)} 張"))
+        write_pins(d, posts, br, v, report)
 
     # 3d. the video's captions: Instagram Reel, YouTube, TikTok, Facebook (and one file per cut of the Reel)
-    if not a.cuts_only:
+    if not (a.cuts_only or a.pins_only):
         t_ = write(posts / "cross_caption.txt", video_captions(br, v))
         report.append(("影片文案 posts/cross_caption.txt",
                        "IG Reel、YouTube、TikTok、FB" + ("，IG 連結留 {ig_link}" if "{ig_link}" in t_ else "")))
-    for k, cut in enumerate(cuts):
+    for k, cut in enumerate([] if a.pins_only else cuts):
         cv = {**v, "title": cut_titles.get(cut, f"{title}（{cut}）")}
         part = PART_LINES["first"] if k == 0 and len(cuts) > 1 else PART_LINES["next"] if k > 0 else None
         write(posts / f"cross_caption_{cut}.txt", video_captions(br, cv, part))
         report.append((f"影片文案 posts/cross_caption_{cut}.txt", cv["title"]))
 
     # 4. README
-    if not a.cuts_only:
+    if not (a.cuts_only or a.pins_only):
         update_readme(readme, f"{num}〈{title}〉", logline or "", dt.date.today().isoformat())
         report.append(("README.md", f"# {num}〈{title}〉"))
 

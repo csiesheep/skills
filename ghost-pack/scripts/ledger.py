@@ -63,7 +63,7 @@ def main() -> None:
     sub.add_parser("show")
     r = sub.add_parser("reserve")
     r.add_argument("title")
-    r.add_argument("--kind", choices=["text", "comic", "other"], default="text")
+    r.add_argument("--kind", choices=["text", "comic", "film", "other"], default="text")
     r.add_argument("--number", type=int, default=None, help="a specific number (0 for an intro post); default: next free")
     r.add_argument("--folder", default=None, help="the story's folder, relative to the brand file's folder (e.g. stories/three_behind)")
     po = sub.add_parser("posted")
@@ -97,7 +97,7 @@ def main() -> None:
         n = next_number(led) if a.number is None else a.number
         taken = [s for s in led["stories"] if s["number"] == n]
         if taken:
-            raise SystemExit(f"第 {n} 首 is already 〈{taken[0]['title']}〉")
+            raise SystemExit(f"第 {n} {'部' if a.kind == 'film' else '首'} is already 〈{taken[0]['title']}〉")
         entry = {"number": n, "title": a.title, "kind": a.kind, "reserved": dt.date.today().isoformat(), "posts": []}
         if a.folder:
             entry["folder"] = a.folder
@@ -111,7 +111,7 @@ def main() -> None:
             raise SystemExit(f"no story has number {a.number}; reserve it first")
         hit[0].setdefault("posts", []).append({"platform": a.platform, "url": a.url, "date": a.date})
         save(p, led)
-        print(f"第 {a.number} 首 〈{hit[0]['title']}〉: {a.platform} {a.date} recorded")
+        print(f"第 {a.number} {'部' if hit[0].get('kind') == 'film' else '首'} 〈{hit[0]['title']}〉: {a.platform} {a.date} recorded")
 
 
 if __name__ == "__main__":
