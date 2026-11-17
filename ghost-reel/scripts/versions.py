@@ -72,7 +72,7 @@ def build_v1(R):
     BY, BH = 190, 1190
     tbox = (SAFE_L, SAFE_TOP - BY + 10, SAFE_R, BH - 40)   # bubbles stay on the picture, inside the safe area
     BASE = 44
-    CPS = 9.5
+    CPS = 9.5 / 1.3   # text 1.3x slower (owner 2026-11-16: 文字太快了)
 
     def picture(img, cell, o, i, n):
         t = i / max(1, n - 1)
@@ -209,7 +209,7 @@ def build_v2(R):
         T.black(o.get("black", 0))
         beats = [b for b in caption.split("／")] if caption else [""]
         for bi, beat in enumerate(beats):
-            sec = (0.7 + len(plain(beat)) / 8.0) if beat else 1.0
+            sec = (0.7 + len(plain(beat)) / (8.0 / 1.3)) if beat else 1.0
             sec = max(sec, 1.3) + (o.get("hold", 0) if bi == len(beats) - 1 else 0)
             n = int(sec * FPS)
             start = T.t
