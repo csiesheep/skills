@@ -1,0 +1,348 @@
+{
+ "h1": {
+  "clip": "clips/h1_s72.mp4"
+ },
+ "h1t": {
+  "clip": "clips/h1_s11.mp4",
+  "max_t": 2.3
+ },
+ "h2": {
+  "clip": "clips/h2_s72.mp4",
+  "max_t": 0.8
+ },
+ "h3": {
+  "clip": "clips/h3_s11.mp4"
+ },
+ "h4": {
+  "clip": "clips/h4_s61f.mp4",
+  "speech": [
+   3.6,
+   5.75
+  ],
+  "me_at": 6.1,
+  "lead": 0.5,
+  "amb": 0.5
+ },
+ "h5": {
+  "clip": "clips/h5_s61.mp4"
+ },
+ "h6": {
+  "clip": "clips/h6_s61.mp4",
+  "offset": 3.9,
+  "speech": [
+   4.4,
+   6.3
+  ],
+  "amb": 0.7
+ },
+ "h7": {
+  "clip": "clips/h7_s61.mp4",
+  "offset": 0.6,
+  "speech": [
+   4.5,
+   5.6
+  ],
+  "me_at": 2.4,
+  "amb": 0.25,
+  "max_t": 6.0
+ },
+ "h8": {
+  "clip": "clips/h8_s72.mp4"
+ },
+ "h9": {
+  "clip": "clips/h9_s62.mp4",
+  "lift": 0.85
+ },
+ "h10": {
+  "clip": "clips/h10_s11.mp4",
+  "offset": 2.3
+ },
+ "h11": {
+  "clip": "clips/h11_s11.mp4"
+ },
+ "h12": {
+  "clip": "clips/h12_s21.mp4",
+  "speech": [
+   5.14,
+   7.36
+  ],
+  "me_at": 1.0,
+  "amb": 0.7
+ },
+ "h13": {
+  "clip": "clips/h13_s21.mp4",
+  "speech": [
+   3.14,
+   3.68
+  ],
+  "me_at": 1.2,
+  "amb": 0.7,
+  "offset": 2.9
+ },
+ "h14": {
+  "clip": "clips/h14_s61f.mp4",
+  "offset": 1.0,
+  "max_t": 3.8
+ },
+ "h14m": {
+  "clip": "clips/h14_s61f.mp4",
+  "speech": [
+   4.0,
+   4.75
+  ],
+  "me_at": 5.2,
+  "lead": 0.2,
+  "amb": 0.25
+ },
+ "h15": {
+  "clip": "clips/h15_s61.mp4"
+ },
+ "h16": {
+  "clip": "clips/h16_s13.mp4",
+  "offset": 1.0,
+  "max_t": 2.4
+ },
+ "h17": {
+  "clip": "clips/h17_s31.mp4",
+  "speech": [
+   4.46,
+   6.5
+  ],
+  "amb": 0.9,
+  "max_t": 6.9
+ },
+ "h18": {
+  "clip": "clips/h18_s62.mp4"
+ },
+ "h19": {
+  "clip": "clips/h19_s61f.mp4",
+  "speech": [
+   4.55,
+   5.3
+  ],
+  "offset": 2.6,
+  "amb": 0.3
+ },
+ "h20": {
+  "clip": "clips/h20_s71.mp4",
+  "offset": 0.3
+ },
+ "h21": {
+  "clip": "clips/h21_s11.mp4",
+  "zoom": 0.55,
+  "focus": [
+   0.5,
+   1.0
+  ]
+ },
+ "h22": {
+  "clip": "clips/h22_s13.mp4",
+  "lift": 0.85
+ },
+ "h23": {
+  "clip": "clips/h23_s11.mp4"
+ },
+ "h24": {
+  "clip": "clips/h24_s21.mp4",
+  "offset": 2.4,
+  "speech": [
+   2.68,
+   7.7
+  ],
+  "amb": 0.7
+ },
+ "h25": {
+  "clip": "clips/h25_s11.mp4"
+ },
+ "h24b": {
+  "clip": "clips/h24b_s23.mp4",
+  "offset": 1.45,
+  "speech": [
+   1.74,
+   9.2
+  ],
+  "amb": 0.7
+ },
+ "h26": {
+  "clip": "clips/h26_s21.mp4",
+  "amb": 0.25
+ },
+ "h27": {
+  "clip": "clips/h27_s11.mp4"
+ },
+ "h28": {
+  "clip": "clips/h28_s11.mp4",
+  "max_t": 4.2
+ },
+ "rise": {
+  "clip": "clips/rise2_s1.mp4"
+ },
+ "h30": {
+  "clip": "clips/h30_s31.mp4",
+  "max_t": 0.45
+ },
+ "h4a": {
+  "clip": "clips/h4_s61f.mp4",
+  "max_t": 3.4,
+  "amb": 0.2
+ },
+ "h3b": {
+  "clip": "clips/h3_s11.mp4",
+  "offset": 1.2
+ },
+ "h12q": {
+  "clip": "clips/h12q_s52.mp4",
+  "amb": 0.5
+ },
+ "h3c": {
+  "clip": "clips/h3_s11.mp4",
+  "offset": 0.9
+ },
+ "h3L": {
+  "clip": "clips/h3L_s82.mp4",
+  "max_t": 7.4,
+  "amb": 0.8
+ },
+ "tc": {
+  "clip": "clips/tc_s81.mp4",
+  "max_t": 3.6,
+  "amb": 0.5
+ },
+ "d1": {
+  "clip": "clips/d1_s81.mp4",
+  "offset": 2.5,
+  "talk": [
+   [
+    3.18,
+    5.58,
+    "「妳請一個禮拜假，老闆不會罵喔？」"
+   ],
+   [
+    6.34,
+    8.34,
+    "「會啊，所以妳要乖乖好起來。」"
+   ]
+  ],
+  "end": 8.6
+ },
+ "nq": {
+  "clip": "clips/nq_s82.mp4",
+  "offset": 2.93,
+  "talk": [
+   [
+    3.0,
+    4.34,
+    "「家屬吃的，不要跟別人講。」"
+   ],
+   [
+    5.36,
+    7.38,
+    "「阿琪，隔壁那床怎麼都拉著？」"
+   ],
+   [
+    7.68,
+    9.2,
+    "「剛清完，等新病人。」"
+   ]
+  ],
+  "end": 9.55
+ },
+ "n2": {
+  "clip": "clips/n2_s81.mp4",
+  "amb": 0
+ },
+ "c12": {
+  "clip": "clips/c12_s81.mp4",
+  "offset": 2.45,
+  "talk": [
+   [
+    2.58,
+    5.48,
+    "「阿琪，我的拖鞋跑到隔壁床底下了。」"
+   ],
+   [
+    6.04,
+    7.52,
+    "「妳晚上睡過去一點，不要靠那邊。」"
+   ],
+   [
+    8.02,
+    9.42,
+    "「蛤？為什麼？」"
+   ],
+   [
+    9.68,
+    10.1,
+    "「沒有為什麼。」"
+   ]
+  ],
+  "end": 10.15
+ },
+ "n3": {
+  "clip": "clips/n3_s81.mp4",
+  "offset": 0.0,
+  "talk": [
+   [
+    4.46,
+    5.08,
+    "「妳幹嘛？」"
+   ],
+   [
+    6.06,
+    8.7,
+    "「沒啦，冷氣太冷。」"
+   ]
+  ],
+  "end": 9.8
+ },
+ "nw": {
+  "clip": "clips/nw_s81.mp4",
+  "offset": 0.0,
+  "talk": [
+   [
+    0.0,
+    1.74,
+    ""
+   ],
+   [
+    5.16,
+    7.08,
+    "「阿琪！阿琪！」"
+   ]
+  ],
+  "end": 7.7
+ },
+ "d1a": {
+  "clip": "clips/d1_s81.mp4",
+  "offset": 0.0,
+  "max_t": 2.5,
+  "amb": 0,
+  "min_speed": 0.35
+ },
+ "h18g": {
+  "clip": "clips/h18g_s97.mp4",
+  "offset": 1.5,
+  "amb": 0.9
+ },
+ "h20m": {
+  "clip": "clips/h20m_s91.mp4",
+  "offset": 0.3
+ },
+ "h26m": {
+  "clip": "clips/h26m_s92.mp4",
+  "offset": 2.2,
+  "talk": [
+   [
+    2.52,
+    5.78,
+    "「我們原本那間，靠窗旁邊那床，什麼時候要進病人？」"
+   ],
+   [
+    7.42,
+    9.76,
+    "「那床上禮拜就封床了，不會排人。」"
+   ]
+  ],
+  "end": 9.95
+ }
+}

@@ -75,6 +75,13 @@ Scripts live in `<skill>/scripts/`; run them with `py -X utf8` from the folder n
    nobody says aloud**; a scene that is one action is **one take** (mark it 「一鏡」), not a cut per sentence; and from
    the scene where the ghost is in the room, each scene says where she is and what she is doing, even when the scene
    is about something else. Write the ending as beats with seconds (lessons.md → 「The ending」).
+   **Count the shots while writing**: about ten a minute at most, one take per conversation, and no picture used
+   twice (第 3 部 went from 39 shots to 27 over four owner rounds: 「畫面太常切換了，多一點長鏡頭」; the cold open's
+   ankle pull, repeated at the reveal, was cut). What the narration says is what the picture shows (「隔壁那床，一直
+   空著」 over a closed curtain was sent back: 「場景換成照著空床」).
+   **A floor plan for every room that has more than two shots**: a top-down sketch (walls, window, door, each bed
+   or table, the curtain, one arrow per camera setup) drawn with PIL into `film/review/plan_<room>.png` and sent
+   with the screenplay. The owner's 「平面圖對」 comes before any still of that room (lessons.md → 「第 3 部」).
    **A film that goes up whole as one Reel (3 minutes or less)** is written to `references/screenplay_short.md`
    (`assets/example_screenplay_short.md`): the time budget first (target 2:45 to 2:52, 280 to 320 characters of
    narration, seconds on every scene heading), the strongest picture with the hook as big text at second 0, the end
@@ -96,6 +103,13 @@ Scripts live in `<skill>/scripts/`; run them with `py -X utf8` from the folder n
    crop of a landscape still cut 小傑's head and left dark bands top and bottom that read as black bars. Add `--wide`
    when a 16:9 long video is planned. Pick each panel's portrait take the same way as the landscape one (independent
    check, people's faces and heights).
+   **One master still per camera setup.** Draw the room's wide shot from the floor plan first (`fresh_draw.py`,
+   four candidates, no source picture), pick it, and make every other still of that setup a same-framing edit of it
+   (`edit_stills.py`: who is where, day or night). A new angle is a fresh draw from the plan, never an edit of
+   another angle: an edit keeps the old perspective. 第 3 部 drew its ward stills one by one and was sent back three
+   times for 「房間格局不統一」; rebuilt from one master, the layout was not mentioned again.
+   **Props are fixed like sets**: one text block per prop that appears in more than one shot (the slipper, a
+   bruise's finger count, glasses on or off), used in every prompt that shows it.
    **Panels in a night story**: a cell's `look` replaces the board's style prefix (`film.py`), so daytime and
    flashback panels get a daylight look instead of the oil-lamp night. grandpa_wake's build_board.py did it with the
    board's style prefix `BASE` minus its night clause 「low light from practical sources only, deep real shadows that
@@ -107,25 +121,35 @@ Scripts live in `<skill>/scripts/`; run them with `py -X utf8` from the folder n
    it gets the story, every character and every speaker; fix what it trips on in the lettering first.
 2. **Voice.** Write the narration in the story's words as short lines (`vo/script.json`, one id per line, 10 to 25
    characters). Voices are H3's own speech nodes (no TTS service; `speak.py`): pick a narrator among three described
-   voices, then render every line with that take as the reference voice (`ref2va` model), so it stays one person.
+   voices, then render every line with that take as the reference voice (`ref2va` model), so it stays one person. Say in the report what the reference may control (timbre, speed) and what it must not bring (the emotion, room reverb or noise of the reference take); a reference nobody has listened to is not described from its file name.
    Submit them with `polite.py speech <jobs.json>` (Rules: the GPU is shared), with a story prefix on every take name
    (`KK_N01`). Check every take with `check.py` (faster-whisper large-v3-turbo) and retake or rewrite until it reads
    back right; then `spans2.py <PREFIX>` picks the best take per line and stores where the line starts and ends in
    it, which render.py uses to trim (ref2va takes often open with words of the reference sentence; the older
    `spans.py` only takes first word to last word of takes already in picks.json). Characters' lines
    are spoken inside their own H3 clip (lip sync); find their start and end with `words.py` and an energy read.
-   When the narrator is also a character, her spoken lines are takes in the narrator's reference voice laid on her
-   lip movement in the clip (step 5, `me_at`), so she stays one voice. **Run all voice jobs as one block**: mixed in
+   When the narrator is also a character, her spoken lines are spoken inside the clip like everyone else's (since
+   第 3 部: narrator-voice takes laid on her lips were sent back three times as 「像唸旁白」, also when re-recorded
+   as room talk). Her talking voice then differs from the narrator's: say so in the report. `me_at` (a narrator
+   take on her lip movement) is the fallback for a line H3 garbles in every take. **Run all voice jobs as one block**: mixed in
    with i2v clips they reload the models every job (50 s a clip became 110 to 280 s). A caller on a phone or a voice
    behind a door: `voice_fx.py phone=P1,P2 door=Q4` after the spans.
 3. **First frames and moving shots.** `crops.py` makes `src/<name>.png` from the portrait stills (zoom 1, nothing to
    cut). Write one H3 prompt per shot in `prompts/` (template in references/lessons.md: the look line, three timed
    beats, the sound, 「畫面中沒有任何文字」). Past a dozen shots, write the prompts from a `reel/plan.py`
    (`assets/example_plan.py`, 第 2 部: the look, cast, set and light as named text blocks, one `sh(...)` row per shot,
-   `plan.py prompts` and `plan.py list <round>`; pause.py reads it). Run `polite.py clips name:seconds:seed ...` in
+   `plan.py prompts` and `plan.py list <round>`; pause.py reads it). Run `prompt_check.py prompts/<name>.txt:<seconds> ...` first (beats that do not add up to the clip length are cut off or slowed down; no 靜音 in the soundscape; lessons.md 「From drama-skills」), then `polite.py clips name:seconds:seed ...` in
    the background, one loop at a time (`run_clips.sh` is the same loop without the queue check: only when nothing
-   else uses the GPU), two or three seeds for anything with a body in motion. Look at every clip as a frame strip
-   (`strips.py`) before using it.
+   else uses the GPU), two or three seeds for anything with a body in motion. Run `clip_check.py --asr` on every
+   new clip first (a light jump, a cut H3 made inside the clip, speech where there should be none), then look at
+   what is left as frame strips (`strips.py`, or `strips.py sheet` for both seeds of a shot on one picture): only a
+   strip shows a wrong action or a movement in the wrong direction.
+   **A conversation is one long take** (10 to 14 s, up to four lines, the prompt giving who speaks in which
+   seconds and 「只有她的嘴在動」): five of six worked on 第 3 部 with two seeds each. H3 adds gibberish before the
+   first line and after the last, and may say the first line twice: take each line's start and end from
+   `words2.py`, list them as `talk` in clip_notes.json, and only those spans are heard (`assets/
+   example_make_shots_long.py`). A scare from the victim's eyes continues the shot before it: its first frame is
+   that clip's last frame (ffmpeg `-ss`), so no still is drawn.
    **Every shot is a clip**: a still with a push-in read as 「定格的圖，很奇怪」 to the owner, and so does a clip's held
    last frame (render.py warns about both). Characters speak Mandarin on screen, never H3's Taiwanese (owner,
    2026-11-08: 「台語的部份，配音很奇怪，改成說中文」). A line H3 gets wrong twice is spoken by `speak.py` over the
@@ -150,12 +174,14 @@ Scripts live in `<skill>/scripts/`; run them with `py -X utf8` from the folder n
 5. **Shot list and render.** `shots_vN.json` (format in references/shots.md; `assets/example_shots.json` is the final
    upper_bunk cut). Past a dozen shots, do not edit that file by hand: keep each clip's pick, offset and in-clip
    speech times in `clip_notes.json` and the order, lines and sounds in a `make_shots.py N` that writes the shot list
-   (`assets/example_make_shots.py`, `assets/example_clip_notes.json`: 第 2 部, with dialogue clips). A new seed or a
+   (`assets/example_make_shots.py`, `assets/example_clip_notes.json`: 第 2 部, with dialogue clips;
+   `example_make_shots_long.py`, `example_clip_notes_long.json`: 第 3 部, long takes with several spoken lines, a
+   narration line before the first of them, a `still:` source and a `sub` line over a sound file). A new seed or a
    re-cut is then one edit, and every version stays reproducible. `render.py shots_vN.json` times every shot from its voice lines, draws one subtitle at a time on a
    dark band at 0.76 of the height, ducks music and room sound under the voice, mixes to -14 LUFS and writes
    `out/reel_vN/` (mp4, `_frames.jpg`, `_timeline.txt`); `--reuse` remixes the sound only, in about a minute.
    Before a scare, a shot's `music_cut` makes a real silence (music and room sound).
-   `package.py` writes the 720p copy under 10 MB. Check the mix line by line with `asr_lines.py out/reel_vN/reel_vN.mp4`
+   `package.py` writes the 720p copy under 10 MB. `verify.py` lists the cuts where the sound moves over 10 dB (LISTEN) or the light over 20 (LOOK); sort them into deliberate (a hit, a planned silence, a flash) and not, and fix the second kind. Check the mix line by line with `asr_lines.py out/reel_vN/reel_vN.mp4`
    (one ASR window per subtitle line; a whole-file pass skips stretches). Every line must read back; a LOW on a
    muffled or filtered line (「開門啊」 behind a door read as 「太忙了」) and any laugh or scream are for the owner's ears:
    say which.
@@ -165,7 +191,10 @@ Scripts live in `<skill>/scripts/`; run them with `py -X utf8` from the folder n
    line only, icon + 鬼唱詩. No clear ghost and no spoiler on a poster: no reveal face, no twist line as tagline (owner,
    2026-11-10: 「poster 不要有清楚的鬼，不能爆雷」); use an ambiguous early image and a rule from the setup. For a body-horror object the owner liked a blend of the normal and the ghost version, normal
    where the light falls (`blend.py`, mode 2 光束 for 上鋪的腳).
-7. **Review rounds.** Give the mp4, timeline and ASR to a fresh subagent with `references/review_brief.md` each round
+7. **Review rounds.** Every cut goes to a blind reviewer before the owner sees it, also a cut that looks finished:
+   第 3 部's v9 looked done to its maker and scored 5/10, with a face change, a cut inside a clip and a person
+   missing after a cut, all real. Do the fixes that cost no GPU, list the rest, and only then send.
+   Give the mp4, timeline and ASR to a fresh subagent with `references/review_brief.md` each round
    (fill every `{…}` in the brief for this film; it cannot hear: say so); it scores 1 to 10 for 「能不能直接公布」
    and names the second a stranger most likely swipes away and the scene worth sharing. Fix the swipe-away second
    before anything after it: average watch on 第 1 部 was 35 s. upper_bunk went 5 → 6 → 6.5 → 7 → 7 over v1 to
@@ -197,9 +226,13 @@ Scripts live in `<skill>/scripts/`; run them with `py -X utf8` from the folder n
 | 1, 3 | `edit_stills.py` | same-framing Qwen edits from a jobs file, three candidates |
 | 2 | `speak.py`, `check.py`, `spans2.py`, `spans.py`, `voice_fx.py` | takes; ASR check against script.json; best take and trim; phone and door filters |
 | 3 | `crops.py`, `fl2va.py` (`fl_polite.sh` waits for an empty queue), `strips.py` | first frames; a shot pinned at both ends; frame strips of clips |
+| 1, 3 | `fresh_draw.py`, `sheet.py` | a master still or a new angle with no source picture, four candidates; pictures side by side with their names |
+| 3 | `clip_check.py [--asr]` | light jumps, cuts inside a clip, speech in a clip that should be silent |
+| 3 | `prompt_check.py prompts/*.txt` (`name.txt:sec` to check the length) | H3 prompts before the GPU: beats contiguous from 0 s and ending at the clip length, 固定機位 with a move, the `non_diegetic_music:` block, 靜音 in the soundscape |
 | 3 | `words.py`, `words2.py` | where a clip's own line starts and ends; every word with its time (for `speech`, `me_at`) |
 | 2 to 4 | `polite.py speech / clips / music`, `pause.py pause / resume` | every GPU job, one at a time on an empty queue; hold a clip loop (needs the story's `plan.py`) |
 | 4 | `music.py` | ACE-Step score |
+| 5 | `verify.py out/reel_vN/reel_vN.mp4` | seam report: cuts where sound moves over 10 dB (LISTEN) or light over 20 (LOOK), single bad frames |
 | 5 | `render.py`, `package.py`, `asr_lines.py`, `asr_mix.py` | the reel; the 720p copy; ASR per subtitle line; ASR of the whole mix with times (what the reviewers read) |
 | 6 | `title_fx.py`, `scary_title.py`, `poster.py`, `blend.py` | animated title; title treatments; poster; normal and ghost stills blended |
 | 7 | `review_sheets.py` | sheets and shots.txt for the two blind reviewers |
@@ -221,8 +254,11 @@ Scripts live in `<skill>/scripts/`; run them with `py -X utf8` from the folder n
   dead grey-blue feet only at the reveal (owner, 2026-11-07: 「腳隨著影片慢慢變鬼腳」).
 - When a cut removes a line, search the rest of the script for anything that depended on it (橘子 and 雞排 callbacks).
 - Hidden ghosts for a rewatch must agree with the twist (outside, if she was outside all along) and be findable at 720p.
+- **Floor plan, then one master still, then everything else** (第 3 部; step 0 and step 1). Mirroring clips or
+  patching single shots did not satisfy the owner; the layout has to hold in every shot.
 - **Long takes and real dialogue** (owner on 第 2 部): a scene that is one action is one clip, not a cut per line, and
-  a line said to someone in the room is lip-synced in a two-person clip, not read as narration. lessons.md → 「What the
+  a line said to someone in the room is lip-synced in a two-person clip, not read as narration, the
+  narrator-character's lines included. lessons.md → 「What the
   owner sent back」.
 - **After the ghost is in the room, every shot says where she is.** A background figure doing the wrong thing gives
   the twist away early.

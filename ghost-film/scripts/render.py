@@ -9,7 +9,8 @@ A shot: {"id", "clip": path | "still": path | "clip0": path (the clip's first fr
          "dur" (fixed length) | "min", "lead", "gap", "tail", "motion", "focus", "amt", "fx": [...], "lift" (gamma < 1
          brightens), "sfx": [[name, at, gain]], "amb" (this clip's own sound gain), "xfade" (frames), "title": true,
          "big": true (subtitles large in the middle), "end": true (the end card), "black" (s of black before),
-         "music_cut": [a, b] (silence the music over these shot seconds, negative = from the shot's end)}
+         "music_cut": [a, b] (silence the music over these shot seconds, negative = from the shot's end),
+         "overlays": [{"png", "at": [a, b] (negative = from the end), "fade", "fade_out", "alpha", "blink" (Hz)}] (W x H RGBA pictures)}
 Voice lines come from vo/picks.json {"N01": "path.flac"}; their text from vo/script.json.
 Engine helpers (fx, clip frames, end card, contact sheet, mux) are ghost-reel's reel.py and sfx.py.
 """
@@ -253,13 +254,13 @@ def build():
                 a0, a1 = ln["clip_speech"]
                 sh["_clip_start"] = cur - t - (a0 - sh.get("offset", 0.0))
                 dia_events.append((cur, sh["clip"], a0, a1, ln.get("gain", 1.0)))
-                pieces = chunks(ln["text"].strip("「」"))
-                tot = sum(len(c) for c in pieces)
+                pieces = chunks(ln["text"].strip("「」")) if ln["text"] else []   # "" = a scream: sound, no subtitle
+                tot = sum(len(c) for c in pieces) or 1
                 c0 = cur
                 for c in pieces:
                     cd = (a1 - a0) * len(c) / tot
                     subs.append((c0, c0 + cd, "「" + c + "」", sh.get("big", False), True)); c0 += cd
-                cur += (a1 - a0) + gap
+                cur += (a1 - a0) + ln.get("gap", gap)   # a line's own "gap": the real pause before the next line in the clip
         dur = sh.get("dur") or max(sh.get("min", 2.0), cur - gap - t + tail if sh.get("lines") else sh.get("min", 2.0))
         sh["_start"], sh["_dur"] = t, dur
         for name, at, g in sh.get("sfx", []):
@@ -319,6 +320,56 @@ def _tfx():
         import title_fx
         _TFX.append(title_fx)
     return _TFX[0]
+
+
+def _stats(sh, n):
+    """mean and std per channel over three frames of the shot (first, middle, last), before any effect"""
+    keep = dict(FROZEN)
+    try:
+        if sh.get("clip"):
+            fr = [np.asarray(clip_pic(sh, i, n)).astype(np.float32) for i in (0, n // 2, n - 1)]
+        else:
+            fr = [np.asarray(still(sh)).astype(np.float32)]
+    finally:
+        FROZEN.clear(); FROZEN.update(keep)
+    a = np.stack(fr)
+    return a.mean(axis=(0, 1, 2)), a.std(axis=(0, 1, 2))
+
+
+def match_scenes(tl):
+    """Same-scene colour matching (drama-skills EDT-16/20). Shots with the same "scene" key that follow each other are
+    pulled toward the group's median channel mean and spread by SPEC["match_strength"] (default 0.7). A shot with
+    "match": false, a ghost_blend, an end card or no "scene" is left alone; "match_strength": 0 turns it off."""
+    k = SPEC.get("match_strength", 0.7)
+    if not k:
+        return
+    runs, cur = [], []
+    for it in tl:
+        sh = it.get("sh") if it["kind"] == "shot" else None
+        ok = sh and sh.get("scene") and sh.get("match") is not False and not sh.get("ghost_blend") and not sh.get("end")             and (sh.get("clip") or sh.get("still") or sh.get("clip0"))
+        if ok and cur and cur[-1]["sh"]["scene"] == sh["scene"]:
+            cur.append(it)
+        else:
+            if len(cur) > 1:
+                runs.append(cur)
+            cur = [it] if ok else []
+    if len(cur) > 1:
+        runs.append(cur)
+    for run in runs:
+        st = [_stats(it["sh"], round(it["dur"] * FPS)) for it in run]
+        tm, ts = np.median([m for m, _ in st], axis=0), np.median([s_ for _, s_ in st], axis=0)
+        for it, (m, s_) in zip(run, st):
+            gain = np.clip(ts / np.maximum(s_, 1.0), 0.8, 1.25)
+            shift = np.clip(tm - m * gain, -40, 40)
+            it["sh"]["_match"] = (m, gain, shift, k)
+            print(f"match {it['sh']['scene']:>10} {it['sh']['id']:>8}  mean {m.mean():5.1f} -> {(m * gain + shift).mean() * k + m.mean() * (1 - k):5.1f}  (group {tm.mean():5.1f})")
+
+
+def _match_apply(img, mt):
+    m, gain, shift, k = mt
+    a = np.asarray(img).astype(np.float32)
+    b = a * gain + shift   # = (a - mean) * gain + the group's mean
+    return Image.fromarray(np.clip(a + k * (b - a), 0, 255).astype(np.uint8))
 
 
 def lift(img, g):
@@ -443,6 +494,8 @@ def shot_frames(item, subs):
                 base = Image.fromarray(np.clip(cur * mask * alpha + f0 * (1 - mask * alpha), 0, 255).astype(np.uint8))
             else:
                 base = Image.fromarray(np.clip(cur * (1 - mask * (1 - alpha)) + f0 * mask * (1 - alpha), 0, 255).astype(np.uint8))
+        if sh.get("_match"):
+            base = _match_apply(base, sh["_match"])
         base = lift(base, sh.get("lift"))
         pic = R.apply_fx(base, fxs, i, n, base_vig=sh.get("vig", 0.35), grain=sh.get("grain", 5.0), tint=sh.get("tint"))
         dx, dy = R.shake_offset(fxs, i)
@@ -465,6 +518,23 @@ def shot_frames(item, subs):
             k = i / FPS
             if ha <= k <= hb:
                 canvas.alpha_composite(headline_tile(sh["headline"], min(1, (k - ha) / 0.15 + (1 if ha == 0 else 0)) * min(1, max(0, (hb - k) / 0.3))))
+        for ov in sh.get("overlays", []):   # pictures laid on the shot (W x H RGBA png): phone messages, screen text, face frames, a flash
+            k = i / FPS
+            oa, ob = ov.get("at", [0, item["dur"]])
+            oa = oa if oa >= 0 else item["dur"] + oa
+            ob = ob if ob >= 0 else item["dur"] + ob
+            if not (oa <= k <= ob):
+                continue
+            if ov.get("blink") and int((k - oa) * ov["blink"] * 2) % 2:
+                continue
+            img = ov.get("_img")
+            if img is None:
+                img = ov["_img"] = Image.open(p(ov["png"])).convert("RGBA").resize((W, H))
+            fi, fo = ov.get("fade", 0.12), ov.get("fade_out", ov.get("fade", 0.12))
+            a = min(1, (k - oa) / fi if fi else 1) * min(1, (ob - k) / fo if fo else 1) * ov.get("alpha", 1.0)
+            if a < 1:
+                img = img.copy(); img.putalpha(img.split()[3].point(lambda v, a=a: int(v * a)))
+            canvas.alpha_composite(img)
         if sh.get("tag") and i / FPS < sh.get("tag_sec", 2.5):
             tg = tag_tile(sh["tag"])
             canvas.alpha_composite(tg, (70, round(H * 0.16)))
@@ -524,7 +594,7 @@ def mixdown(total, vo_events, dia_events, amb_events, sfx_events):
         if name.startswith("file:"):
             a = audio(name[5:]).copy()
             a *= 0.12 / (np.sqrt((a ** 2).mean()) + 1e-9)
-            fo = int(SR * 1.2); a[-fo:] *= np.linspace(1, 0, fo)[:, None]
+            fo = min(int(SR * 1.2), len(a) // 2); a[-fo:] *= np.linspace(1, 0, fo)[:, None]
             place(fx, start, a * g)
             continue
         x = np.asarray(SFX._make(name, 2.0), dtype=np.float64)
@@ -568,6 +638,7 @@ def mixdown(total, vo_events, dia_events, amb_events, sfx_events):
 # ---------------------------------------------------------------- main
 def main():
     tl, total, vo_e, dia_e, amb_e, sfx_e, subs = build()
+    match_scenes(tl)
     shots = []
     for it in tl:
         if it["kind"] == "black":
