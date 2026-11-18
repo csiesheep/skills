@@ -1,6 +1,6 @@
 """Film-poster cover (1080x1920): a graded still, a tagline at the top, the title in the D treatment (標楷, worn, cold glow) and
 under it one line only, the brand icon and 鬼唱詩 (owner, 2026-11-07: 「上鋪的腳 下方，只用一行 鬼唱詩 icon 鬼唱詩」).
-py -X utf8 poster.py <bg.png> <out.jpg> --title 上鋪的腳 --tagline 每天半夜，它都垂下來。 [--focus 0.5,0.4] [--lift 1.15]
+py -X utf8 poster.py <bg.png> <out.jpg> --title 上鋪的腳 (a | splits a long title onto two lines) --tagline 每天半夜，它都垂下來。 [--focus 0.5,0.4] [--lift 1.15]
 The grade: teal shadows and warm highlights, crushed blacks, film grain, vignette, a dark fade at the bottom, a few faint
 scratches."""
 import argparse, os, sys
@@ -51,12 +51,20 @@ d = ImageDraw.Draw(im, "RGBA")
 for _ in range(5):
     x = rng.uniform(0, W); y0 = rng.uniform(0, H * 0.6); L = rng.uniform(40, 220)
     d.line([(x, y0), (x + rng.uniform(-4, 4), y0 + L)], fill=(255, 255, 255, int(rng.uniform(6, 13))), width=1)
-if a.tagline:
+if a.tagline:   # a soft dark shadow first, so the line still reads over a pale wall or a lamp (第 4 部)
+    sh = Image.new("RGBA", (W, H), (0, 0, 0, 0)); spaced(ImageDraw.Draw(sh), a.tagline, ImageFont.truetype(FONT_L, 44), 150, (0, 0, 0, 200), 0.45)
+    sh = sh.filter(ImageFilter.MaxFilter(5)).filter(ImageFilter.GaussianBlur(7)); im.alpha_composite(sh); im.alpha_composite(sh)
     spaced(d, a.tagline, ImageFont.truetype(FONT_L, 44), 150, (225, 222, 214), 0.45)
 size = 232   # 上鋪的腳 (4 characters) at 232; a longer title shrinks to fit, and erodes less so thin strokes survive
-while size > 90 and st.mask(KAI, size, text=a.title).width > W - 20:
+LINES = a.title.split("|")   # 一中街的|無人拍貼店: a long title on two lines (9 characters on one line came out at ~110 px, unreadable)
+while size > 90 and max(st.mask(KAI, size, text=t).width for t in LINES) > W - 20:
     size -= 6
-m = st.erode(st.mask(KAI, size, text=a.title), min(0.9, 0.32 * (232 / size) ** 2))
+ms = [st.erode(st.mask(KAI, size, text=t), min(0.9, 0.32 * (232 / size) ** 2)) for t in LINES]
+step = round(size * 1.12)
+m = Image.new("L", (max(x.width for x in ms), ms[0].height + step * (len(ms) - 1)), 0)
+for i, x in enumerate(ms):
+    m.paste(Image.composite(x, m.crop(((m.width - x.width) // 2, i * step, (m.width - x.width) // 2 + x.width, i * step + x.height)), x),
+            ((m.width - x.width) // 2, i * step))
 x = (W - m.width) // 2; y = a.title_y
 for col, mm in (((110, 180, 215, 255), m.filter(ImageFilter.GaussianBlur(22))), ((226, 236, 240, 255), m)):
     layer = Image.new("RGBA", m.size, col); im.alpha_composite(Image.merge("RGBA", (*layer.split()[:3], mm)), (x, y))

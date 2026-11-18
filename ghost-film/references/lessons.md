@@ -9,7 +9,9 @@
 | build music and place sounds | 「Music levels」, 「A music bed by situation」, 「Stock sound effects」, 「A real silence before a scare」 |
 | render and mix | 「Mix and render」, 「render.py fixes in this round」, 墾丁 → 「Render and mix」 |
 | cut a long film or make it scarier | 「Cutting a long reel」, 「Scarier without new footage」, 「The ending」 |
+| write H3 prompts, cut points, or sort a clip's defect | 「From drama-skills」 at the end |
 | run review rounds | 氣窗 → 「Review rounds」, 「Blind polish review」 |
+| start any film, or set one up to run unattended | 「第 3 部」 at the end: the order that wastes least, what H3 gets wrong, what a scheduled run needs |
 
 # What upper_bunk taught (2026-11-06 to 11-07)
 
@@ -392,3 +394,120 @@ Second reference run: `backlog/kenting_knock/film/` (`reel/plan.py`, `clip_notes
   A LOW on a filtered line is a listen, not a retake by default.
 - `voice_fx.py phone=… door=…`: fxlines.py with the line ids as arguments.
 - `assets/example_make_shots.py` + `example_clip_notes.json`: the shot-list builder with two-person dialogue clips.
+
+
+# 〈隔壁空床的簾子〉 (鬼唱詩劇場｜第 3 部, v1 to v11, 2026-11-13 to 11-14)
+
+Working folder `backlog/empty_bed_curtain/film/`. Eleven cuts; v1 to v8 were mostly one problem, the room.
+
+## The order that wastes least
+1. Screenplay, with a shot count (about ten a minute) and one take per conversation.
+2. A floor plan per room, confirmed by the owner. H20 (a side angle of the ward) was redrawn four times from the
+   owner's words (「空床應該在窗戶右邊」「媽媽的床應該與牆壁平行」「窗戶在右邊的牆」「簾子，窗戶 不對」) and was right
+   in one draw after a top-down sketch came back with 「平面圖對」.
+3. One master still per camera setup, a fresh draw from the plan. Every other still of the setup is a same-framing
+   edit of it. An edit toward a new angle keeps the old perspective: draw fresh.
+4. The stills on one sheet to the owner, then clips.
+
+What it cost to do it the other way: about 2.5 GPU hours of clips from stills whose beds lay along the window, all
+replaced. Mirroring those clips (v8) was not accepted either.
+
+## What the owner sent back, as rules
+- 「場景不穩定」「病床的位子不統一」「房間格局不統一」 (three rounds): the floor plan and the master still, above.
+- 「主角說話還是像唸旁白，應該要像對話」 (three rounds, also after re-recording the takes as room talk): the
+  narrator-character speaks inside the clip. Not raised again after that.
+- 「畫面太常切換了，多一點長鏡頭」: 39 shots became 27 for 2:33. A cold open of four flashes became one 7 s take.
+- 「片頭沒有背景」: the title goes over a clip (the closed curtain with a thin gap), not over black.
+- 「折疊床折疊動作不對，改成主角坐上床休息」: an action H3 does badly is replaced by a simpler one, not reseeded.
+- 「場景換成照著空床」: the picture shows what the narration is about.
+- 「應該是拖鞋滑到床底（不是滑出來）」: the clip slid it out and then in; an `offset` past the first half fixed it.
+- The scare: 「主角視角，婆婆變成鬼臉，伸手抓主角的腳，把主角往她拉過去」, continuing the shot before it. Its first
+  frame was that clip's last frame; all three takes worked.
+- A picture used twice is cut (the ankle pull of the cold open, again at the reveal), and so is an insert that only
+  repeats a line (the dent close-up; its line moved onto the wide shot).
+
+## H3 on this film
+- Long dialogue takes (10 to 14 s, two to four lines): d1, nq, n3, c12 and h26m each had a usable take among two
+  seeds; h25L (one short line, 5 s) garbled both. Typical faults: gibberish before the first line and after the
+  last, the first line said twice (start at the second), one word changed (的 for 那).
+- A cut inside the clip (nq at 2.9 s: wide to two-shot) and a camera that pushes in although the prompt says fixed.
+  Start after the cut; a slow push is fine.
+- Night frames that jump to a lit room (h16, h22g). `clip_check.py` finds these and the inside cuts; it also flags a
+  wanted change of light (the lunge in h18g), so a flag is a reason to look, not a verdict.
+- A person who turns to the lens gets another face (d1 after 9 s). Keep people turned to each other.
+- Clips with no line can still carry speech-like sound (n2). Set `amb` to 0 for them.
+- A same-framing edit that only added glasses made the clip jump (h22g); the old clip stayed.
+
+## render.py and make_shots
+- A `clip_speech` line may carry its own `gap` (the real pause to the next line in the clip), and an empty `text`
+  is a sound with no subtitle (a scream). Lines of one take stay in sync that way.
+- For a clip with spoken lines the renderer plays only the spans, never the rest of the clip's sound: gibberish
+  around the lines is gone, and so is the room tone. Add a sound (`sfx`) where the silence shows.
+- make_shots `talk`: clip_notes `{"offset", "talk": [[start, end, "「…」"], …], "end"}`; `"pre": "N13"` puts one
+  narration line before the first spoken line. `still:src/x.png` as a source, and a `{"sub", "dur"}` line for a
+  shout that comes from a sound file.
+- A narration line after the dialogue in the same take is a second shot from the same clip (offset at the cut), at
+  its own speed, or it moves to the next shot.
+
+## For a run nobody watches (the scheduled task)
+- Three owner gates stop a run: the story, the stills before H3, and any download. Split the work in two: everything
+  up to the stills sheet (story, screenplay, floor plans, master stills, derived stills) can run alone and ends in
+  one review package; clips, voice, cut, blind review and packing run after the yes. Never post.
+- State lives in files, not in the session: this film outran the context twice. clip_notes.json, make_shots.py, the
+  jobs files and the logs were enough to resume; add a `film/STATE.md` with the step reached, what is picked and
+  what waits for the owner.
+- The GPU has no lock. `polite.py`, `edit_stills.py` and `fresh_draw.py` wait for an empty queue, and another
+  session's job did sit between two of ours. ComfyUI was restarted by someone else mid-draw: wait for port 8188 and
+  run the same jobs file again (finished names are skipped). Never start or restart it.
+- Checks a run can do alone: `clip_check.py --asr`, `words2.py` against the script for every spoken line,
+  `asr_lines.py` on the mix, a blind reviewer on every cut. What it cannot: whether an action is right, and
+  anything heard (voices, music level, a scream under music). Those go in the report as open points.
+- GPU on this film: about 96 min for the 17 long-take clips, 22 min for five fix clips, 11 min for three takes of
+  the grab, 7 min for three voice takes, stills 1.5 min per three candidates.
+
+
+# From drama-skills (2026-11-17, zenstory-ai/drama-skills, MIT; a short-drama pipeline on cloud models, read for what carries over)
+
+## H3 prompts
+- **The timed beats must add up to the clip, exactly.** Past the length H3 cuts off the last line or the last action; a gap nobody wrote is
+  filled by slowing the action down. `prompt_check.py prompts/<name>.txt:<seconds>` checks it (our existing prompts all passed the contiguity part).
+- **A reaction close-up** (the victim hears or sees it): the trigger, then one precise emotion word (「她瞬間怔住」), then two tells that are
+  visible at that framing (eyes fixed, a thumb stopped above the screen), then held still within 1.5 s. An emotion word alone gives a face that
+  moves everywhere; a list of small actions with no emotion word gives nothing.
+- **Someone who is not speaking** gets 「嘴巴一直閉著」 in the prompt, or H3 gives them the line's mouth.
+- **No score**: write `non_diegetic_music: N/A` and 「沒有配樂」; 「全程靜音」 also removes the room sound.
+- **Fixed camera and a push in the same seconds contradict each other.** Our 「固定機位，鏡頭極慢地推近」 has shipped, so the check only warns; if
+  a push is wanted, give it its own beat after the still one.
+- **An action that fits**: a 4 to 5 s shot holds one or two connected actions. A third one gives smeared hands.
+- **A second identity picture for a face close-up** with no first frame: the same person's face board next to the full-body sheet, and say which
+  one holds the face and which the build and clothes. They tested it on 3 seeds in one night scene only: try it before relying on it.
+- **Anchors the picture does not show**: an anchor in a blocking line (「站在書架旁」) that is not visible in the reference picture is invented
+  by H3 differently each time. Use fixed objects that the picture shows.
+- **Same input rerolled once or twice and the same defect comes back**: stop reseeding. Change a word, or split the shot. Still stuck, choose
+  one: keep it and hide it with the cut, move what it carries into the next shot, or delete the shot. A shot that carries the only plant of a
+  twist is moved to a neighbour before it is deleted.
+
+## Cuts and seams
+- A line goes in about 0.25 s before its first sound and out about 0.4 s after its last (0.6 s when the framing or the stand changes a lot), and
+  a line shot is at least 1.2 s. Compare our `lead` / `gap` / `tail` defaults against these when a cut feels hard.
+- Cut to the listener on the second half of a heavy line (L-cut: the speaker's voice runs on over the reaction), or let the next line's sound start
+  before its picture (J-cut). Subtitles stay on the shot where the mouth opens.
+- A turn on the action does not cut well when H3 turns the wrong way (6 of 6 in their runs); cut before the turn.
+- `verify.py` is their `verify` in 60 lines: 0.4 s of sound each side of every cut (over 10 dB listed), the picture's brightness (over 20 listed),
+  a lone bad frame. photo_booth v4 listed 10 sound cuts, mostly the planned hits and silences around 124 to 168 s; the brightness list was
+  long there because the ending flashes on purpose. The list says where to listen first, not what is wrong.
+- Same-scene colour matching is now in `render.py` (`scene`, `match`, `match_strength` in shots.md): it pulls the shots of one scene toward the
+  group's median mean and spread. Turn it off for a shot where the light changes on purpose.
+
+## Sorting a clip's defect
+| Defect | Do |
+|---|---|
+| not noticed at normal speed (an edge flicker, a far figure) | keep it |
+| outside the part of the clip that is used (a blank start, a deformed end) | `offset` / `max_t` |
+| fixable in the mix or the grade (a few frames of lip sync, colour, a small prop) | fix it there |
+| the story reads, but the face drifted, a prop is wrong or the mouth is off | redraw; the owner may waive it |
+| a key action, a line, a necessary clue is missing; someone changed face; the room is mirrored | redraw, no waiver |
+| the clip has it and the cut lost it (a line cut off, a subtitle wrong) | fix the cut, not the clip |
+
+Fix a list of clear defects in one round and say which things not to touch; change one thing at a time only when the cause is unknown.
+When a reference picture itself is the problem (an old watermark, a blurred face), redraw the picture, not the prompt.

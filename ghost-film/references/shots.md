@@ -36,6 +36,7 @@ A shot:
 | `tag`, `tag_sec` | a name plate for a speaker the first time we see them |
 | `title_fx`, `title_fx_dur` | the animated title (1, 2 or 3 from title_fx.py) over this shot |
 | `nosub`, `big`, `sub_y` | no subtitles; large centred subtitles; subtitle height |
+| `scene`, `match` | a scene name: shots that follow each other with the same `scene` are colour-matched to the group's median (`match_strength` at the top level, default 0.7, 0 = off); `"match": false` leaves one shot alone (the lights come on). Shots with no `scene`, a `ghost_blend` or an end card are never touched |
 | `ghost_blend` | 若隱若現: `{"mode": "curve", "curve": [[t, a], ...], "ref_t", "region": [x0,y0,x1,y1], "feather", "outside_ref", "tint", "scale", "anchor"}` — the ghost shows only where the clip differs from its empty frame at `ref_t`, at the opacity curve; `scale` shrinks it about `anchor` |
 | `theme`, `theme_at`, `theme_gain` | a music file that starts with this shot (the end theme) |
 | voice over a muted clip | `"amb": 0, "theme": "clips/line.wav", "theme_at": 0.3, "lines": [{"sub": "「…」", "dur": 1.6}]`: a line spoken by speak.py when H3 cannot say it |
