@@ -262,12 +262,12 @@ def build_v2(R):
 # ======================================================================== V3 電影感
 def build_v3(R):
     T = Timeline()
-    tint = (0.92, 0.97, 1.05)
+    tint = None if getattr(S, "MONO", False) else (0.92, 0.97, 1.05)  # shots.json "mono": true keeps a black-and-white comic grey
     global STRIP
     import numpy as np
     g = np.zeros((H, W, 4), dtype=np.uint8)
     ys = np.arange(H)
-    a = np.clip((ys - 1180) / 260, 0, 1) * np.clip((1620 - ys) / 120, 0, 1) * 170
+    a = np.clip((ys - 1180) / 260, 0, 1) * np.clip((1620 - ys) / 120, 0, 1) * 205
     g[..., 3] = a[:, None].astype(np.uint8)
     STRIP = Image.fromarray(g, "RGBA")
     for pid, sec, sub, o in S.V3:
@@ -297,24 +297,33 @@ def build_v3(R):
         if o.get("duck"):
             T.ducks.append((start - o.get("black", 0), start + sec))
         tile = None
+
+        def voice_tile(txt):
+            # a voice in the frame: big, centred, one line per 8 characters (a long line ran off the frame
+            # and was cut to 「／下一個拿刀的，明」 in 灰外套's last shot)
+            from PIL import ImageDraw
+            f = R.font(96, weight="Regular")
+            lines = [txt[k:k + 8] for k in range(0, len(txt), 8)] or [""]
+            wdt = int(max(f.getlength(x) for x in lines)) + 60
+            t = Image.new("RGBA", (wdt, 130 * len(lines) + 40), (0, 0, 0, 0))
+            d = ImageDraw.Draw(t)
+            for k, x in enumerate(lines):
+                d.text(((wdt - f.getlength(x)) / 2, 10 + 130 * k), x, font=f, fill=(240, 240, 245), stroke_width=7,
+                       stroke_fill=(0, 0, 0))
+            return t
+
+        mk = voice_tile if o.get("voice") else R.subtitle_tile
         if sub:
-            if o.get("voice"):
-                f = R.font(96, weight="Regular")
-                txt = " ".join(sub)
-                tile = Image.new("RGBA", (int(f.getlength(txt)) + 60, 170), (0, 0, 0, 0))
-                from PIL import ImageDraw
-                ImageDraw.Draw(tile).text((20, 10), txt, font=f, fill=(240, 240, 245), stroke_width=7, stroke_fill=(0, 0, 0))
-            else:
-                tile = R.subtitle_tile(sub)
+            tile = mk(sub.replace("／", "")) if o.get("voice") else R.subtitle_tile(sub)
         # "／" in a subtitle: several lines in turn on one shot, each on screen for a share of the shot that follows
         # its length (a long panel of narration keeps all of it)
         beats = []
-        if sub and not o.get("voice") and "／" in sub:
+        if sub and "／" in sub:
             parts = [x for x in sub.split("／") if x]
             total_len = sum(len(x) for x in parts)
             at = 0.0
             for x in parts:
-                beats.append((at, R.subtitle_tile(x)))
+                beats.append((at, mk(x)))
                 at += sec * len(x) / total_len
         voice = o.get("voice", False)
 
@@ -339,10 +348,10 @@ def build_v3(R):
                 k = max(j for j, (at, _) in enumerate(beats) if now >= at)
                 at, tile = beats[k]
                 nxt = beats[k + 1][0] if k + 1 < len(beats) else n / FPS
-                a = (1.0 if first and k == 0 else min(1, max(0, (now - at - (0.35 if k == 0 else 0.1)) / 0.3)))                     * min(1, max(0, (nxt - now) * FPS / 6))
+                a = (1.0 if first and k == 0 else min(1, max(0, (now - at - (0.12 if k == 0 else 0.05)) / 0.18)))                     * min(1, max(0, (nxt - now) * FPS / 6))
             if tile is not None and not beats:
                 now = i / FPS
-                a = (1.0 if first else min(1, max(0, (now - 0.35) / 0.4))) * min(1, max(0, (n - i) / 9))
+                a = (1.0 if first else min(1, max(0, (now - 0.12) / 0.18))) * min(1, max(0, (n - i) / 9))
             if tile is not None:
                 if a > 0:
                     t2 = tile.copy(); t2.putalpha(t2.split()[3].point(lambda v: int(v * a)))
@@ -353,8 +362,8 @@ def build_v3(R):
                         R.paste_center(f, t2, W / 2, 1400)
             return f.convert("RGB")
         T.shot(n, draw, xfade=0 if o.get("black") else 12, pid=pid)
-    T.black(0.4)
-    card_shot(T, R, R.end_card(), 3.2, fade=14)
+    T.black(0.1)  # 0.4 s plus the card fade read as the video ending (灰外套 part 1)
+    card_shot(T, R, R.end_card(), 3.2, fade=8)
     # beds: the shot list's "v3_beds", each over the whole film or from one panel's shot to another's
     for frm, to, name, gain in S.V3_BEDS:
         if frm is None:

@@ -13,11 +13,13 @@ The file is meant to be read and edited by hand (one shot per line). Its keys:
     v2       說書快剪 (shelved): [{"panel", "caption", options}]; "／" splits a caption into beats
     v3       電影感: [{"panel", "sec", "sub", options}] in the order they play; panel "TITLE" is the title card.
              "／" in a sub shows its parts in turn on that shot.
+    mono     true: no blue V3 grade, for a comic the owner wants with no colour at all
     cuts     other V3 cuts of the same comic: {name: {"v3": [...], "title", "end": [lines], "music", "v3_beds"}},
              rendered with make.py --cut name (a long version, a part 1 and part 2)
 
 Options: motion (push, pull, pan_rtl, pan_down, static, snap), focus [x, y], fx (night, pulse, chroma, darken,
-shake, fadein, glitch), sfx [[name, at seconds, gain]], hold (extra seconds, v1), black (seconds of black before),
+shake, fadein, glitch, flicker, flicker2, vhs (tape noise every frame), static (a TV-snow burst on the first frames),
+negflash (negative frames on the cut)), sfx [[name, at seconds, gain]], hold (extra seconds, v1), black (seconds of black before),
 duck (music dips), clip (an H3 video, path relative to the story folder), clip_offset, mono (strip the colour
 H3 lets into a clip), voice (v3: the line is a
 voice in the middle of the frame, not a subtitle), voice_y.
@@ -62,6 +64,7 @@ def load(story_dir: str | Path, brand: dict | None = None, cut: str | None = Non
         SEAL=(brand or {}).get("seal"),
         HANDLE=(brand or {}).get("handle", ""),
         DISCLOSURE=(brand or {}).get("disclosure", "AI 輔助創作｜故事純屬虛構"),
+        MONO=bool(j.get("mono")),  # the comic is strictly black and white: no cinematic blue tint on V3
         MUSIC=j.get("music", {}),
         BEDS=[(b["from"], b["to"], b["bed"], b["gain"]) for b in j.get("beds", [])],
         V3_BEDS=[(b.get("from"), b.get("to"), b["bed"], b["gain"]) for b in j.get("v3_beds", [])],
