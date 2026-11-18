@@ -124,7 +124,27 @@ def apply_fx(pic, fxs, i, n, base_vig=0.55, grain=0.0, tint=None):
             for _ in range(random.randint(2, 5)):
                 y = random.randint(0, h - 40); hh = random.randint(6, 40)
                 a[y:y + hh] = np.roll(a[y:y + hh], random.randint(-50, 50), axis=1)
-            a += np.random.normal(0, 18, a.shape).astype(np.float32)
+            a += np.random.normal(0, 18, (h, w, 1)).astype(np.float32)   # grey noise: a black-and-white comic stays grey
+        elif fx == "vhs":
+            # analog tape: heavy grain, scanlines, a rolling bright band, tears that jump sideways, brightness wobble
+            a += np.random.normal(0, 26, (h, w, 1)).astype(np.float32)
+            a[::3] *= 0.82
+            band = (int(t * h * 1.7) + i * 7) % h
+            a[band:band + 18] = a[band:band + 18] * 0.55 + 110
+            for _ in range(random.randint(1, 3)):
+                y = random.randint(0, h - 12); hh = random.randint(3, 12)
+                a[y:y + hh] = np.roll(a[y:y + hh], random.randint(-70, 70), axis=1)
+            a *= random.uniform(0.86, 1.04)
+        elif fx == "static" and i < 5:
+            # a burst of TV snow over the first frames, fading into the picture
+            k = 1 - i / 5
+            snow = np.random.randint(0, 256, (h // 4, w // 4, 1)).astype(np.float32)
+            snow = np.repeat(np.repeat(snow, 4, axis=0), 4, axis=1)[:h, :w]
+            a = a * (1 - 0.85 * k) + snow * 0.85 * k
+        elif fx == "negflash" and i in (0, 1, 3):
+            a = 255 - a                                                   # a negative frame on the cut
+        elif fx == "flicker2" and random.random() < 0.3:
+            a *= random.choice((0.15, 0.35, 1.25))
         elif fx == "chroma" and i < 12:
             k = int(10 * (1 - i / 12))
             a[..., 0] = np.roll(a[..., 0], k, axis=1); a[..., 2] = np.roll(a[..., 2], -k, axis=1)
@@ -238,7 +258,7 @@ def subtitle_tile(text, size=60):
     d = ImageDraw.Draw(tile)
     for k, ln in enumerate(ls):
         x = (tw - widths[k]) / 2
-        d.text((x, 10 + k * lh), "".join(c for c, _ in ln), font=f, fill=(235, 235, 235), stroke_width=3, stroke_fill=(0, 0, 0))
+        d.text((x, 10 + k * lh), "".join(c for c, _ in ln), font=f, fill=(250, 250, 250), stroke_width=7, stroke_fill=(0, 0, 0))
     return tile
 
 

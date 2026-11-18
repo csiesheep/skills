@@ -3,14 +3,16 @@
     py -X utf8 draft.py <story folder> [--target 85] [--force]
 
 What it decides, from the board alone (comic/board.json, the picked panels and the "reveal" mark):
-- the cold open: the hook panel before the reveal (the same pick as ghost-comic's Threads picture), then the
-  title card;
+- the cold open: the hook panel before the reveal (the same pick as ghost-comic's Threads picture), with tape noise
+  (`vhs`); no title card (the title is in the caption and the cover, and a black title card was the likeliest swipe);
 - which panels play in V3: every lettered panel in reading order, then the least needed ones dropped until the film
   fits --target seconds; the hook, the panel before the reveal, the reveal and the last panel always stay;
 - per shot: seconds from the length of the line, one short subtitle (the first spoken or narrated sentence, cut at a
   comma when long), a voice-in-the-frame for "voice" lettering, the camera move from the panel's shape, "night"
   from the panel's prompt, a whisper, phone ping or heartbeat from what the panel holds;
-- the reveal: a second of black, a stinger, shake, the music ducked; the last panel: darken, riser and stinger;
+- the reveal: a short beat of black before it (0.3 s), a stinger, shake, a negative flash and a TV-snow burst, the
+  music ducked; the last panel: darken, tape noise, riser and stinger;
+- a black-and-white board (`"mono": true`) gives `"mono": true` and no "night" tint (night panels are drawn black);
 - H3 clips already in reels/clips (named *_<panel>.mp4) are used where they exist;
 - V1: the same cold open, every panel, the reveal and the ending marked; ambience from the setting.
 
@@ -57,6 +59,9 @@ def short_line(cell, limit=20) -> tuple[str | None, str | None]:
     return first, e["kind"]
 
 
+MONO = False
+
+
 def main() -> int:
     for s in (sys.stdout, sys.stderr):
         try:
@@ -81,6 +86,8 @@ def main() -> int:
     mg = R.mg
     mg.set_work(d / "comic")
     b, ch = mg.load_board(), mg.load_choices()
+    global MONO
+    MONO = bool(b.get("mono"))
     reveal_page, after = mg.reveal_point(b)
     if reveal_page is None:
         print("board.json marks no reveal panel (\"reveal\": true): mark it first, the draft is built around it",
@@ -107,7 +114,7 @@ def main() -> int:
         else:
             o["motion"] = "pan_rtl" if aspect >= 1.8 else "pan_down" if aspect < 0.75 else "push"
         fx = []
-        if NIGHT.search(cell.get("prompt", "")) or cell.get("fill"):
+        if (NIGHT.search(cell.get("prompt", "")) or cell.get("fill")) and not MONO:
             fx.append("night")
         sfx = []
         kinds = {e["kind"] for e in cell.get("text", [])}
@@ -131,10 +138,10 @@ def main() -> int:
     line, kind = short_line(c, 14)
     o = options(c, box, kind)
     o.setdefault("sfx", []).append(["heartbeat", 0.0, 0.4])
+    o["fx"] = o.get("fx", []) + ["vhs"]
     if kind == "voice":
         o["voice"] = True
     shots.append({"panel": hook, "sec": 3.0, "sub": line, **o})
-    shots.append({"panel": "TITLE", "sec": 2.2, "sub": None, **({"clip": clips[order[0]]} if order[0] in clips else {})})
     body = []
     for pi, c, box in panels:
         pid = c["id"]
@@ -150,13 +157,13 @@ def main() -> int:
             o["voice"] = True
         if pid == reveal:
             line, sec = None, 5.0
-            o.update(black=1.0, duck=True)
-            o["fx"] = [x for x in o.get("fx", []) if x != "pulse"] + ["shake"]
+            o.update(black=0.3, duck=True)     # black is the beat BEFORE the shot
+            o["fx"] = [x for x in o.get("fx", []) if x != "pulse"] + ["shake", "negflash", "static"]
             o["sfx"] = [["stinger", 0.0, 1.0]]
         elif pid == last:
             sec = 5.6
             o.update(black=0.6, duck=True)
-            o["fx"] = o.get("fx", []) + ["darken"]
+            o["fx"] = o.get("fx", []) + ["darken", "vhs"]
             o["sfx"] = o.get("sfx", []) + [["riser", 1.2, 0.4], ["stinger", 3.0, 0.8]]
         score = (3 if pid in (reveal, last, before) else 0) + (1 if kind in ("speech", "voice") else 0) \
             + (1 if pid in clips else 0) + (0.5 if order.index(pid) < order.index(reveal) else 0)
@@ -204,6 +211,8 @@ def main() -> int:
                "say": {}, "skip": []},
         "v3": shots,
     }
+    if MONO:
+        doc["mono"] = True
     p = story.save(d, doc)
     v3_len = sum(s["sec"] + s.get("black", 0) for s in shots) + 3.6
     print(f"{p}: V3 {len(shots)} shots, about {v3_len:.0f} s (cold open {hook}, reveal {reveal} on page "

@@ -42,6 +42,13 @@ def check(S, R, version) -> list[str]:
             problems.append(f"{pid}: not on the board")
         if o.get("clip") and not Path(o["clip"]).exists():
             problems.append(f"{pid}: clip missing {o['clip']}")
+        import sfx as _sfx
+        for x in o.get("sfx", []):
+            if x[0] not in _sfx.LIB and x[0] not in _sfx.SAMPLE_MAP:
+                problems.append(f"{pid}: no sound named {x[0]!r} (have: {', '.join(sorted(set(_sfx.LIB) | set(_sfx.SAMPLE_MAP)))})")
+    if version == "v3" and S.V3 and not (S.V3[0][2] or "").strip():
+        problems.append("first shot has no subtitle: the first frame needs one whole, concrete line (owner 2026-11-17; "
+                        "the 13 reels that opened with a wordless flash all stayed under 300 views, see SKILL.md step 2)")
     reveal_page, after = R.mg.reveal_point(R.BOARD)
     opening = [p for p, _ in shots[:2]] if version != "v1" else [p for p, *_ in S.HOOK]
     for pid in opening:

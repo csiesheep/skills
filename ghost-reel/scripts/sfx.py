@@ -121,6 +121,16 @@ def ping():
     return x * np.exp(-((t % 0.14) / 0.08)) * 0.35
 
 
+def ring(d=None):
+    """An old desk phone's bell: a hammer striking two bells about 20 times a second for 1.6 s, then a short tail."""
+    ln = secs(2.0); t = np.arange(ln) / SR
+    tone = sum(a * np.sin(2 * math.pi * f * t) for f, a in ((980, 1.0), (1240, 0.8), (2650, 0.35), (3410, 0.2)))
+    strike = (np.sin(2 * math.pi * 20 * t) > 0).astype(float)
+    env = np.convolve(strike, np.exp(-np.arange(secs(0.03)) / secs(0.012)), mode="same")
+    gate = (t < 1.6) + (t >= 1.6) * np.exp(-(t - 1.6) / 0.12)
+    return norm(tone * env * gate, 0.55)
+
+
 def zipper(d=0.7):
     n = secs(d); x = np.zeros(n)
     for i in range(int(d * 60)):
@@ -150,7 +160,7 @@ def silence(d):
 LIB = {"drone": drone, "wind": wind, "insects": insects, "rustle": rustle, "heartbeat": heartbeat,
        "stinger": lambda d=None: stinger(), "riser": riser, "whoosh": lambda d=None: whoosh(),
        "pop": lambda d=None: pop(), "ping": lambda d=None: ping(), "zipper": lambda d=None: zipper(),
-       "whisper": lambda d=None: whisper()}
+       "whisper": lambda d=None: whisper(), "ring": lambda d=None: ring()}
 BEDS = {"drone", "wind", "insects", "rustle", "heartbeat"}
 
 
@@ -263,3 +273,76 @@ def _make(name, d):
 LIB["footsteps"] = lambda d=None: rustle(d or 4, 3)
 LIB["page"] = lambda d=None: whoosh(0.3)
 BEDS.add("footsteps")
+
+
+def bell(d=None):
+    """A bus's stop-request chime 「叮」: one bright struck bell, a fast attack and a 1.2-s ring-out
+    (〈末班車的下車鈴〉, 2026-10-30)."""
+    ln = secs(1.3); t = np.arange(ln) / SR
+    tone = sum(a * np.sin(2 * math.pi * f * t) * np.exp(-t / dk)
+               for f, a, dk in ((1568, 1.0, 0.45), (3136, 0.35, 0.22), (4704, 0.18, 0.12), (2093, 0.25, 0.3)))
+    click = np.exp(-t / 0.004) * rng.normal(0, 0.3, ln)
+    return norm(tone + click, 0.5) * env(ln, 0.002, 0.2)
+
+
+def rain(d):
+    """Heavy rain on a bus roof: broadband hiss with a slow swell and a scatter of drops."""
+    n = secs(d); t = np.arange(n) / SR
+    x = band(rng.normal(0, 1, n), 900, 9000) * (0.75 + 0.25 * np.sin(2 * math.pi * 0.09 * t))
+    drops = (rng.random(n) < 0.0009).astype(float) * rng.uniform(0.3, 1.0, n)
+    x += np.convolve(drops, np.exp(-np.arange(secs(0.01)) / secs(0.002)), mode="same") * 0.8
+    return norm(x, 0.5) * env(n, 0.8, 0.8)
+
+
+LIB["bell"] = bell
+LIB["rain"] = rain
+BEDS.add("rain")
+
+
+def knock(d=None):
+    """A dull knock on a metal grate heard through water 「叩」: a low thud with a muffled metallic edge, 0.4 s
+    (〈社區泳池的排水口〉, 2026-10-31). Name it three times about 0.45 s apart for 「叩、叩、叩」."""
+    ln = secs(0.4); t = np.arange(ln) / SR
+    thud = np.sin(2 * math.pi * 85 * t) * np.exp(-t / 0.07)
+    metal = sum(a * np.sin(2 * math.pi * f * t) * np.exp(-t / dk) for f, a, dk in ((410, 0.35, 0.05), (690, 0.2, 0.035)))
+    click = band(rng.normal(0, 1, ln), 200, 1200) * np.exp(-t / 0.008) * 0.4
+    return norm(thud + metal + click, 0.8) * env(ln, 0.001, 0.15)
+
+
+LIB["knock"] = knock
+
+
+def slap(d=None):
+    """A wet flip-flop sole slapping a bare heel on tile 「啪」: a short smack with a watery splat tail, 0.3 s
+    (〈東河海邊的民宿〉, 2026-11-03). Name it three times about 0.7 s apart for 「啪，啪，啪」, slow."""
+    ln = secs(0.3); t = np.arange(ln) / SR
+    smack = band(rng.normal(0, 1, ln), 500, 4500) * np.exp(-t / 0.012)
+    body = np.sin(2 * math.pi * 140 * t) * np.exp(-t / 0.03) * 0.6
+    splat = band(rng.normal(0, 1, ln), 1500, 7000) * np.exp(-((t - 0.04) ** 2) / 0.0012) * 0.35
+    return norm(smack + body + splat, 0.8) * env(ln, 0.001, 0.12)
+
+
+def waves(d):
+    """Slow surf on a stony beach: a low wash that swells and drains about every 7 s, with pebble hiss."""
+    n = secs(d); t = np.arange(n) / SR
+    swell = (0.5 + 0.5 * np.sin(2 * math.pi * t / 7.0 - 1.5)) ** 2
+    x = band(rng.normal(0, 1, n), 120, 1800) * (0.25 + 0.75 * swell)
+    x += band(rng.normal(0, 1, n), 2500, 9000) * np.clip(np.sin(2 * math.pi * t / 7.0 - 2.6), 0, 1) ** 3 * 0.35
+    return norm(x, 0.5) * env(n, 1.5, 1.5)
+
+
+def gasp(d=None):
+    """A long, wet, rasping in-breath, like someone surfacing from water 「嘶——」, 1.4 s."""
+    ln = secs(1.4); t = np.arange(ln) / SR
+    rise = np.clip(t / 1.2, 0, 1)
+    noise = rng.normal(0, 1, ln)
+    air = band(noise, 500, 2200) * (1 - rise) * 0.6 + band(noise, 1800, 6000) * rise
+    air *= (0.3 + 0.7 * rise)
+    gurgle = np.sin(2 * math.pi * (90 + 40 * np.sin(2 * math.pi * 11 * t)) * t) * (rng.random(ln) < 0.5) * 0.15
+    return norm(air + gurgle, 0.85) * env(ln, 0.05, 0.25)
+
+
+LIB["slap"] = slap
+LIB["waves"] = waves
+LIB["gasp"] = gasp
+BEDS.add("waves")
