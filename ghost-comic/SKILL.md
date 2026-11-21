@@ -44,7 +44,25 @@ style was wrong and the sheets were picked for them.
    one to two and a half GPU hours; the owner read 〈代班那台電梯一直超載〉 only after its seven
    pages were drawn, said 「這故事不好，放棄」, and all of it was thrown away. The next story was
    sent first and approved with one word. A story the owner supplies needs no gate.
-1. **Board.** Copy `assets/example_board.json` into the work folder as `board.json` and rewrite it
+1. **Board.** *A story from ghost-story-v3 or v2 has a screenplay: start from it.*
+   `py -X utf8 "<skill dir>/scripts/from_screenplay.py" <story folder>` (stdlib only, no GPU) reads
+   `film/screenplay.md` and writes `comic/board.json`, `comic/brief.md` and `comic/brief.json`. What it
+   carries over by itself: the cast (a feature list from the screenplay's bold words; a voice-only part
+   gets no sheet), one scene per place, one panel per bracketed beat with the narration and spoken lines
+   already lettered (`narration`, `speech`, and `voice` for the voice-only parts), the cold open as panel 1,
+   the 最大畫面 beat marked `reveal: true` at the top of a page, the title on panel 1, post-production
+   overlay text kept out of the panels, and a table of the jokes with the panel each one falls in and the
+   panel its callback lands in (estimated from the seconds; the seed panel's words are not cut for length).
+   What it cannot know, and `brief.md` lists in order: every English `desc`/`views`/`keywords`, each scene's
+   floor plan, the 「這樣才對」 lines for the device rules the screenplay states, the style and lights,
+   every panel's prompt, refs and `cast` (its `cast` is a guess), and what the ghost looks like. The
+   screenplay says the ghost is seen clearly; this skill's default and `brand/taste.md` ask for restraint,
+   so that is the owner's call. Every panel carries `"todo": true` and every scene and character `desc`
+   starts with `TODO`: `lint`, `panels` and `sheets` refuse until all are gone, so a skeleton cannot reach
+   the GPU. Run `manga.py plan` for the wireframe (no GPU) and fix its `WARN lettering` lines; `brief.md`
+   says how a 24 to 30 panel board compares with the 6 to 8 page convention. The film's beats outnumber
+   what a comic needs: merge pure reaction or prop beats into the panel before them.
+   *Any other story:* copy `assets/example_board.json` into the work folder as `board.json` and rewrite it
    for the story: characters with at least two memorable features each (`features` in Chinese,
    the same features in `desc` and in every panel prompt), scenes, the `consistency` block
    (fixed room layout, fixed heights), the `lights` states, pages, panel labels and lettering.
@@ -53,6 +71,11 @@ style was wrong and the sheets were picked for them.
    turns face. Check it against the story's own geometry (a knock "right next to my head" puts
    the window by the head of the bed). In the sixth comic the room was described loosely, and
    the window, the bed and the dresser moved from panel to panel until the owner pointed at it.
+   For every object or action the story turns on, write one 「這樣才對」 line of plain physical fact
+   and put it in the prompt of each panel that shows it, which is also what the checker's brief quotes (how it
+   is worn or held, how big it is against something everyone knows, how a trace is left): 「布袋戲
+   尪仔：手從下面穿進戲服，尪仔坐在手上」, 「鞋印：比一塊地磚小，左右腳交錯」. Twelve of the owner's
+   review comments on finished comics were this kind, and the checker had passed every one.
    Give every panel its `scene` and `light` explicitly, and a `cast` when a character is drawn
    from words alone. Name every speaking character in the panel where they are first drawn (a
    `tag` or a caption; `intro` points at another panel on the same page, `ghost: true` exempts
@@ -186,10 +209,11 @@ candidate-by-candidate questions.
    nothing), wide panels first; not the cover, not the title panel, and never a phone or screen
    panel, whose picture is blank without its lettering (第 2 首's top scorer was a blank phone).
    It is the panel as drawn, without lettering, 1080 wide in its own shape. `--pinterest` adds
-   the pins: the cover and every page before the reveal page, whole, on 1000 x 1500 paper.
+   the pins: the cover and every page, the reveal's included (owner, 2026-10-28; ghost-pack titles the
+   reveal page and those after it 「結局」), whole, on 1000 x 1500 paper.
    The reveal is read from `board.json`: mark the panel that shows what the story hid with
-   `"reveal": true`. A cover, Threads picture or teaser panel at or after it is refused, and
-   pins stop at its page. With no mark nothing is checked, and export says so.
+   `"reveal": true`. A cover, Threads picture or teaser panel at or after it is refused.
+   With no mark nothing is checked, and export says so.
    `--dest <story folder>` writes everything where the folder contract
    (`C:/Users/sheep/Pictures/gui_chang_shi/README.md`) puts it: `posts/ig/01..NN.jpg`,
    `posts/threads/image.jpg`, `posts/pinterest/00_cover.jpg` and `NN_page.jpg`. It writes no
@@ -229,12 +253,19 @@ Time on an RTX 3090: a panel with references takes 47 to 115 s per image and one
 - **Fiction only, no real people.** Characters are invented; never draw a real, identifiable
   person or a recognisable business, temple or hospital. If the user supplies a photo of a real
   person as a character, decline that part.
-- **Paneling, not style.** Borrow paneling principles from manga the owner names; never put an
-  author's name or a work's title into an image prompt, and do not imitate a living artist's
-  drawing style.
+- **Learn from artists, fuse them, write techniques.** Study the artists and works the owner names
+  (paneling, line, hatching, blacks, faces) and fuse what they do into the comic's own style; the
+  owner's words (2026-11-06): 「我不是要模仿，而是學習和融合不同的畫家」. Prompts describe the
+  techniques ("dense cross-hatching like an engraving", "hair drawn strand by strand"), not the
+  artist's name or a work's title: a name pulls in its famous pictures whole, while techniques
+  can be taken apart and recombined.
 - **The ghost stays restrained by default.** Even at ghost cap 3, the ghost is smaller than the
   living characters and its face mostly in shadow. The owner prefers 留白 and asked for exactly
   this after seeing a large, clear one. Draw it clearly only if the user asks.
+- **What the comic is for.** Its cover is the first frame a stranger sees and its panels are the
+  Reel's pictures; the accounts grow on the Reel (new follows, then shares and saves). Read
+  `brand/taste.md` before the board for the week's experiment (which opening is the main cut) and
+  how much of the ghost its 偏好 asks for.
 - **No text from the model.** No signs, posters, screens with writing or labels in prompts;
   lettering is the script's job.
 
@@ -282,6 +313,12 @@ Time on an RTX 3090: a panel with references takes 47 to 115 s per image and one
   the same request on an enlarged crop (`repaint`) fixed it, and a collar, the hair and a hand
   after it. When even that fails (a
   radio on a drip stand), put the detail in the narration instead of burning more GPU.
+- Counting is not enough. What the owner sent back from the review page (第 24, 28, 40, 43 首) had
+  the right number of everything: a puppet held by its body instead of worn from below, puppets
+  hung upside down, footprints bigger than a floor tile and all from one foot, a hand bigger than
+  the box it came out of, a head turned past the shoulder, a storehouse that changed shape between
+  two pages. Write how the thing works in the board (step 1) and have the checker judge it
+  (qa_checklist item 11).
 - Each character has to be checked across panels as well as in each one (`review --cast`), and
   the picked sheet has to match what the owner has in mind: the boy's sheet had black hair, so
   his panels split between black and white, and a checker holding the sheet calls the white

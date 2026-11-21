@@ -210,6 +210,9 @@ def prompt_key(prompt: str, ref_names: list[str]) -> str:
     return hashlib.sha1("\n".join([prompt] + ref_names).encode("utf-8")).hexdigest()[:10]
 
 
+MONO = False  # set from board.json "mono" in main()
+
+
 def job(kind: str, jid: str, prompt: str, refs: list[Path], w: int, h: int, n: int, seed: int, dest_dir: Path) -> list[str]:
     names = [comfy.upload(p) for p in refs]
     graph = comfy.build_graph(prompt, names, w, h, seed, n, f"ghost_comic/{kind}/{jid}")
@@ -219,6 +222,8 @@ def job(kind: str, jid: str, prompt: str, refs: list[Path], w: int, h: int, n: i
     for k, img in enumerate(images, start + 1):
         dest = dest_dir / f"{jid}_{k}.png"
         comfy.fetch(img, dest)
+        if MONO:  # board "mono": true: the model still tints bells, skin and hills; every output is greyscaled here
+            Image.open(dest).convert("L").convert("RGB").save(dest)
         files.append(dest.name)
     rec = {"kind": kind, "id": jid, "prompt_id": pid, "w": w, "h": h, "n": n, "seed": seed,
            "refs": [p.name for p in refs], "prompt_key": prompt_key(prompt, [p.name for p in refs]),
@@ -351,8 +356,18 @@ def lint(board: dict, only: list[str] | None = None) -> list[tuple[str, str, str
     scene_ids = set(board.get("consistency", {}).get("scene", {})) | set(board.get("scenes", {}))
     if not _explicit_scenes(board) and board.get("consistency", {}).get("scene_refs"):
         out.append(("board", "warn", "scene layouts are inferred from references (consistency.scene_refs); set `scene` on each panel instead"))
+    # a skeleton from from_screenplay.py: nothing may be drawn while a TODO is left in it
+    todo_board = [k for k, v in {**{f"characters.{c}.desc": x.get("desc", "") for c, x in board.get("characters", {}).items()},
+                                 **{f"scenes.{s}": x for s, x in board.get("scenes", {}).items()},
+                                 **{f"consistency.scene.{s}": x for s, x in board.get("consistency", {}).get("scene", {}).items()},
+                                 **{f"style_options.{s}.panel": x.get("panel", "") for s, x in board.get("style_options", {}).items()}}.items()
+                  if isinstance(v, str) and v.startswith("TODO")]
+    for k in todo_board:
+        out.append(("board", "error", f"{k} is still TODO (board.json came from from_screenplay.py; see comic/brief.md)"))
     for _, cell, box in all_panels(board):
         pid = cell["id"]
+        if cell.get("todo") and not (only and pid not in only):
+            out.append((pid, "error", "still marked todo: write its prompt, refs and cast, then delete \"todo\""))
         if cell.get("fill") or (only and pid not in only):
             continue
         prompt, refs = cell.get("prompt", ""), cell.get("refs", [])
@@ -536,15 +551,30 @@ def cmd_styles(a) -> None:
 def cmd_sheets(a) -> None:
     """Gate 2: n versions of every character and scene in the chosen style, then numbered pick sheets."""
     b = load_board()
+    stale = [m for pid, lvl, m in lint(b) if pid == "board" and lvl == "error"]
+    if stale:
+        raise SystemExit("board.json still has TODOs:\n  " + "\n  ".join(stale))
     ch = load_choices()
     sheet_style, panel_style = style_text(b, ch, "sheet"), style_text(b, ch, "panel")
-    jobs = [(cid, f"{sheet_style} {c['views']} {c['desc']}") for cid, c in b["characters"].items()]
-    jobs += [(f"scene_{sid}", f"{panel_style} Background art in this style, nobody in it. {p}") for sid, p in b["scenes"].items()]
-    for jid, prompt in jobs:
+    # A character with "variants" (a list of {"features", "desc"}) gets one sheet per variant, in order, so the owner
+    # picks between genuinely different designs, not three seeds of one description; `choose` then copies the picked
+    # variant's features and desc onto the character in board.json (see cmd_choose).
+    jobs = []
+    for cid, c in b["characters"].items():
+        if c.get("variants"):
+            jobs += [(cid, f"{sheet_style} {c['views']} {v['desc']}", 1) for v in c["variants"]]
+        else:
+            jobs.append((cid, f"{sheet_style} {c['views']} {c['desc']}", a.n))
+    jobs += [(f"scene_{sid}", f"{panel_style} Background art in this style, nobody in it. {p}", a.n) for sid, p in b["scenes"].items()]
+    for jid, prompt, n in jobs:
         if a.only and jid not in a.only and jid.removeprefix("scene_") not in a.only:
             continue
-        job("sheets", jid, prompt, [], 1536, 1024, a.n, a.seed or random.randrange(2**31), OUT / "sheets")
-    pick_sheet(b, [c for c in b["characters"]], "pick_characters.png", {c: f"{v.get('name', c)}：{v.get('features', '')}" for c, v in b["characters"].items()})
+        job("sheets", jid, prompt, [], 1536, 1024, n, a.seed or random.randrange(2**31), OUT / "sheets")
+    def title(c, v):
+        if v.get("variants"):
+            return f"{v.get('name', c)}：" + "　／　".join(f"{k}. {x['features']}" for k, x in enumerate(v["variants"], 1))
+        return f"{v.get('name', c)}：{v.get('features', '')}"
+    pick_sheet(b, [c for c in b["characters"]], "pick_characters.png", {c: title(c, v) for c, v in b["characters"].items()})
     pick_sheet(b, [f"scene_{s}" for s in b["scenes"]], "pick_scenes.png", {f"scene_{s}": s for s in b["scenes"]})
 
 
@@ -596,6 +626,13 @@ def cmd_choose(a) -> None:
                 raise SystemExit(f"{OUT / path} does not exist")
             ch["sheets"][sid] = path
             ch["refs"].pop(sid, None)  # stale until `refs` runs again
+            c = b.get("characters", {}).get(sid)
+            if c and c.get("variants") and v.isdigit() and 1 <= int(v) <= len(c["variants"]):
+                # Sheet k of a variant character is variant k: its design becomes the character's.
+                c.update({f: c["variants"][int(v) - 1][f] for f in ("features", "desc")})
+                del c["variants"]
+                (WORK / BOARD).write_text(json.dumps(b, ensure_ascii=False, indent=1), encoding="utf-8")
+                print(f"{sid}: variant {v} written into board.json; a board builder script must make the same pick")
         else:
             find_panel(b, k)
             f = f"{k}_{v}.png" if v.isdigit() else v
@@ -616,7 +653,10 @@ def cmd_refs(a) -> None:
     for sid, path in ch["sheets"].items():
         im = Image.open(OUT / path).convert("L")
         char = b.get("characters", {}).get(sid)
-        crop = char.get("ref_crop", "left") if char else "none"
+        # a sheet of two different people (VIEWS2: the two officers, the two students) keeps both; cropping it to the
+        # left half dropped the moustached officer and the twin-tailed girl from every panel
+        two = char and "two different people" in char.get("views", "").lower()
+        crop = char.get("ref_crop", "none" if two else "left") if char else "none"
         if crop == "left":
             im = im.crop((0, 0, im.width // 2, im.height))
         elif crop == "right":
@@ -1506,8 +1546,20 @@ def pin_fit(im: Image.Image, margin: int, colour) -> Image.Image:
     return canvas
 
 
+def write_page_pins(b: dict, pages: list, pdir: Path, ground) -> None:
+    """Every page of the comic as a pin, the reveal included (owner, 2026-10-28: the whole comic goes on its own
+    Pinterest board; ghost-pack marks the reveal page and those after it 「結局」 in their titles)."""
+    reveal_page, _ = reveal_point(b)
+    for p in pages:
+        n = int(p.stem.split("_")[1])
+        pin_fit(Image.open(p), PIN_MARGIN["page"], ground).save(pdir / f"{n:02d}_page.jpg", quality=92)
+    print(f"{pdir}: {len(pages)} page pins" + (f" (the reveal is on page {reveal_page})" if reveal_page else
+                                              " (no reveal panel marked)"))
+
+
 # The reveal: the board marks the panel that shows what the story was hiding with "reveal": true. Nothing meant to
-# bring readers in (a cover, the Threads picture, a teaser, a Pinterest pin) may show it or anything after it.
+# bring readers in (a cover, the Threads picture, a teaser) may show it or anything after it. Pinterest page pins are the
+# exception since 2026-10-28: the whole comic goes on the story's own board, the reveal pages titled 「結局」.
 def reveal_point(b: dict) -> tuple[int | None, set[str]]:
     """(the page the reveal is on, the ids of the reveal panel and every panel after it). (None, empty) if the board
     marks no reveal."""
@@ -1669,7 +1721,7 @@ def _serif(size: int) -> ImageFont.FreeTypeFont:
 
 
 def brand_cover(b: dict, ch: dict, w: int, h: int, panel: str | None, br: dict, number: int | None,
-                seal: Image.Image | None) -> Image.Image:
+                seal: Image.Image | None, title: bool = True) -> Image.Image:
     """Slide 1: the picked panel framed on the paper colour, the vertical title at its top right, and a strip under
     it with the brand's `cover_strip` line (「鬼唱詩｜第 N 首」), the disclosure and the seal. The same frame for every
     comic, so the profile grid reads as one shelf."""
@@ -1689,7 +1741,8 @@ def brand_cover(b: dict, ch: dict, w: int, h: int, panel: str | None, br: dict, 
     im.paste(pic, box[:2])
     d = ImageDraw.Draw(im)
     d.rectangle([box[0] - 1, box[1] - 1, box[2], box[3]], outline=c["ink"], width=5)
-    draw_entry(im, {"kind": "title", "text": board_title(b), "pos": "tr", "scale": 1.3}, box, round(w / 40))
+    if title:   # --no-cover-title: a panel whose figure fills the top right (〈東河河口的鈴鐺〉 p2)
+        draw_entry(im, {"kind": "title", "text": board_title(b), "pos": "tr", "scale": 1.3}, box, round(w / 40))
     top = box[3] + round(strip * 0.22)
     line = brand_text(br.get("cover_strip", "{name}｜{number}"), br, number) if number else br.get("name", "")
     big = _serif(round(w / 23))
@@ -1728,6 +1781,18 @@ def brand_end(w: int, h: int, br: dict, handle: str | None, seal: Image.Image | 
     return im
 
 
+def cmd_pins(a) -> None:
+    """Only the Pinterest page pins, every page, for a story already exported (and maybe posted): the cover pin, the
+    carousel and the captions stay as they are. ghost-pack --pins-only then writes pins.txt."""
+    pages = sorted((OUT / "pages").glob("page_*.png"))
+    if not pages:
+        raise SystemExit("no pages yet: run `pages` first")
+    br = load_brand(a.brand_file)
+    pdir = Path(a.dest).resolve() / "posts" / "pinterest"
+    pdir.mkdir(parents=True, exist_ok=True)
+    write_page_pins(load_board(), pages, pdir, br["rgb"]["paper"] if br else "white")
+
+
 def cmd_export(a) -> None:
     """Instagram carousel from the laid-out pages: a cover, every page whole on a 3:4 (or 4:5) slide, an end card,
     and a caption with the disclosure. A page of 1200 x 1700 leaves about 32 px of white at each side on 3:4. More
@@ -1736,7 +1801,7 @@ def cmd_export(a) -> None:
     when the story is about to be posted).
 
     Beside the carousel: the Threads picture (--threads-panel, else threads_panel's pick) and, with --pinterest, the
-    pins: the cover and every page before the reveal page on 1000 x 1500. --dest <story folder> writes them where the
+    pins: the cover and every page on 1000 x 1500. --dest <story folder> writes them where the
     folder contract wants them (posts/ig, posts/threads/image.jpg, posts/pinterest) and leaves the captions to
     ghost-pack; without it everything goes to out/export as before, the carousel caption included."""
     b, ch = load_board(), load_choices()
@@ -1763,7 +1828,7 @@ def cmd_export(a) -> None:
     first = None
     for k, part in enumerate(parts, 1):
         tag = f"part{k}_" if len(parts) > 1 else ""
-        first = brand_cover(b, ch, w, h, a.cover, br, a.number, solid) if br else ig_cover(b, ch, w, h, a.cover)
+        first = brand_cover(b, ch, w, h, a.cover, br, a.number, solid, not a.no_cover_title) if br else ig_cover(b, ch, w, h, a.cover)
         slides = [first] + [fit_on(Image.open(p), w, h, ground) for p in part]
         if k == len(parts):
             slides.append(brand_end(w, h, br, handle, outline) if br else ig_end(b, w, h, handle))
@@ -1783,16 +1848,8 @@ def cmd_export(a) -> None:
         pdir.mkdir(parents=True, exist_ok=True)
         for f in pdir.glob("*.jpg"):
             f.unlink()
-        reveal_page, _ = reveal_point(b)
-        keep = pages[:reveal_page - 1] if reveal_page else pages
-        if not reveal_page:
-            print("note: no reveal panel marked, so every page became a pin; take out the ones that give it away")
         pin_fit(first, PIN_MARGIN["cover"], ground).save(pdir / "00_cover.jpg", quality=92)
-        for p in keep:
-            n = int(p.stem.split("_")[1])
-            pin_fit(Image.open(p), PIN_MARGIN["page"], ground).save(pdir / f"{n:02d}_page.jpg", quality=92)
-        print(f"{pdir / '00_cover.jpg'} + {len(keep)} pages"
-              + (f" (pages {reveal_page} on hold the reveal)" if reveal_page else ""))
+        write_page_pins(b, pages, pdir, ground)
     if story:
         print("captions: ghost-pack writes posts/ig/caption.txt and posts/pinterest/pins.txt")
         return
@@ -2352,12 +2409,18 @@ def main() -> None:
     ex = sub.add_parser("export")
     ex.add_argument("--ratio", choices=sorted(IG_SIZES), default="3:4")
     ex.add_argument("--cover", default=None, help="panel id for slide 1 (default: page 1 as it is)")
+    ex.add_argument("--no-cover-title", action="store_true",
+                    help="brand cover without the vertical title (it is in every caption and the Threads heading)")
     ex.add_argument("--handle", default=None, help="account name for the end card (default: the brand file's)")
     ex.add_argument("--tags", default=None, help="comma-separated hashtags for the caption (default: the brand file's)")
     ex.add_argument("--threads-panel", default=None,
                     help="panel id for the Threads picture (default: picked among the panels before the reveal)")
     ex.add_argument("--pinterest", action="store_true",
-                    help="also the Pinterest pins: the cover and every page before the reveal page, 1000 x 1500")
+                    help="also the Pinterest pins: the cover and every page (the reveal included), 1000 x 1500")
+    pn = sub.add_parser("pins", help="only the Pinterest page pins (every page) into <story>/posts/pinterest; "
+                                    "the cover pin and everything else are left as they are")
+    pn.add_argument("--dest", required=True, help="the story folder (stories/<name>)")
+    pn.add_argument("--brand-file", default=None, help="for the paper colour (default white)")
     rl = sub.add_parser("reel")
     rl.add_argument("mode", choices=["teaser", "line"])
     rl.add_argument("ids", nargs="*", help="teaser: the panels in order, usually three")
@@ -2388,6 +2451,11 @@ def main() -> None:
                        help="the story's number in the account (「第 N 首」); leave it out: ghost-pack numbers a story just before it is "
                             "posted")
     a = ap.parse_args()
+    global MONO
+    try:
+        MONO = bool(load_board().get("mono"))
+    except Exception:
+        MONO = False
     if a.cmd in ("export", "reel"):
         a.brand = load_brand(a.brand_file)
         br = a.brand or {}
@@ -2410,7 +2478,7 @@ def main() -> None:
     {"check": cmd_check, "styles": cmd_styles, "sheets": cmd_sheets, "choose": cmd_choose, "refs": cmd_refs,
      "lint": cmd_lint, "review": cmd_review, "repaint": cmd_repaint, "fill": cmd_fill, "tone": cmd_tone, "crop": cmd_crop,
      "plan": cmd_plan, "panels": cmd_panels, "contact": cmd_contact, "pages": cmd_pages, "status": cmd_status,
-     "export": cmd_export, "reel": cmd_reel}[a.cmd](a)
+     "export": cmd_export, "reel": cmd_reel, "pins": cmd_pins}[a.cmd](a)
 
 
 if __name__ == "__main__":
