@@ -22,6 +22,7 @@ all local, nothing fetched (2026-11-21):
 | how he talks | his spoken words and their frequency, rhythm, a density example | `references/phrasebank.md` |
 | how he jokes | joke constructions from all 1,499 of his jokes, with our own examples | `references/jokes.md` |
 | voice numbers | particles, exclamations, intensifiers, questions, transitions, line length, over 205 stories | `references/fingerprint.json` (`scripts/voice.py`) |
+| the retelling brief | the prompt for the fresh writer who retells the draft aloud (step 3) | `references/retell_brief.md` |
 | what not to take | names, fixed lines, series, his stories (common slang is allowed, owner 2026-11-21) | `references/avoid.md` |
 
 **Why the voice files exist (2026-11-21):** the first trial story, 〈搬家打工的第十三箱〉, passed review at 7 but the
@@ -77,56 +78,87 @@ Read `references/style.md`, `references/avoid.md`, `references/phrasebank.md` an
 Then check line 4 to 6 against his stories: open `research/weiteng/story_json/` and search the titles and
 `peak_scare_desc` for the same object and twist. The same pair is replaced, not reworded.
 
-### 2. The story
+### 2. The structure draft
 
-Write `story.md`: first line `[經驗] <title>`, then the story as spoken text, paragraphs of short breath-groups.
-Follow style.md §3 to §5, and write it **spoken**, at his density (phrasebank.md §7 shows the difference):
-- **About half the text is dialogue.** Things happen through two people talking, one line each, not through the
-  narrator summarising them. A friend's first reaction to anything strange is a particle (蛤？欸？).
-- **Particles about 3 per 100 characters**, mostly at the ends of spoken lines (啦、喔、啊、欸、吧、耶、咧).
-- **Exclamations and slang** in the first half (我靠、靠北、北七、哭喔、真的假的、不會吧), **intensifiers** in
-  the narration (直接、根本、整個、到底).
-- **Jokes are built** with the constructions in jokes.md, mostly friends going at each other for two to four lines,
-  and the story moves on right after.
-- When the fear rises, all of that drops away (style.md §3): the contrast is the point.
-
-Put the markers from `scripts/weitong_check.py` (HTML comments: `<!-- 異狀 -->`,
-`<!-- 鬼 -->`, `<!-- 反轉 -->`, `<!-- 驚嚇 -->`, `<!-- 收尾 -->`, `<!-- 笑 <type> <id> -->`, `<!-- 回收 <id> -->`) just
-before the sentence they mark. Read `writing_direct.md` from ghost-story for the plain-prose rules.
-
-Then:
+Write `drafts/v1.md`: first line `[經驗] <title>`, then the whole story from `plan.md`, every beat, clue, joke and
+payoff in place. This draft is about **what happens**, not how it sounds; do not try to sound like him yet. Put the
+markers from `scripts/weitong_check.py` (HTML comments: `<!-- 異狀 -->`, `<!-- 鬼 -->`, `<!-- 反轉 -->`,
+`<!-- 驚嚇 -->`, `<!-- 收尾 -->`, `<!-- 笑 <type> <id> -->`, `<!-- 回收 <id> -->`) just before the sentence they mark.
 
 ```
-python -X utf8 ~/.claude/skills/ghost-story-weitong-v4/scripts/weitong_check.py backlog/<name>/story.md
+python -X utf8 ~/.claude/skills/ghost-story-weitong-v4/scripts/weitong_check.py backlog/<name>/drafts/v1.md
 ```
 
-Fix every 必改 before the review, the voice rows (口氣、台詞佔比) included. A 注意 may stay with one sentence in the
-round table saying why. The checker reads the markers the writer placed; the reviewer in step 3 counts without them.
+Fix every structural 必改 (length, beats, jokes, distances, callbacks, avoid.md). **Ignore the 口氣 rows and 台詞佔比
+here**: step 3 is what fixes those. Then read the draft once for logic only: who is where, who has which phone, what
+was seen against what is said later. Moving_box13's first review found three such holes (2026-11-21); fixing them
+before the retelling is cheaper than after.
 
-Then the **blind voice test**, before any review round:
+### 3. Retell it aloud (a fresh writer)
+
+Writing in his voice directly does not work. In moving_box13, drafts v4 to v7 were revised four times straight
+from the judges' notes until every voice metric was inside his range, and judges still caught them in 5 of 6 blind
+tests ("too clean, too designed"). v8, retold from scratch by a fresh writer who had first read three of his
+transcripts, was the first version the owner accepted (2026-11-21).
+
+Give a **fresh subagent** (Opus) this job:
+- Read the structure draft (plot fixed: keep every beat, clue and payoff in order, and every marker), then
+  `references/phrasebank.md` (especially §5b to §9), `references/jokes.md`, and `drafts/blind_notes.md` if one exists.
+- Read **three of his transcripts in full** to hear him, choosing ones similar in setting or length, from
+  `C:/Users/sheep/Pictures/gui_chang_shi/research/weiteng/nuwa_src/fp_all/` (local only, never copied into the story
+  or the skill). Absorb rhythm and habits; copy no sentence, name, story or fixed line (avoid.md).
+- Retell the story **as a young Taiwanese guy telling friends over late-night snacks**:
+  - narration ends with 呢、啊、啦 every few lines, with 這樣 before a noun now and then;
+  - leave traces of speech: a repeated phrase, a self-correction (「三台電鍋，喔不是，兩台是壞的啦」), fillers (嗯、
+    呃、就是), an aside to the listeners (「你們阿嬤家應該也是這個味道吧」);
+  - mock-epic self-roasting about past-you (「這個數學真的太天才了」);
+  - description that serves the next action or turns into a comment, never still-life or a poetic metaphor;
+  - banter that makes things happen (friends egging each other on, escalating; stammers when excited or scared),
+    with jokes mostly one quick line carried by particles;
+  - one or two unrelated everyday details next to each clue, so it is not obviously planted;
+  - from the moment the ghost is known through the biggest scare, the voice goes quiet: short lines, almost no
+    particles, no jokes; after it, plain speech, no joke in the last paragraph;
+  - dialogue in 「」 without 「他說」 tags, 35 to 45% of the text; length 2,300 to 2,700 spoken characters.
+- Write `drafts/v2.md`, run `weitong_check.py` on it, and fix every 必改, voice rows included, before returning. It
+  returns the checker's table and five lines it thinks sound most spoken.
+
+The full brief, ready to fill in, is `references/retell_brief.md` (the prompt that produced moving_box13's v8).
+Copy the result to `story.md`.
+
+### 4. Blind voice test
+
+On the retold text, before any review round.
 
 ```
-python -X utf8 ~/.claude/skills/ghost-story-weitong-v4/scripts/blind_test.py backlog/<name>/story.md \
-    C:/Users/sheep/Pictures/gui_chang_shi/research/weiteng/nuwa_src/fp_all backlog/<name>/blind_vN
+python -X utf8 ~/.claude/skills/ghost-story-weitong-v4/scripts/fair_asr.py backlog/<name>/story.md backlog/<name>/fair_vN
+python -X utf8 ~/.claude/skills/ghost-story-weitong-v4/scripts/blind_test.py backlog/<name>/story.md     C:/Users/sheep/Pictures/gui_chang_shi/research/weiteng/nuwa_src/fp_all backlog/<name>/blind_vN     --ours-file backlog/<name>/fair_vN/ours_asr.txt
 ```
+
+`fair_asr.py` speaks our excerpt with local H3 TTS (ComfyUI on 8188, ghost-film's speak.py) and transcribes it back
+with faster-whisper, so our excerpt has the same kind of ASR errors as his. Without it, judges notice that only ours
+has no typos (every judge in moving_box13 mentioned it). If ComfyUI is busy or down, run `blind_test.py` without
+`--ours-file` and tell the judge that typos are not evidence.
 
 Give a fresh subagent only `blind_vN/blind.md` (never `key.json`) with this prompt: four excerpts, three by one
 storyteller, one an imitation; which is the imitation, confidence 1 to 5, the three strongest reasons pointing at
-lines, and the three lines that sound least like him rewritten as he would say them. **Pass** when the judge picks
-one of his, or picks ours at confidence 2 or less. Otherwise apply the rewrites that fit, rerun the checker and
-test again with a new seed and a new judge, up to three times. The judge's rewrites are the most useful voice notes
-the skill gets; keep them in `drafts/blind_notes.md`.
+lines, and the three lines that sound least like him rewritten as he would say them. Run **two** tests with
+different seeds and different judges. **Pass** when at least one judge picks one of his, or picks ours at
+confidence 2 or less. Otherwise give the judges' reasons and rewrites to a new retelling (step 3, a new writer),
+not to line edits: line edits were what failed in v4 to v7. At most two retellings. Keep every judge's reasons in
+`drafts/blind_notes.md`.
 
-### 3. Score and fine-tune
+### 5. Score and fine-tune
 
 As in ghost-story step 5b:
 - Save the text as `drafts/vN.md`. Give a **fresh subagent** ghost-story's `references/review_brief.md` filled in,
   **plus part 5 from `references/review_addendum.md`**, with the story stripped of markers (`<!-- ... -->` removed)
   and without `plan.md`.
-- Apply every fix that costs a line or two; rerun the checker.
+- Review the **retold** text, so the scores are for the version that ships. Apply every fix that costs a line or two,
+  written in the retold voice (dialogue rather than narration); rerun the checker. A fix that changes more than a
+  few lines in the first half goes through the blind test again.
 - A new subagent each round; never tell it what the last round found.
 - **Stop** when a round passes (overall 7 or more, no sub-score under 3), the checker has no 必改, the blind test has
-  passed on the current text, the reviewer found at least two callbacks it grades A, and nothing copies the
+  passed on the retold text, the reviewer found at least two callbacks it grades A, and nothing copies the
   channel's own names, lines or stories. Three rounds at most. A review fix that adds narration and drops dialogue
   is applied in dialogue instead.
 - Report each round to the owner as one table: five scores, overall, the checker's 必改 count, the reviewer's joke
@@ -134,7 +166,7 @@ As in ghost-story step 5b:
 
 A round that fails the rubric is a rewrite from step 1, not a line fix.
 
-### 4. Deliver and stop
+### 6. Deliver and stop
 
 Write `speakers.md` next to the story: the cast (one line each: who, voice, temperament), then a table of every line
 of dialogue in order (number, its first words, who says it, its tone), then two or three notes for the voice actor
