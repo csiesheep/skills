@@ -142,7 +142,20 @@ account checks, AI labels, Instagram first). What is different:
 - **Files.** Run `py -X utf8 "<skill dir>/scripts/check_film.py" <story folder> --number N`. It checks the film ledger, the
   covers, every caption, and that each video in `posts/film/files.txt` has a 720p upload copy within 10 MB. What is
   missing goes back to ghost-pack-film (number, covers, captions) or ghost-film (videos, poster, the 720p copy).
-- **What goes where.** A video over 3 minutes is not a Reel or a Short, so Instagram gets the two parts:
+- **What goes where, 3 minutes or less** (第 2 部, 2:36, posted 2026-11-13 in about 25 minutes): one cut everywhere,
+  the 720p copy, six posts.
+
+| Order | Platform | File | Caption |
+|---|---|---|---|
+| 1 | Instagram Reel | the 720p, crop "Original", cover `cover.jpg` through the Edit step's file input, AI label on | `caption_ig.txt` |
+| 2 | YouTube | the 720p. Under 3 minutes it becomes a Short (`/shorts/<id>`). Studio took `cover.jpg` as the thumbnail through the Details step's hidden file input | `caption_full.txt`, YouTube |
+| 3 | Facebook Page | the 720p as a Reel, as the Page, AI label on, then switch back | `caption_full.txt`, Facebook |
+| 4 | Threads | **the video** with `threads.txt` (owner, 2026-11-13: 「Threads 也上傳影片」), not the poster; topic 鬼故事; `{ig_link}` = the Reel | `threads.txt` |
+| 5, 6 | Pinterest | `cover.jpg` (Mark as AI-Modified), then the video (also "AI-generated person"), both on 「鬼唱詩劇場｜台灣怪談短片」 | `pins.txt` |
+
+  In the film ledger record the cover pin as the Pinterest link; the video pin goes in `posts/film/README.md`.
+- **What goes where, over 3 minutes.** A video over 3 minutes is not a Reel or a Short, so Instagram gets the two parts
+  (Threads takes the part 1 video the same way):
 
 | Order | Platform | File | Caption |
 |---|---|---|---|
@@ -180,3 +193,11 @@ TikTok stays off (2026-11-01).
 - Pinterest and TikTok offer to connect Instagram or turn on automatic checks after posting: decline; those are
   account settings.
 - A file over 30 MB is not delivered to a phone by SendUserFile; send a 720p copy.
+- A scaled screenshot (`scale` 0.4 to 0.6) is drawn smaller than the page: click in the full-size frame the tool
+  reports (1536×674), not at the pixel seen in the small image. A click taken from the small image opened Reels
+  instead of Create (第 2 部).
+- Waiting: one browser_batch of sixteen 10 s waits timed out. Keep a batch's waits to about 30 s and call again.
+  Instagram's "Sharing" took about 90 s for a 6 MB Reel; Threads showed "Posting…" for about 40 s with a video.
+- "Post in N minutes" from the owner: prepare the first post up to its Share button, then wait there.
+- Upload quality: the film's clips are 576×1024, so the 720p copy already holds the detail (ghost-film lessons.md).
+  If the owner asks for better, the only real step up is the owner picking the 1080p master in each site's dialog.

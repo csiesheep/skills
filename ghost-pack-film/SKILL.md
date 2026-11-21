@@ -64,5 +64,8 @@ not the script.
 - Read the report: the YouTube title must be within 100 characters and Threads within 500.
 - Look at `cover.jpg` and one part cover.
 - Show the owner the captions and covers before ghost-post. Nothing is public yet, but the number is taken.
+- A new cut after packing (v10 → v12 on 第 2 部): run pack_film.py again with the new `--full`. The same title keeps
+  its number, and `files.txt`, `pins.txt` and the captions follow the new file.
+- On Threads the film goes up as the video with `threads.txt`, not the cover (owner, 2026-11-13).
 - Posting is ghost-post's "Films" section: `check_film.py`, then one preview and one yes, then the posts, each recorded
   in the film ledger.
