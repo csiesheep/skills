@@ -27,6 +27,7 @@ HEAD = re.compile(r"^## (?P<n>\d+)\. (?P<title>.+)$")
 TIME = re.compile(r"(\d+):(\d\d)\s*[–\-]\s*(\d+):(\d\d)")
 STAMP = re.compile(r"(\d+):(\d\d)")
 POS = ["tr", "ml", "bc", "bl"]  # a lettering ladder: reading goes top-right first, each box lower than the last
+DEVICE = re.compile(r"對講機|電話|廣播|手機|話筒|擴音|喇叭|無線電|視訊")
 
 
 def secs(s: str) -> int:
@@ -70,7 +71,11 @@ def parse(md: str) -> dict:
             if m:
                 desc = m.group(2)
                 feats = re.findall(r"\*\*(.+?)\*\*", desc)
-                cast.append({"name": m.group(1), "desc": re.sub(r"\*\*", "", desc), "features": feats,
+                # 「**阿斌（bin）**：」 gives the character an id; without one they became c2, c3, c5, which are hard to
+                # keep apart in prompts (vet_night_xray, 2026-11-21)
+                nm = re.match(r"^(.+?)[（(]([a-z][a-z0-9_]*)[）)]$", m.group(1))
+                cast.append({"name": nm.group(1) if nm else m.group(1), "id": nm.group(2) if nm else "",
+                             "desc": re.sub(r"\*\*", "", desc), "features": feats,
                              "voice_only": ("只出聲" in desc or "不算角色" in desc),
                              "ghost": "鬼" in desc.split("。")[0] or m.group(1) in ("她", "他", "它") and "鬼" in desc})
         if mode == "scene" and ln.strip().startswith("-"):
@@ -119,7 +124,7 @@ def build(sp: dict, story_rel: str, max_text: int, max_page: int) -> tuple[dict,
         if c["voice_only"]:
             voice_names.add(c["name"])
             continue
-        cid = "me" if c["name"] == "我" else ("ghost" if c["ghost"] and not ghost_id else f"c{k + 1}")
+        cid = c.get("id") or ("me" if c["name"] == "我" else ("ghost" if c["ghost"] and not ghost_id else f"c{k + 1}"))
         if cid == "ghost":
             ghost_id = cid
         names[c["name"]] = cid
@@ -161,12 +166,15 @@ def build(sp: dict, story_rel: str, max_text: int, max_page: int) -> tuple[dict,
                 t = secs(stamp.group(0))
             texts = []
             for sy in g["says"]:
+                who = {"who": names[sy["who"]]} if sy["who"] in names else {}
                 if sy["voiceover"]:
                     texts.append({"kind": "narration", "text": sy["text"]})
-                elif sy["who"] in voice_names or sy["offscreen"]:
-                    texts.append({"kind": "voice", "text": sy["text"]})
+                elif sy["who"] in voice_names or sy["offscreen"] or DEVICE.search(sy["note"]):
+                    # a line through an intercom or a phone comes out of a machine: `voice`, not `speech`
+                    # (「**她**（對講機）：」 was drawn as speech in vet_night_xray)
+                    texts.append({"kind": "voice", "text": sy["text"], **who})
                 else:
-                    texts.append({"kind": "speech", "text": sy["text"]})
+                    texts.append({"kind": "speech", "text": sy["text"], **who})
             big = big_t >= 0 and bool(stamp) and abs(t - big_t) < 2
             if not hook and s["n"] == 1:
                 m = re.search(r"大字[：:]\s*([^\]。]+)", g["beat"])

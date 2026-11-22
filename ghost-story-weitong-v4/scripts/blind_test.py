@@ -13,6 +13,7 @@ The transcripts stay local; blind.md goes only to a local subagent and is not pu
 import argparse, glob, json, os, random, re
 
 HAN = re.compile(r'[一-鿿]')
+HIS_NAMES = ['阿騰', '維騰', '韋騰', '土豆', '小剛', '小康', '馬鏡', '馬騎', '馬竟', '馬桿', '洋蔥']
 
 
 def ours(path, n):
@@ -58,8 +59,10 @@ def main():
                     help="our excerpt already passed through TTS and ASR (fair_asr.py's ours_asr.txt)")
     a = ap.parse_args()
     rnd = random.Random(a.seed)
-    his_names = ['阿騰', '維騰', '韋騰', '土豆', '小剛', '小康', '馬鏡', '馬騎', '馬竟', '馬桿', '洋蔥']
-    files = [f for f in glob.glob(os.path.join(a.his_dir, '*.txt')) if os.path.getsize(f) > 6000]
+    his_names = HIS_NAMES
+    # the control test passes one of his transcripts as "ours": it must not also be drawn as one of his three
+    files = [f for f in glob.glob(os.path.join(a.his_dir, '*.txt')) if os.path.getsize(f) > 6000
+             and os.path.basename(f) != os.path.basename(a.story)]
     picks = rnd.sample(files, 3)
     items = [('his', os.path.basename(f), scrub(his(f, a.chars), his_names, rnd)) for f in picks]
     if a.ours_file:
@@ -76,7 +79,10 @@ def main():
     with open(os.path.join(neutral, 'excerpts.md'), 'w', encoding='utf-8') as f2:
         pass
     with open(os.path.join(a.out, 'blind.md'), 'w', encoding='utf-8') as f:
-        f.write('# 四段口述鬼故事的逐字稿（沒有標點，一行是一口氣；有的有語音辨識的錯字）\n\n')
+        # the judges took ASR side effects (one name in three spellings, line breaks) as signs of the imitation
+        # (vet_night_xray, 2026-11-22); they are told what is not evidence
+        f.write('# 四段口述鬼故事的逐字稿（沒有標點，一行是一口氣；四段都經過語音辨識，'
+                '錯字、同一個名字的不同寫法、斷行位置都是語音辨識造成的，不能當成判斷的證據，請只看說話的方式）\n\n')
         for i, (_, _, txt) in enumerate(items):
             f.write(f'## {"ABCD"[i]}\n\n{txt}\n\n')
     key = {"ABCD"[i]: {'who': w, 'src': s} for i, (w, s, _) in enumerate(items)}

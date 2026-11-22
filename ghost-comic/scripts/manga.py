@@ -331,6 +331,10 @@ _GAZE = re.compile(r"\b(viewer|in profile|three-quarter|head turned|turned towar
                    r"looking (at|down|up|toward)|eyes (on|fixed|lowered)|faces? turned)\b", re.I)
 _SEEN_BY = re.compile(r"\b(as seen by|seen by someone|from the point of view of|through the eyes of)\b", re.I)
 _PART_SHOT = re.compile(r"\b(close-up|close shot|extreme close-up|through a gap|head-and-shoulders|head and shoulders)\b", re.I)
+# a picture that fills the frame (an X-ray film, a phone screen) is not a view of the room; a CCTV frame of the room
+# is, and keeps its layout
+_FULL_FRAME = re.compile(r"\b(fill(s|ing)? the whole frame|full-frame|on a light box|screen fills the frame)\b", re.I)
+_CCTV_ROOM = re.compile(r"\b(security camera|cctv)\b", re.I)
 
 
 def character_names(board: dict, cid: str) -> list[str]:
@@ -442,6 +446,10 @@ def lint(board: dict, only: list[str] | None = None) -> list[tuple[str, str, str
             say("warn", "a close shot with a scene layout: the whole fixed layout goes into the prompt and the model draws "
                         "the whole room (p29, 8 of 8 pulled back from a curtain gap to the room); set \"scene\": [] for a "
                         "shot of one part of the place")
+        if _FULL_FRAME.search(prompt) and cell.get("scene") and not _CCTV_ROOM.search(prompt):
+            say("warn", "a full-frame X-ray or screen picture with a scene layout: the layout drew the whole X-ray room "
+                        "around the film (vet_night_xray p23 and p32, first round); set \"scene\": [] and say \"no room, no "
+                        "table, no walls\"")
         if _NOT_SMILING.search(prompt):
             for r in refs:
                 cr = char_ref(board, r)

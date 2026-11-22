@@ -24,13 +24,25 @@ Read first, fully:
 
 How to retell:
 - Talk, don't write. Narration sentences end with 呢、啊、啦、喔 every few lines; put 這樣 before nouns sometimes;
-  leave traces of speech: a repeated phrase, a self-correction, a filler (嗯、呃、就是、那個), an aside to the
-  listeners.
-- Mock-epic self-roasting about past-you (「這個想法真的太天才了」「仔細回想，當時的我們真的很欠揍啊」).
-- Description serves the next action or turns into a comment to the listener; no novelist still-life, no poetic
-  metaphors.
-- Banter makes things happen: friends egging each other on, escalating, stammering when excited or scared. Jokes
-  are mostly one quick line carried by particles, not set-up-and-punchline routines.
+  leave traces of speech: a repeated phrase, a self-correction, a filler (嗯、呃、就是、那個), and now and then a
+  particle alone on its own line (欸。 蛤？ 吼。).
+- **Narration runs in long breaths held together by connectors**, not in four-to-six-character fragments: 「就這樣，
+  在…之後，我們就決定…」「而就在…的時候」「沒想到當我…的時候」「這時，我一回頭，赫然發現…」「而正當我們講到這裡時」.
+  Two judges in a row caught the fragments (「院長養的，平常睡在櫃台上，掉毛超凶」).
+- **The narrator stops to make a fuss, once a paragraph or so**: an exaggerated aside or self-roast that slows the
+  story down (「這個想法真的太天才了」「仔細回想，當時的我們真的很欠揍啊」「整個人好像剛打完一場仗」), and a slow summing-up
+  line now and then (「一時間，大家都…」「整個…」). Use his everyday interjections at about his rate, zero to two
+  per story each: 基本上、說實在的、說真的、畢竟、我的天啊、你知道嗎. Not his signature lines (avoid.md).
+- **Talk to the listeners only the way he does: at most three times, and only to ask their question for them (「你
+  一定想問，那為什麼不…」), to say they are probably wondering (「大家應該很好奇…」), or to reassure them.** No comments
+  turned toward them (「你們身邊應該也有個這樣的朋友吧」「你們阿嬤家應該也是這個味道吧」): both judges of vet_night_xray
+  named that line, and the research (02-voice §4) finds none.
+- Description serves the next action; no novelist still-life, no poetic metaphors, no written-only words
+  (只見、映入眼簾、不禁、彷彿、宛如; weitong_check.py flags them).
+- **Jokes live in the characters' mouths**: friends teasing each other, one quick line and a quick answer
+  (「欸，也太準了吧，比你上班還準時欸。」「吼，閉嘴啦。」). Not the narrator's set-up-and-punchline routines, not
+  three-step build-ups (「蹭冷氣、蹭飲料、連貓都蹭」): judges called those 「寫出來的，不是聊出來的」. Banter makes things
+  happen: friends egging each other on, escalating, stammering when excited or scared.
 - Keep the clues but bury them a little: one or two irrelevant everyday details next to each clue.
 - From the moment the ghost is known through the biggest scare, the voice goes quiet: short lines, almost no
   particles, no jokes. After the scare, back to plain spoken voice; no joke in the last paragraph.
@@ -46,7 +58,7 @@ example lines you are proudest of as "spoken".
 ## 那一次寫手交回來、它自己最滿意的五句（示範「講出來」的程度）
 
 - 廚房有三台電鍋，喔不是，兩台是壞的啦，反正就三台。
-- 一進屋子。「哇靠，超重的樟腦丸味喔。」你們阿嬤家應該也是這個味道吧。
+- 一進屋子。「哇靠，超重的樟腦丸味喔。」（原本後面接一句「你們阿嬤家應該也是這個味道吧」：對聽眾的評論，2026-11-22 起不用）
 - 「可是她講碗耶，她怎麼知道是碗？」「你自己剛剛一直喊碗碗碗的啊。」
 - 現在回想，這個數學真的太天才了，居然沒有人問一句，為什麼是晚上。
 - 「中和啊，治安啊，你管人家。」
