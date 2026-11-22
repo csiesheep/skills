@@ -88,8 +88,26 @@ def build_graph(prompt: str, ref_names: list[str], w: int, h: int, seed: int, n:
     return g
 
 
+def wait_idle(poll: float = 5.0) -> None:
+    """The GPU is shared (other sessions queue music, video or portraits): submit only on an empty queue, as ghost-film's
+    polite.py does, so jobs of different models are not interleaved. COMFY_POLITE=0 turns it off."""
+    if os.environ.get("COMFY_POLITE", "1") == "0":
+        return
+    said = False
+    while True:
+        q = json.loads(http("/queue"))
+        if not q.get("queue_running") and not q.get("queue_pending"):
+            return
+        if not said:
+            print(f"waiting for an empty ComfyUI queue ({len(q.get('queue_running', []))} running, "
+                  f"{len(q.get('queue_pending', []))} pending)", flush=True)
+            said = True
+        time.sleep(poll)
+
+
 def run(graph: dict) -> tuple[str, list[dict], float, float | None]:
     """Submit, wait, return (prompt_id, images, wall seconds, execution seconds)."""
+    wait_idle()
     t0 = time.time()
     res = json.loads(http("/prompt", json.dumps({"prompt": graph, "client_id": CLIENT}).encode(),
                           {"Content-Type": "application/json"}))

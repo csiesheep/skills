@@ -211,6 +211,7 @@ def prompt_key(prompt: str, ref_names: list[str]) -> str:
 
 
 MONO = False  # set from board.json "mono" in main()
+COLOUR = False  # board.json "colour": true (ghost-comic-v2's 水墨淡彩): refs, panels and pages keep their colour
 
 
 def job(kind: str, jid: str, prompt: str, refs: list[Path], w: int, h: int, n: int, seed: int, dest_dir: Path) -> list[str]:
@@ -397,6 +398,8 @@ def lint(board: dict, only: list[str] | None = None) -> list[tuple[str, str, str
         for lvl, rx, msg in _RISKY:
             if rx is _RISKY[2][1] and _FLAT.search(prompt):
                 continue  # light words are fine once the flat-black wording that fixes them is there
+            if COLOUR and rx in (_RISKY[2][1], _RISKY[3][1]):
+                continue  # a colour board wants its colour words, and ink washes are grey shading by design
             hits = _risky_hits(rx, prompt)
             if hits:
                 say(lvl, f"{', '.join(dict.fromkeys(h.lower() for h in hits))}: {msg}")
@@ -651,7 +654,7 @@ def cmd_refs(a) -> None:
     dest = OUT / "refs"
     dest.mkdir(parents=True, exist_ok=True)
     for sid, path in ch["sheets"].items():
-        im = Image.open(OUT / path).convert("L")
+        im = Image.open(OUT / path).convert("RGB" if COLOUR else "L")
         char = b.get("characters", {}).get(sid)
         # a sheet of two different people (VIEWS2: the two officers, the two students) keeps both; cropping it to the
         # left half dropped the moustached officer and the twin-tailed girl from every panel
@@ -1387,7 +1390,7 @@ def panel_source(cell: dict, ch: dict) -> Image.Image:
         ax, ay = cell.get("zoom_at", (0.5, 0.5))
         canvas.paste(small, (round((W - small.width) * ax), round((H - small.height) * ay)))
         src = canvas
-    return src.convert("L").convert("RGB")  # pages stay black and white
+    return src if COLOUR else src.convert("L").convert("RGB")  # pages stay black and white unless "colour"
 
 
 def overlap(a, b) -> float:
@@ -1420,7 +1423,8 @@ def place_panel(page: Image.Image, cell: dict, box, ch: dict) -> None:
         if cell.get("pip") and cell["pip"] in ch["panels"]:
             pw = round(iw * 0.22)
             ph = round(pw * 0.75)
-            pip = cover(Image.open(OUT / "panels" / ch["panels"][cell["pip"]]).convert("L").convert("RGB"), pw, ph)
+            pip = Image.open(OUT / "panels" / ch["panels"][cell["pip"]]).convert("RGB")
+            pip = cover(pip if COLOUR else pip.convert("L").convert("RGB"), pw, ph)
             px, py = x0 + t + iw - pw - 10, y0 + t + ih - ph - 10
             d.rectangle([px - 3, py - 3, px + pw + 2, py + ph + 2], fill="white")
             page.paste(pip, (px, py))
@@ -2451,11 +2455,13 @@ def main() -> None:
                        help="the story's number in the account (「第 N 首」); leave it out: ghost-pack numbers a story just before it is "
                             "posted")
     a = ap.parse_args()
-    global MONO
+    global MONO, COLOUR
     try:
-        MONO = bool(load_board().get("mono"))
+        _b = load_board()
+        MONO = bool(_b.get("mono"))
+        COLOUR = bool(_b.get("colour")) and not MONO
     except Exception:
-        MONO = False
+        MONO = COLOUR = False
     if a.cmd in ("export", "reel"):
         a.brand = load_brand(a.brand_file)
         br = a.brand or {}
