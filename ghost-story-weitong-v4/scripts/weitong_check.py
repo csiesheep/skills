@@ -69,6 +69,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('story')
     ap.add_argument('--rate', type=float, default=4.5)
+    ap.add_argument('--chars', default='2200-2700',
+                    help='target spoken characters, e.g. 850-1000 when the owner asks for a short one')
     a = ap.parse_args()
     raw = open(a.story, encoding='utf-8').read()
     events, total = parse(raw)
@@ -82,8 +84,9 @@ def main():
 
     # length
     mins = sec(total) / 60
-    v = 'ok' if 2200 <= total <= 2700 else ('注意' if 1800 <= total <= 3200 else '必改')
-    add('長度（唸出來的字）', f'{total} 字 ≈ {mins:.1f} 分', '2,200–2,700 字（8–10 分）', v)
+    lo_c, hi_c = (int(x) for x in a.chars.split('-'))
+    v = 'ok' if lo_c <= total <= hi_c else ('注意' if lo_c * .85 <= total <= hi_c * 1.15 else '必改')
+    add('長度（唸出來的字）', f'{total} 字 ≈ {mins:.1f} 分', f'{lo_c:,}–{hi_c:,} 字', v)
 
     def one(kind):
         return [p for p, k, _ in events if k == kind]

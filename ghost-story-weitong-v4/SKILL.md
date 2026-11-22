@@ -139,7 +139,7 @@ with faster-whisper, so our excerpt has the same kind of ASR errors as his. With
 has no typos (every judge in moving_box13 mentioned it). If ComfyUI is busy or down, run `blind_test.py` without
 `--ours-file` and tell the judge that typos are not evidence.
 
-Give a fresh subagent only `blind_vN/blind.md` (never `key.json`) with this prompt: four excerpts, three by one
+Give a fresh subagent only the `excerpts.md` path the script prints (a neutral temp folder, so the story's folder name does not give the setting away; never `key.json`) with this prompt: four excerpts, three by one
 storyteller, one an imitation; which is the imitation, confidence 1 to 5, the three strongest reasons pointing at
 lines, and the three lines that sound least like him rewritten as he would say them. Run **two** tests with
 different seeds and different judges. **Pass** when at least one judge picks one of his, or picks ours at
