@@ -69,12 +69,21 @@ def main():
     items.append(('ours', os.path.basename(a.story), '\n'.join(ol)))
     rnd.shuffle(items)
     os.makedirs(a.out, exist_ok=True)
+    # the judge must not see the story's folder name (it gave the setting away on 2026-11-21):
+    # blind.md also goes to a neutral temp folder, and that is the path to give the judge
+    import tempfile
+    neutral = tempfile.mkdtemp(prefix='voice_test_')
+    with open(os.path.join(neutral, 'excerpts.md'), 'w', encoding='utf-8') as f2:
+        pass
     with open(os.path.join(a.out, 'blind.md'), 'w', encoding='utf-8') as f:
         f.write('# 四段口述鬼故事的逐字稿（沒有標點，一行是一口氣；有的有語音辨識的錯字）\n\n')
         for i, (_, _, txt) in enumerate(items):
             f.write(f'## {"ABCD"[i]}\n\n{txt}\n\n')
     key = {"ABCD"[i]: {'who': w, 'src': s} for i, (w, s, _) in enumerate(items)}
     json.dump(key, open(os.path.join(a.out, 'key.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    import shutil
+    shutil.copy(os.path.join(a.out, 'blind.md'), os.path.join(neutral, 'excerpts.md'))
+    print('give the judge:', os.path.join(neutral, 'excerpts.md'))
     print('wrote', os.path.join(a.out, 'blind.md'), '; ours is', [k for k, v in key.items() if v['who'] == 'ours'][0])
 
 

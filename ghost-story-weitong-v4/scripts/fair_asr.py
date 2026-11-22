@@ -40,22 +40,27 @@ def queue_empty():
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('story'); ap.add_argument('out'); ap.add_argument('--chars', type=int, default=420)
+    ap.add_argument('--tag', default=None, help='reuse clips already rendered under this tag (skip TTS)')
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
     lines = blind_test.ours(a.story, a.chars)
     parts = chunks(lines)
-    tag = 'weitong_fair_' + time.strftime('%H%M%S')
+    tag = a.tag or ('weitong_fair_' + time.strftime('%H%M%S'))
     jobs = [{'name': f'{tag}_{i:02d}', 'text': t, 'voice': VOICE, 'acting': 'casual, conversational, a bit playful',
-             'emotion': 'amused', 'intensity': 0.4, 'seconds': round(len(t) / 4.3 + 1.5, 1), 'seed': 7 + i}
+             'emotion': 'amused', 'intensity': 0.4, 'seconds': max(5.6, min(15.0, round(len(t) / 4.3 + 1.5, 1))), 'seed': 7 + i}
             for i, t in enumerate(parts)]
     jp = Path(a.out) / 'tts_jobs.json'
     json.dump(jobs, open(jp, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
-    subprocess.run([sys.executable, '-X', 'utf8', str(SPEAK), str(jp)], check=True)
+    todo = [j for j in jobs if not sorted(OUT.glob(j['name'] + '_*.flac'))]
+    if todo:  # with --tag, only the clips that are missing are rendered
+        json.dump(todo, open(jp, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+        subprocess.run([sys.executable, '-X', 'utf8', str(SPEAK), str(jp)], check=True)
     deadline = time.time() + 3600
     while time.time() < deadline:
         time.sleep(15)
         files = [sorted(OUT.glob(j['name'] + '_*.flac')) for j in jobs]
-        if all(files) and queue_empty():
+        if all(files):
+            time.sleep(5)  # let the last file finish writing
             break
     else:
         sys.exit('TTS timed out')
