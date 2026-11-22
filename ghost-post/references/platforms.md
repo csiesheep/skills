@@ -126,6 +126,15 @@ profile to the brand's Meta account (an account merge the user declined on 2026-
   step's "Cover photo" file input, "Share to" Threads left off. The grid on `/<handle>/reels/` needed a few seconds
   before `find` saw the new `/reel/` link.
 
+- **Do not paste the caption with a synthetic ClipboardEvent on Instagram (第 46 首, 2026-11-14).** The box showed the
+  text and the counter (78/2,200), but the Reel went out with an empty caption. Type it with the keyboard tool (one
+  `type` call with `\n` works) and click Share / Done by ref, not from JS: a JS click on the Edit dialog's "Done"
+  closed it without saving. Fix for a post already out: its "More options" → "Edit" → type the caption → "Done"
+  (the post then shows "Edited"). After every Share, open `/p/<code>/` and check the caption is there.
+- The Edit step may read "Video has no audio" with a disabled switch although the file has an AAC track (第 46 首):
+  the posted Reel had sound (`video.webkitAudioDecodedByteCount` grows while it plays). Check the file with ffprobe,
+  then go on and check the posted Reel.
+
 ## Pinterest (pinterest.com) — tested 2026-10-18, 第 1 首 cover pin
 
 1. Account check: `https://www.pinterest.com/<username>/` shows "Edit profile" (and "Your saved ideas"), no

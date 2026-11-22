@@ -15,6 +15,21 @@ Brand words, colours and the account handle come from the brand file the user ke
 `Projects/ghost story/ghost story brand.md` 2.2). Each day's work goes in `engagement/<YYYY-MM-DD>.md` beside the
 brand folder.
 
+## What is live now (read this first; later sections keep their history)
+
+- **Scheduled runs post by themselves.** Seven fixed runs a day (13:00, 13:20, 22:00, 22:18, 22:36, 22:53, 23:09
+  Taiwan) each find fresh posts and reply on the spot: `references/posting-task.md` is their whole procedure, with
+  the caps (ordinary replies 15 a day on Instagram and 30 on Threads, 找故事 4 per platform) and the two-Chrome
+  rule (the 鬼唱詩 Chrome stays on gui.chang.shi; a run never switches accounts).
+- **In a conversation the user posts.** Steps 1 to 3 below, and Claude types a reply only when the user asks for
+  that reply in that conversation.
+- **What the numbers say** (`brand/taste.md`, week of 2026-11-09): of 58 ordinary replies checked, 1 brought a
+  follow; Threads grew by 59 in the same week, mostly on the two days after one reply that reached 2.1K likes. That
+  reply went under a post one hour old with 273K views and 111 replies (no_forget_dict, 2026-11-04) and was an A
+  line that gave readers a folk rule they could try on the post's own detail: 「老一輩說，小孩突然變乖先別誇，叫一聲
+  她的全名，看她要想多久才應。」 One reply is a lead: when a run finds a post that young and that fast, it goes
+  first, and a rule the reader can test is the first A line to try. More replies under slow posts have not paid.
+
 ## What may and may not be done
 
 - **The user posts the replies, not Claude.** On 2026-10-20 the owner stopped Claude half way through posting
@@ -25,7 +40,7 @@ brand folder.
   Chrome is shared with the games brand (csiesheep.games, game-promote), which switches the same Instagram account:
   on 2026-10-23 Instagram was on csiesheep.games when ghost-reply came to post. Note which account Instagram and
   Threads are on before touching anything, switch with game-promote's `references/accounts.md` (no password, with
-  gui.chang.shi as the brand), check the handle on the page right before typing, and put both back as found. If
+  gui.chang.shi as the brand), check the handle on the page right before typing, and leave both on gui.chang.shi (brand blocks since 2026-11-01, see game-promote accounts.md). If
   the switch would need a password, stop and tell the user.
 - **Fiction stays fiction.** The brand labels its stories as fiction, so a reply never presents a ghost story as the
   brand's own real experience. Short stories are told as heard ("聽過一個……說", "老一輩說"), never "我那晚……".
@@ -172,3 +187,13 @@ reply, with the handle check before every post. Instagram and Threads may go at 
 同時」): `plan.py slots --pair`, and an Instagram and a Threads slot that coincide are posted by one task, one after
 the other, never by two tasks firing together. Outside those runs the default above still applies, and the
 three-a-day pace above still applies to replies posted from a conversation.
+
+## 找故事 replies (owner 2026-11-01)
+
+Besides the ordinary replies, up to 4 a day per platform (IG and Threads) under people who ask for ghost stories,
+recommending one posted 鬼唱詩 story with `@gui.chang.shi 第 N 首`. The one place a reply names the brand. Who, where,
+how, how many and the fixed times: `references/seekers.md`.
+
+## 鬼唱詩 schedule since 2026-11-01
+
+The separate search runs (ghost-reply-daily-1700-bypass, ghost-reply-daily-0500) are disabled. Seven reply runs (13:00, 13:20, 22:00, 22:18, 22:36, 22:53, 23:09 Taiwan) each find fresh posts and reply on the spot, one per platform, and leave Instagram and Threads on gui.chang.shi: `references/posting-task.md`. Older sections above that describe search runs marking 待發 rows are history.

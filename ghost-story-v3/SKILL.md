@@ -19,6 +19,7 @@ own posts (step 6).
 
 ```
 ghost-story-v3 (story + screenplay, style_check, reviewed) → owner reads and approves → ghost-film (stills, voice, video) → ghost-pack-film → ghost-post
+                                                                  ↘ ghost-comic (`from_screenplay.py`) → ghost-reel → ghost-pack → ghost-post
 ```
 
 It borrows, by path, and never copies:
@@ -151,6 +152,14 @@ grade as a real one (the joke's content comes true or becomes a clue).
 ### 5. Deliver and stop
 
 v2's step 5 unchanged. **Then wait** for the owner before ghost-film.
+
+**Which line next** (the owner picks; the first trial, 2026-11-21, is the comic): the same story and screenplay feed
+both. For the comic, `py -X utf8 ~/.claude/skills/ghost-comic/scripts/from_screenplay.py backlog/<name>` writes
+`comic/board.json` (cast, scenes, one lettered panel per beat, the reveal marked, jokes and their callbacks mapped to
+panels) and `comic/brief.md` (what a person still has to write); ghost-comic's step 1 says what carries over and what
+does not. Two things to settle before drawing: the screenplay shows the ghost clearly (cap 3) while a comic defaults
+to a restrained ghost, and a film's beats outnumber a comic's panels. The screenplay's headline numbers (the second-0
+picture, the 最大畫面 second, the joke table) stay in `comic/brief.json` for ghost-reel's draft step.
 
 ### 6. The trial (the first stories only)
 

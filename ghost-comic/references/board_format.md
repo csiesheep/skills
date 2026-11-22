@@ -39,6 +39,9 @@
 - `ref_boxes`：自動找的頭部、半身框不準時手動指定，`{"head": [x0, y0, x1, y1]}`，相對於單一視角的比例。
 - `animal`：`true` 的角色（狗）不算進人數，也不建議改用頭部裁切。
 - `aliases`：台詞和旁白裡對這個角色的其他叫法（`name` 是「媽媽」，旁白寫「我媽」）。`name` 裡的括號也會拆開：「我（舅舅）」算「我」和「舅舅」。
+- 頂層 `"colour": true`（ghost-comic-v2 的水墨淡彩用，`ink_tint.py apply` 會設）：`refs`、版面和 pip 都保留彩色，`lint` 不再警告顏色字和光線字。沒有這個欄位時一切照舊是黑白。和 `mono` 同時設時以 `mono` 為準。
+- 頂層 `"mono": true`：每張角色卡、格子、repaint 存檔時就轉灰階（老闆要「確保沒有顏色」時用）。兩人卡的 `views` 寫 `two different people` 時，`refs` 不裁半邊。
+- `variants`：要給老闆挑「比較不一樣」的設計時用，三個 `{features, desc}`（不同髮型、臉、體型、衣服）。`sheets` 每個 variant 畫一張，`choose cid=N` 把第 N 個的 features 和 desc 寫回角色並刪掉 variants。
 - `intro`：介紹這個角色的那一格的 id。`lint` 要求角色第一次被畫出來的那一格就有他的名字；如果名牌在同一頁的另一格（小寶在 p2 被畫出來，名牌在 p4），設 `intro: "p4"`。介紹的那格必須在同一頁，不然照樣警告。
 - `ghost`：`true` 的角色是鬼，不檢查名字：讀者本來就不該知道他是誰。
 

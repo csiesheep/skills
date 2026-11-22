@@ -665,7 +665,7 @@ class FifthComicTest(unittest.TestCase):
                          ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "caption.txt"])
         self.assertEqual((story / "posts" / "ig" / "caption.txt").read_text(encoding="utf-8"), "ghost-pack's")
         pins = sorted(f.name for f in (story / "posts" / "pinterest").iterdir())
-        self.assertEqual(pins, ["00_cover.jpg", "01_page.jpg", "02_page.jpg"])  # page 3 holds the reveal
+        self.assertEqual(pins, ["00_cover.jpg", "01_page.jpg", "02_page.jpg", "03_page.jpg", "04_page.jpg"])  # every page, the reveal's too (2026-10-28)
         self.assertTrue(all(Image.open(story / "posts" / "pinterest" / p).size == (1000, 1500) for p in pins))
         self.assertEqual(manga.threads_panel(b, manga.load_choices(), None), "p3")  # the voice, not the blank phone
         self.assertEqual(Image.open(story / "posts" / "threads" / "image.jpg").size, (1080, 810))

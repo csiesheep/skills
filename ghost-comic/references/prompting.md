@@ -18,6 +18,13 @@
 
 | 發生了什麼 | 原因 | 修法 |
 |---|---|---|
+| 每個人都看著讀者（〈灰外套〉第一輪 34 格裡有十幾格） | 角色描述後面加了 `a readable, expressive manga face`，模型把臉轉正給讀者看 | 拿掉這種形容；寫頭的方向和視線落點（`eyes lowered to the phone`、`eyes looking off past the edge of the frame`）；「走向鏡頭」也會變成看鏡頭，改成三分之二側身走 |
+| 空場景卡裡站了四個男人（〈灰外套〉） | 畫風的 `panel` 文字加了一句講人物的話，場景卡也用 panel 畫風 | 人物的畫風要求只放 `sheet`；格子裡要的話寫進角色描述 |
+| 揭露那格（監視器俯視）幾乎全黑，鬼比活人大、臉打亮 | `cctv` 光線加深夜，鬼站在前景 | 寫 `flat mid-grey tones bright enough to read`、鬼站在活人後面半被擋住、`seen from this height no bigger than the crouching one`、刀 `pale and clearly visible` |
+| repaint 大框回來一片灰霧，手臂還是光的 | repaint 只適合小區域，框太大就糊 | 小框；衣服、姿勢方向的錯改重畫，或手工修 |
+| 黃昏畫成大白天（〈鈴鐺〉p1、p13、p25 全部候選） | `plain pale sky` 讓整片天空留白 | 寫 `only a pale band of sky low on the horizon, the rest of the sky grey screentone, the sea dark grey`；已經畫好的可以用由上往下的漸層壓暗（沒有接縫） |
+| 「釣竿」每張都多畫一個拿竿子的人 | 釣竿這個詞自帶釣客 | 寫 `wedged upright in a crack in the rock, nobody holding it, no angler, no hands` |
+| 兩人角色卡（兩個警察、兩個學生）只剩一個人進格子 | `refs` 預設裁左半邊 | `views` 寫 `two different people` 就不裁（manga.py 已自動）；不然設 `ref_crop: "none"` |
 | 小芳的視訊格畫成兩個全身的她並排站著；主角也被畫成兩個 | 角色卡上本來就有正面和側面兩隻，模型連「兩個人」一起照抄 | `refs` 指令只裁正面那一半當參考；prompt 加 `Only one person in the frame` |
 | 視訊畫面畫成全身站姿 | 角色卡是全身，模型照抄姿勢 | `head and shoulders only, as seen by her laptop's webcam, not a full body` |
 | 客廳場景卡畫成棕色沙發、粉紅拖鞋，顏色跟著跑進格子 | prompt 有顏色字 | 參考圖一律轉灰階，頁面也轉灰階；prompt 不寫顏色字（pink、brown、bluish） |
