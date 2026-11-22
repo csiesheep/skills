@@ -413,6 +413,62 @@ class LayoutToolsTest(unittest.TestCase):
         self.assertEqual(issues, [])
 
 
+class SpeakerLetteringTest(unittest.TestCase):
+    """Owner, 2026-11-22: bubbles off the faces, a tail toward the speaker, a face badge for someone off the panel."""
+
+    def test_auto_place_keeps_off_a_face(self):
+        cell = (0, 0, 600, 900)
+        face = [380, 0, 600, 300]  # a face in the top right corner, where the first box would go
+        box, score = manga.auto_place(150, 250, cell, {"me": face}, [], None)
+        self.assertLess(manga.covers(box, face), 0.05)
+        self.assertLess(score, 2.5)
+
+    def test_auto_place_reads_after_the_last_box(self):
+        cell = (0, 0, 600, 900)
+        first = [436, 14, 586, 264]
+        box, _ = manga.auto_place(150, 250, cell, {}, [first], None, last=[first])
+        self.assertTrue(box[1] >= first[3] - 10 or (box[0] + box[2]) / 2 < (first[0] + first[2]) / 2)
+
+    def test_face_boxes_follow_mirror_and_crop(self):
+        td = Path(tempfile.mkdtemp())
+        old = manga.OUT
+        manga.OUT = td
+        try:
+            (td / "panels").mkdir()
+            Image.new("RGB", (400, 800)).save(td / "panels" / "p1_1.png")
+            cell = {"id": "p1", "faces": {"me": [0.0, 0.5, 0.25, 0.75]}, "mirror": True}
+            got = manga.face_boxes(cell, (100, 100, 500, 900), {"panels": {"p1": "p1_1.png"}})["me"]
+            self.assertEqual([round(v) for v in got], [400, 500, 500, 700])  # flipped to the right edge
+            cell["faces_for"] = "p1_0.png"  # marked on another candidate: dropped
+            self.assertEqual(manga.face_boxes(cell, (100, 100, 500, 900), {"panels": {"p1": "p1_1.png"}}), {})
+        finally:
+            manga.OUT = old
+
+    def test_badge_for_a_speaker_outside_the_panel(self):
+        td = Path(tempfile.mkdtemp())
+        old, old_colour = manga.OUT, manga.COLOUR
+        manga.OUT, manga.COLOUR = td, True  # keeps the red test face red
+        try:
+            (td / "refs").mkdir()
+            Image.new("RGB", (200, 200), (200, 30, 30)).save(td / "refs" / "dean_head.png")
+            page = Image.new("RGB", (800, 1000), "white")
+            e = {"kind": "speech", "text": "那隻貓，就是灰灰。", "pos": "tr", "who": "dean"}
+            with_badge = manga.draw_entry(page, e, (0, 0, 800, 1000), 30, {}, [], ["cat"])
+            red = sum(1 for p in page.getdata() if p[0] > 150 and p[1] < 80)
+            self.assertGreater(red, 500)  # the badge is drawn
+            page2 = Image.new("RGB", (800, 1000), "white")
+            plain = manga.draw_entry(page2, e, (0, 0, 800, 1000), 30, {}, [], ["dean", "cat"])
+            self.assertGreater(with_badge[3] - with_badge[1], plain[3] - plain[1])  # the badge counts in its box
+            self.assertEqual(sum(1 for p in page2.getdata() if p[0] > 150 and p[1] < 80), 0)
+            (td / "badges").mkdir()  # "face" picks the expression made by `badge`
+            Image.new("RGB", (200, 200), (30, 30, 200)).save(td / "badges" / "dean_sad_1.png")
+            page3 = Image.new("RGB", (800, 1000), "white")
+            manga.draw_entry(page3, dict(e, face="sad_1"), (0, 0, 800, 1000), 30, {}, [], ["cat"])
+            self.assertGreater(sum(1 for p in page3.getdata() if p[2] > 150 and p[0] < 80), 500)
+        finally:
+            manga.OUT, manga.COLOUR = old, old_colour
+
+
 class ReviewThirdComicTest(unittest.TestCase):
     def setUp(self):
         self.td = Path(tempfile.mkdtemp())
