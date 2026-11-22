@@ -147,6 +147,12 @@ confidence 2 or less. Otherwise give the judges' reasons and rewrites to a new r
 not to line edits: line edits were what failed in v4 to v7. At most two retellings. Keep every judge's reasons in
 `drafts/blind_notes.md`.
 
+If the blind test still fails after the second retelling, stop retelling. Run step 5 on the best retelling (the one
+whose judges were least sure), then stop and give the owner the review table, every blind result (judge, pick,
+confidence) and the judges' most common reason; the owner decides whether it ships as it is or is rewritten from
+step 1. Deliver it only on the owner's word, and say in the delivery that it never passed the blind test
+(study_room_b7, 2026-11-21: 8 fair tests, all caught; the owner chose to fix and ship).
+
 ### 5. Score and fine-tune
 
 As in ghost-story step 5b:
@@ -158,7 +164,7 @@ As in ghost-story step 5b:
   few lines in the first half goes through the blind test again.
 - A new subagent each round; never tell it what the last round found.
 - **Stop** when a round passes (overall 7 or more, no sub-score under 3), the checker has no 必改, the blind test has
-  passed on the retold text, the reviewer found at least two callbacks it grades A, and nothing copies the
+  passed on the retold text (or, after two failed retellings, the owner has decided as step 4 says), the reviewer found at least two callbacks it grades A, and nothing copies the
   channel's own names, lines or stories. Three rounds at most. A review fix that adds narration and drops dialogue
   is applied in dialogue instead.
 - Report each round to the owner as one table: five scores, overall, the checker's 必改 count, the reviewer's joke
