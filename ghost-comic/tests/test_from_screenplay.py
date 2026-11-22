@@ -28,6 +28,24 @@ class ParseTest(unittest.TestCase):
         self.assertEqual(len(SP["rules"]), 3)
 
 
+class SpeakerTest(unittest.TestCase):
+    """vet_night_xray (2026-11-22): an intercom line was lettered as speech, and ids c2/c3/c5 were hard to keep apart."""
+
+    def test_id_who_and_device_lines(self):
+        text = (SKILL / "assets" / "example_v3_screenplay.md").read_text(encoding="utf-8")
+        text = text.replace("- **阿哲**", "- **阿哲（zhe）**", 1)
+        sp = fs.parse(text)
+        self.assertIn("zhe", [c["id"] for c in sp["cast"]])
+        self.assertIn("阿哲", [c["name"] for c in sp["cast"]])
+        board, _ = fs.build(sp, "../story.md", 3, 5)
+        self.assertIn("zhe", board["characters"])
+        lines = [e for pg in board["pages"] for r in pg["rows"] for c in r["cells"] for e in c["text"]]
+        said = [e for e in lines if e["kind"] in ("speech", "voice")]
+        self.assertTrue(said and all(e.get("who") in board["characters"] for e in said if e.get("who")))
+        self.assertTrue(any(e.get("who") == "zhe" for e in said))
+        self.assertTrue(fs.DEVICE.search("對講機") and fs.DEVICE.search("電話裡") and not fs.DEVICE.search("小聲"))
+
+
 class BoardTest(unittest.TestCase):
     def setUp(self):
         self.board, self.brief = fs.build(SP, "../story.md", 3, 5)

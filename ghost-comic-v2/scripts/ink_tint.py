@@ -35,8 +35,11 @@ TINT = (" Bold black brush lines and grey ink washes exactly as in a monochrome 
 STYLE = {
     "name": "水墨淡彩",
     # sheets are drawn in plain ink and tinted afterwards (`tint`); panels are drawn ink and tint together
-    "sheet": f"Character design reference sheet as a {INK[0].lower()}{INK[1:]} Almost no colour. Plain off-white rice "
-             f"paper background.",
+    # rough dry brush: smooth sheets made the indoor panels drawn from them read as fine-line watercolour illustration
+    # (vet_night_xray, 2026-11-21)
+    "sheet": f"Character design reference sheet as a {INK[0].lower()}{INK[1:]} Rough, loose dry-brush strokes and "
+             f"broken ink edges, like a sketch with a calligraphy brush, not clean line art. Almost no colour. Plain "
+             f"off-white rice paper background.",
     "panel": f"Comic panel as a {INK[0].lower()}{INK[1:]}{TINT} Night scenes are dark ink washes with the faces left light.",
 }
 END = "Drawn entirely in this style: "
@@ -46,7 +49,9 @@ FIGHTS = re.compile(r"\b(line art|line-art|screentone|halftone|manga|cel shading
 KEEP = ("Redraw <image1> keeping its exact Chinese ink wash brushwork: the same bold black brush strokes, dry brush "
         "texture, grey ink washes on off-white rice paper, the same composition")
 ADD = ("Add only faint transparent tints of colour over the ink on {where}; everything else stays ink grey exactly as in "
-       "<image1>. Not a watercolour illustration. No text.")
+       "<image1>. Both views of the character get identical colours. Not a watercolour illustration. No text.")
+# "both views identical": the narrator's jeans came out dark grey in front and pale blue in three-quarter view
+# (vet_night_xray, 2026-11-21)
 
 
 def load(name: str) -> dict:

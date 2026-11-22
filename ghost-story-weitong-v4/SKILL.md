@@ -69,11 +69,17 @@ Read `references/style.md`, `references/avoid.md`, `references/phrasebank.md` an
 3. **The ghost's entry:** passing as a person (with its one flaw) or heard first; when it is seen (about .69).
 4. **Mechanisms:** the 2 or 3 from style.md §2, and the record or witness that overturns the narrator.
 5. **Twists:** two or three, each written as 「本來以為 A，其實 B」. The second rewrites something the narrator did.
-6. **The biggest scare** (about .85): what is on the page, in one sentence; no face close-up.
+6. **The biggest scare** (about .85): what is on the page, in one sentence; no face close-up. This is a rule for the
+   words only. Whether a comic or a film shows her face is the owner's call when the picture is made (vet_night_xray,
+   2026-11-22: 「按照故事，可以清楚露臉」).
 7. **The third party** who explains half, and the physical proof that pins it.
 8. **Jokes:** six to nine, each with who, its **construction from jokes.md**, rough position; mark which two or more
    come back and how (style.md §4). Most are banter between two people, not narrator lines.
 9. **The ending:** which of the four, and the last line.
+10. **Lines that must survive any cut:** the sentence each twist turns on, and every time marker the reader needs to
+    follow the days (禮拜三, 禮拜四…, 兩點十分). A comic or a short version cuts the dialogue hard. vet_night_xray's
+    comic script dropped 「我不記得我走進過倉庫」, and the blind reader could not follow the CCTV twist until it was
+    put back. Copy this list into `speakers.md` (step 6) so the next skill finds it.
 
 Then check line 4 to 6 against his stories: open `research/weiteng/story_json/` and search the titles and
 `peak_scare_desc` for the same object and twist. The same pair is replaced, not reworded.
@@ -110,11 +116,19 @@ Give a **fresh subagent** (Opus) this job:
 - Retell the story **as a young Taiwanese guy telling friends over late-night snacks**:
   - narration ends with 呢、啊、啦 every few lines, with 這樣 before a noun now and then;
   - leave traces of speech: a repeated phrase, a self-correction (「三台電鍋，喔不是，兩台是壞的啦」), fillers (嗯、
-    呃、就是), an aside to the listeners (「你們阿嬤家應該也是這個味道吧」);
-  - mock-epic self-roasting about past-you (「這個數學真的太天才了」);
-  - description that serves the next action or turns into a comment, never still-life or a poetic metaphor;
-  - banter that makes things happen (friends egging each other on, escalating; stammers when excited or scared),
-    with jokes mostly one quick line carried by particles;
+    呃、就是), a particle alone on its own line (欸。蛤？);
+  - narration in long breaths held by connectors (「而就在…的時候」「這時，我一回頭，赫然發現…」), not
+    four-to-six-character fragments;
+  - the narrator stops to make a fuss about once a paragraph: mock-epic self-roasting about past-you (「這個數學真的太
+    天才了」), an exaggerated aside, a slow summing-up line; his everyday interjections (基本上、說實在的、畢竟、我的天啊)
+    at his rate, zero to two each;
+  - talk to the listeners only as he does: at most three times, only to ask their question for them, to say they
+    are probably wondering, or to reassure; never a comment turned toward them (「你們阿嬤家應該也是這個味道吧」
+    caught moving_box13's and vet_night_xray's judges; the checker makes it 必改);
+  - description that serves the next action, never still-life, a poetic metaphor or a written-only word (只見);
+  - jokes in the characters' mouths (a quick tease and a quick answer), not the narrator's set-up-and-punchline or
+    three-step build-ups; banter that makes things happen (friends egging each other on, escalating; stammers when
+    excited or scared);
   - one or two unrelated everyday details next to each clue, so it is not obviously planted;
   - from the moment the ghost is known through the biggest scare, the voice goes quiet: short lines, almost no
     particles, no jokes; after it, plain speech, no joke in the last paragraph;
@@ -130,7 +144,7 @@ Copy the result to `story.md`.
 On the retold text, before any review round.
 
 ```
-python -X utf8 ~/.claude/skills/ghost-story-weitong-v4/scripts/fair_asr.py backlog/<name>/story.md backlog/<name>/fair_vN
+python -X utf8 ~/.claude/skills/ghost-story-weitong-v4/scripts/fair_asr.py backlog/<name>/story.md backlog/<name>/fair_vN --names "<名字1>,<名字2>,..."
 python -X utf8 ~/.claude/skills/ghost-story-weitong-v4/scripts/blind_test.py backlog/<name>/story.md     C:/Users/sheep/Pictures/gui_chang_shi/research/weiteng/nuwa_src/fp_all backlog/<name>/blind_vN     --ours-file backlog/<name>/fair_vN/ours_asr.txt
 ```
 
@@ -139,9 +153,37 @@ with faster-whisper, so our excerpt has the same kind of ASR errors as his. With
 has no typos (every judge in moving_box13 mentioned it). If ComfyUI is busy or down, run `blind_test.py` without
 `--ours-file` and tell the judge that typos are not evidence.
 
+What `fair_asr.py` does so our excerpt does not stand out (vet_night_xray, 2026-11-22: a judge read 阿兵/阿斌/阿冰
+and 灰灰/輝輝 in one excerpt as 「像故意灑錯字」):
+- `--names` gives whisper the cast's names as hotwords. On the same recording 阿斌 came back right 3 of 3 times
+  (before: 阿兵 3 times) and 灰灰 5 of 5 (before: 4, plus 揮揮 once).
+- Spaces inside a line become line breaks, and digits become characters (兩點, 十二點). Lines with a space went from
+  8% to 0 (his: 2.8%), lines with a digit from 2% to 0 (his: 1.2%). Line length already matched his (8.4 to 8.9
+  characters against his 8.6).
+- It waits for an empty ComfyUI queue before sending the H3 voices: the GPU is shared, and H3 must not be slotted
+  between someone else's Qwen jobs.
+- A traditional-Chinese opening prompt keeps whisper out of simplified characters, and a long segment is split at
+  its commas. Without these, the control's first line came back simplified and as one 40-character line, and 5 of
+  428 lines in earlier runs were simplified.
+
+**Control test (2026-11-22, `research/weiteng/control_2026-11-22/`, local only).** One of his own transcripts went
+through `fair_asr.py --plain` and was passed off as ours, with two judges:
+- Judge 1 picked one of his untouched excerpts (confidence 4), calling his lines 「書面語」 and 「照公式填的」.
+- Judge 2 picked the processed one (confidence 4), quoting one of his own lines as written style.
+
+So:
+- A confidence of 4 does not mean the judge is right.
+- The voice-and-transcribe trip leaves some trace (1 pick of 2, against 1 in 4 by chance).
+- Under the pass rule below, his own text passes. Our three stories failed 12 times out of 12, so most of that is
+  the writing, not the tool.
+
+Two judges is a small sample. Run a control again whenever `fair_asr.py` changes.
+
 Give a fresh subagent only the `excerpts.md` path the script prints (a neutral temp folder, so the story's folder name does not give the setting away; never `key.json`) with this prompt: four excerpts, three by one
 storyteller, one an imitation; which is the imitation, confidence 1 to 5, the three strongest reasons pointing at
-lines, and the three lines that sound least like him rewritten as he would say them. Run **two** tests with
+lines, and the three lines that sound least like him rewritten as he would say them. Say in the prompt that all four
+went through speech recognition, so typos, a name spelled two ways and where the lines break are not evidence; only
+the way of talking is (the excerpt file's header says it too). Run **two** tests with
 different seeds and different judges. **Pass** when at least one judge picks one of his, or picks ours at
 confidence 2 or less. Otherwise give the judges' reasons and rewrites to a new retelling (step 3, a new writer),
 not to line edits: line edits were what failed in v4 to v7. At most two retellings. Keep every judge's reasons in
@@ -181,8 +223,16 @@ itself keeps his tagless dialogue; the table is what makes it voiceable and draw
 and voice acting a reader cannot always tell who speaks (owner, 2026-11-21). Example:
 `backlog/moving_box13/speakers.md`.
 
+End `speakers.md` with 「不能縮掉的句子」: plan.md line 10, each line quoted as it now reads in the story.
+
 Give the owner: the story (markers removed) as plain text, `speakers.md`, one line of mechanism / ghost entry /
-ending, the length in characters and minutes, the last round's table. **Then wait.** What it becomes (a voiced long video, a YouTube
+ending, the length in characters and minutes, the last round's table. **Then wait.**
+
+**When the owner hands the gates over** (「you can decide everything until the comic is ready」, vet_night_xray
+2026-11-21), the owner's decisions in steps 4 and 6 become yours: whether a story that failed the blind test ships,
+and what it becomes next. Write each decision and its reason in `drafts/blind_notes.md`. The delivery still says, in
+its first lines, whether the story passed the blind test and the judges' confidence. Handing over a gate is not
+consent to hide its result. What it becomes (a voiced long video, a YouTube
 story, or cut down with ghost-story-v3) is the owner's call.
 
 ## Rules

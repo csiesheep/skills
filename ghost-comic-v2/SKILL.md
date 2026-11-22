@@ -77,6 +77,54 @@ Run all of them from the comic's work folder.
    - **Checker brief:** add one line to every `review` brief: "the picture is Chinese ink wash with faint
      colour; fail a candidate drawn as watercolour illustration, clean line art or full colour".
 
+## From a ghost-story-weitong-v4 long story
+
+The first whole comic in this style, 〈動物醫院的兩點十分〉 (2026-11-22), came from a v4 story: 2,868 characters
+told aloud in about 10.6 minutes. It became 10 pages, 41 panels and about 100 GPU minutes. v4 writes no
+screenplay, so:
+
+1. **Write the comic script first.** Use the v3 screenplay format that `from_screenplay.py` reads, in
+   `film/screenplay.md`:
+   - the header with **長度** and **最大畫面**;
+   - **人物**, with an English id for each person: 「**阿斌（bin）**：…」. Without ids they came out as c2, c3 and c5;
+   - scenes and `[beat]` lines;
+   - `**誰**（note）：text` lines. A line said through an intercom, a phone or a speaker (the note says 對講機, 電話,
+     廣播 …) becomes a `voice` bubble.
+
+   Then run `from_screenplay.py`. Every line it writes carries `who`.
+2. **Cut the dialogue, not the story.** v4 is 35 to 45% dialogue, written as tagless speech that will not fit a
+   bubble. Shorten each line to its point. Keep everything else:
+   - every joke that comes back later, and the line it comes back in;
+   - the twist sentences, and every day and time marker. `speakers.md` lists them under 「不能縮掉的句子」.
+     Dropping 「我不記得我走進過倉庫」 made the CCTV twist unreadable for the blind reader;
+   - who is in which panel.
+3. **The ghost's face is the owner's call.** v4's 「不寫五官」 is a rule for the words only. Ask once, at the story gate.
+4. **GPU:** v4's blind test uses H3 voices, and this skill uses Qwen. Finish the story, its blind test included,
+   before drawing. Never interleave the two.
+
+## When the owner hands over the gates
+
+「you can decide everything until the comic is ready」 (2026-11-21): the story gate and gates 1 to 3 become mine.
+Pick the sheets and the layout myself, with an independent checker on every pick, and note each choice in
+`pipeline_notes.md`. The owner still gets the story and the finished pages, and the delivery says what was
+accepted with a known flaw.
+
+## Design gate rules (learned on the first whole comic)
+
+- **Draw the ghost's sheet as a frightening adult from the start.** Her first sheet had big doll eyes. Every panel
+  that used `ghost:head` came out cute, and the reveal panels had to drop her reference and describe "a grown woman
+  of about twenty-five, not a child and not a doll: a long gaunt adult face, sunken cheeks…" in words. Reject a
+  doll face at the design gate.
+- **Sheets in rough dry brush.** Smooth sheets gave indoor panels that read as fine-line watercolour illustration.
+  `ink_tint.py`'s sheet style now asks for rough, broken dry-brush strokes.
+- **Scenes say "the walls are bare: no posters, no notices, no signs, no writing".** Without it, every indoor
+  panel got a wall of fake notices, and a checker failed them all.
+- **`scene_tint` names where each colour sits.** "the green snack packets" put pale green on the waiting room's
+  bench cushions. Write "the green snack packet taped on top of each machine".
+- **A picture that fills the frame has no scene.** An X-ray film, a phone screen or a radiograph on a light box gets
+  `"scene": []` and "no room, no table, no walls". With the X-ray room's layout, p23 and p32 drew the whole room.
+  `lint` warns about it now.
+
 ## Prompt rules for this style
 
 - **Light the ghost, then say why she is frightening.** "The ghost's face is lit and clearly visible" alone made
@@ -130,9 +178,14 @@ side by side (`~/.claude/skills/ghost-comic` and `~/.claude/skills/ghost-comic-v
     0 for the ink-grey ghost.
   - `tests/test_ink_tint.py` covers `apply` and `check` (no GPU).
   - ghost-comic's 51 tests pass with the `colour` flag.
+  - **A whole comic, 2026-11-22:** 〈動物醫院的兩點十分〉 (`backlog/vet_night_xray/comic/`), 10 pages and 41 panels in
+    colour.
+    - GPU: sheets 13 min, panels 67 min, face repaints 20 min.
+    - Four independent checkers rated every candidate. 11 panels were redrawn for story errors, and 27 were
+      accepted with cosmetic flaws.
+    - Four blind readers, two before the owner's review and two after it, followed the plot. Their speaker and
+      reading-order trouble was fixed in the lettering.
+    - `pages` keeps the colour.
 - **Not tested yet:**
-  - a whole comic to the end;
-  - `manga.py pages`, `export` and `reel` with `colour` on (the code keeps colour where it used to greyscale,
-    but no page has been laid out in colour);
-  - the checker and the blind reader on ink pages;
+  - `export` and `reel` with `colour` on;
   - `tint`'s default wording with nothing written in `tint` or `scene_tint`, which came out too faint.

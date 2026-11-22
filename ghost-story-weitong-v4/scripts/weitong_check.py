@@ -37,6 +37,8 @@ AVOID_MUST = [
 ]
 # 2026-11-21 owner: common Taiwanese slang is allowed (哭喔, 北七, 你倒咧, 好死不死 ...).
 AVOID_WARN = ['小康', '洋蔥', '以下就是', '的故事：']
+# written-only words a storyteller does not say aloud (2026-11-22: 「只見」 named by both blind judges)
+WRITTEN = ['只見', '映入眼簾', '不禁', '彷彿', '宛如', '霎時', '頓時間', '油然而生', '不由得', '竟是', '此時此刻']
 
 
 def load_avoid():
@@ -177,8 +179,18 @@ def main():
         add('像他的字（人判斷）', '、'.join(warn), '是一般用法就留', '注意')
     nx = clean.count('沒想到')
     add('「沒想到」', f'{nx}', '最多 2', 'ok' if nx <= 2 else '注意')
-    addr = len(re.findall(r'各位|你們一定|大家一定|你一定想|你們可能|說到這裡', clean))
-    add('對聽眾說話', f'{addr}', '最多 3', 'ok' if addr <= 3 else '注意')
+    # 2026-11-22 vet_night_xray: both blind judges named 「只見」 as written Chinese he never says
+    bookish = [w for w in WRITTEN if w in clean]
+    add('書面語（只見、彷彿…）', '、'.join(bookish) or '0', '0', '必改' if bookish else 'ok')
+    # he talks to the listeners at most 3 times, only to ask for them, to guess their curiosity or to reassure
+    # (02-voice §4); a comment turned toward them (「你們身邊應該也有個這樣的朋友吧」) gave two stories away
+    narr = re.sub(r'「[^」]*」', '', clean)
+    # replaces a count of 各位/你一定想… that found 0 in both stories the judges caught on exactly this
+    to_them = [s for s in re.split(r'[。！？\n]', narr) if re.search(r'你們|大家|各位|你一定|你可能|說到這裡', s)]
+    remarks = [m.group(0) for s in to_them for m in [re.search(r'(你們|大家).{0,12}應該(也)?.{0,10}吧', s)] if m]
+    add('旁白對聽眾說話', f'{len(to_them)} 次', '最多 3', 'ok' if len(to_them) <= 3 else '必改')
+    if remarks:
+        add('對聽眾的評論（「你們…應該也…吧」）', '、'.join(remarks), '0：只替聽眾問、預告好奇、安撫', '必改')
     # voice fingerprint against his 205 stories (references/fingerprint.json, built by voice.py)
     try:
         sys.path.insert(0, HERE)
