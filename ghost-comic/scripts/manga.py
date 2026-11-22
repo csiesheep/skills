@@ -458,6 +458,13 @@ def lint(board: dict, only: list[str] | None = None) -> list[tuple[str, str, str
             kws = board["characters"][cid].get("keywords", [])
             if kws and not any(k.lower() in prompt.lower() for k in kws):
                 say("warn", f"{cid}: none of its features ({', '.join(kws)}) is repeated in the prompt")
+        said = [e for e in cell.get("text", []) if e["kind"] in ("speech", "voice")]
+        for e in said:
+            if e.get("who") and e["who"] not in board["characters"]:
+                say("error", f"「{e['text'][:8]}」: who {e['who']!r} is not a character")
+        if len(said) > 1 and not all(e.get("who") for e in said):
+            say("warn", "two or more lines in the panel without `who`: the reader cannot tell who says which (owner "
+                        "2026-11-22); `who` draws a tail toward the speaker, or a face badge when they are not in the panel")
     # name a character where they first appear: 阿嬤 never was, and her bust beside 「那應該是恁細姑」 read as 細姑.
     # `intro` points at another panel on the same page that names them (小寶 is drawn in p2, his tag is in p4)
     where = {c["id"]: (pi, c) for pi, c, _ in all_panels(board)}
@@ -796,6 +803,36 @@ def cmd_repaint(a) -> None:
            "n": a.n, "seed": seed, "prompt": text, "wall_s": wall, "exec_s": exec_s, "files": files}
     log(rec)
     print(json.dumps(rec, ensure_ascii=False), flush=True)
+
+
+def cmd_badge(a) -> None:
+    """The character's head ref with another expression, for the small face under a bubble (owner, 2026-11-22:
+    「小臉也可以有表情」). Writes out/badges/<who>_<name>_<k>.png; a text entry picks one with "face": "<name>_<k>"."""
+    b, ch = load_board(), load_choices()
+    src = OUT / "refs" / f"{a.who}_head.png"
+    if not src.exists():
+        raise SystemExit(f"{src} does not exist: run `refs` first")
+    work = OUT / "badges"
+    work.mkdir(parents=True, exist_ok=True)
+    im = Image.open(src).convert("RGB")
+    s = 1024 / max(im.size)
+    w, h = (max(512, round(v * s / 32) * 32) for v in im.size)
+    tmp = work / f"{a.who}_src.png"
+    im.resize((w, h), Image.LANCZOS).save(tmp)
+    prompt = (f"{style_text(b, ch, 'panel')} Keep this picture exactly the same as <image1>: the same person, face shape, "
+              f"hair, clothes and drawing style. Change only the facial expression to: {a.prompt}")
+    seed = a.seed or random.randrange(2**31)
+    graph = comfy.build_graph(prompt, [comfy.upload(tmp)], w, h, seed, a.n, f"ghost_comic/badge/{a.who}")
+    prompt_id, images, wall, exec_s = comfy.run(graph)
+    files = []
+    for k, img in enumerate(images, 1):
+        dest = work / f"{a.who}_{a.name}_{k}.png"
+        comfy.fetch(img, dest)
+        Image.open(dest).convert("RGB").resize(im.size, Image.LANCZOS).save(dest)
+        files.append(dest.name)
+    log({"kind": "badge", "id": a.who, "prompt_id": prompt_id, "name": a.name, "n": a.n, "seed": seed,
+         "prompt": a.prompt, "wall_s": wall, "exec_s": exec_s, "files": files})
+    print(json.dumps(files), flush=True)
 
 
 # ---------------------------------------------------------------------------
@@ -1274,36 +1311,176 @@ def text_block(entry: dict, size: int, max_h: float | None = None) -> Image.Imag
     return tile
 
 
-def draw_entry(page: Image.Image, entry: dict, cell_box, base: int) -> list[int]:
-    """One text item. The bubble shape says where the voice comes from: speech (round) is said in the room,
-    voice (round, white on black) comes from someone unseen, screen / phone (square, double outline) comes
-    through a device, narration is a plain box, title and tag are white on black."""
-    kind = entry["kind"]
-    oval = kind in ("speech", "voice")
-    size = round(base * entry.get("scale", 1.0) * {"title": 1.5, "tag": 1.25}.get(kind, 1.0))
-    room = (cell_box[3] - cell_box[1]) - 28 - (size * 1.1 if not oval else size * 0.8)
-    tile = text_block(entry, size, max_h=room / (1.22 if oval else 1.0))
-    if oval:  # the text rectangle must fit inside the ellipse: scale by about sqrt(2)
-        bw, bh = round(tile.width * 1.42 + size * 0.5), round(tile.height * 1.22 + size * 0.8)
-    else:
-        pad = round(size * 0.55)
-        bw, bh = tile.width + 2 * pad, tile.height + 2 * pad
-    pad_x, pad_y = (bw - tile.width) // 2, (bh - tile.height) // 2
+def slot_box(pos: str, bw: int, bh: int, cell_box, mgn: int = 14) -> list[int]:
     x0, y0, x1, y1 = cell_box
-    mgn = 14
-    pos = entry.get("pos", "tr")
     bx = x1 - mgn - bw if pos[1] == "r" else (x0 + mgn if pos[1] == "l" else (x0 + x1 - bw) // 2)
     by = y0 + mgn if pos[0] == "t" else (y1 - mgn - bh if pos[0] == "b" else (y0 + y1 - bh) // 2)
+    return [bx, by, bx + bw, by + bh]
+
+
+def covers(box, face) -> float:
+    """How much of a face the box hides, as a share of the face."""
+    w = min(box[2], face[2]) - max(box[0], face[0])
+    h = min(box[3], face[3]) - max(box[1], face[1])
+    return 0.0 if w <= 0 or h <= 0 else w * h / ((face[2] - face[0]) * (face[3] - face[1]))
+
+
+def reads_before(b, e) -> bool:
+    """True when box b would be read before box e on a right-to-left page. b comes after e only when it starts below
+    e's bottom, or sits to e's left without starting higher (p17: a box to the left but higher was read first)."""
+    below = b[1] >= e[3] - 20
+    left_not_higher = (b[0] + b[2]) / 2 < (e[0] + e[2]) / 2 - 10 and b[1] >= e[1] - 20
+    return not (below or left_not_higher)
+
+
+def auto_place(bw: int, bh: int, cell_box, faces: dict, drawn: list, speaker, last=None,
+               mgn: int = 14) -> tuple[list[int], float]:
+    """Where a box goes when its `pos` is "auto": the spot on a 7 x 7 grid of the cell that hides no face and no box
+    already drawn, is read after `last` (right to left, top to bottom), and sits near its speaker and the top right.
+    Returns the box and its score: 2.5 or more means it still hides something. The owner (2026-11-22):
+    「字框儘量不要檔住人臉」."""
+    x0, y0, x1, y1 = cell_box
+    cw, chh = max(1, x1 - x0), max(1, y1 - y0)
+    xs = [x1 - mgn - bw - k * max(0, (x1 - x0 - 2 * mgn - bw)) / 6 for k in range(7)]
+    ys = [y0 + mgn + k * max(0, (y1 - y0 - 2 * mgn - bh)) / 6 for k in range(7)]
+    best, best_score = None, None
+    for by in ys:
+        for bx in xs:
+            b = [round(bx), round(by), round(bx) + bw, round(by) + bh]
+            score = 10 * sum(covers(b, f) * (0.4 if w == "cat" else 1.0) for w, f in faces.items())
+            score += 60 * sum(overlap(b, pb) for pb in drawn)
+            score += 0.4 * ((x1 - b[2]) / cw + (b[1] - y0) / chh)  # top right first
+            # read after every earlier box, not only the last: 「那牠是在打卡喔」 sat below the second box but right of
+            # the first, and the blind reader read it first (p7)
+            score += 6 * sum(reads_before(b, e) for e in (last or []))
+            if speaker:
+                cx, cy = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
+                fx, fy = (speaker[0] + speaker[2]) / 2, (speaker[1] + speaker[3]) / 2
+                own = math.hypot(cx - fx, cy - fy)
+                score += 1.5 * own / max(cw, chh)
+                # nearer someone else's face than its speaker's: its tail runs past them and the blind reader gave
+                # the line to them (p3, p29: the narrator's line beside 院長)
+                for f in faces.values():
+                    if f is not speaker and math.hypot(cx - (f[0] + f[2]) / 2, cy - (f[1] + f[3]) / 2) < own:
+                        score += 1.5
+            if best_score is None or score < best_score:
+                best, best_score = b, score
+    return best, best_score
+
+
+def draw_tail(page: Image.Image, box, target, size: int, dark: bool) -> None:
+    """A wedge from the oval toward the speaker's face, stopping short of it: which of two people in a panel says the
+    line (owner, 2026-11-22: 「一格中，兩人多個對話框，有時也會搞不清楚是誰說的」)."""
+    cx, cy = (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
+    rx, ry = (box[2] - box[0]) / 2, (box[3] - box[1]) / 2
+    tx, ty = (target[0] + target[2]) / 2, (target[1] + target[3]) / 2
+    ang = math.atan2((ty - cy) / ry, (tx - cx) / rx)
+    edge = (cx + rx * math.cos(ang), cy + ry * math.sin(ang))
+    dist = math.hypot(tx - edge[0], ty - edge[1]) - max(target[2] - target[0], target[3] - target[1]) * 0.6
+    # always at least a short tail: two bubbles beside 院長 in p36 had none and the narrator stood right there.
+    # Small (owner, 2026-11-22: 「對話框的尾巴儘量縮小」): a stub of about one letter that only points; the bubble
+    # itself is placed near its speaker and away from other faces, so the direction is enough
+    length = max(size * 0.6, min(dist, size * 1.3))
+    ux, uy = (tx - edge[0]), (ty - edge[1])
+    n = math.hypot(ux, uy) or 1
+    tip = (edge[0] + ux / n * length, edge[1] + uy / n * length)
+    da = min(0.12, size * 0.45 / max(rx, ry))  # base about one letter wide, whatever the bubble's size
+    b1 = (cx + rx * math.cos(ang - da), cy + ry * math.sin(ang - da))
+    b2 = (cx + rx * math.cos(ang + da), cy + ry * math.sin(ang + da))
+    inn = lambda p: (cx + (p[0] - cx) * 0.93, cy + (p[1] - cy) * 0.93)
+    fill, line = ("black", "white") if dark else ("white", "black")
     d = ImageDraw.Draw(page)
-    box = [bx, by, bx + bw, by + bh]
+    d.polygon([inn(b1), tip, inn(b2)], fill=fill)
+    d.line([b1, tip, b2], fill=line, width=3, joint="curve")
+
+
+def draw_badge(page: Image.Image, who: str, box, size: int, face: str | None = None) -> list[int] | None:
+    """The speaker's face in a small circle at the foot of the bubble, for a line said by someone outside the panel
+    (owner, 2026-11-22: 「說話的人不在當一格的對話框，框下方加上一個小臉」). Cut from the character's head ref, or from
+    out/badges/<who>_<face>.png, the same head with the line's expression (`badge` makes them; 「小臉也可以有表情」)."""
+    ref = OUT / "badges" / f"{who}_{face}.png" if face else OUT / "refs" / f"{who}_head.png"
+    if not ref.exists():
+        return None
+    dia = round(size * 2.6)
+    head = Image.open(ref).convert("RGB")
+    side = round(min(head.size) * 0.7)  # the head ref carries the shoulders; the badge is the face
+    left, top = (head.width - side) // 2, round(head.height * 0.03)
+    face = head.crop((left, top, left + side, top + side)).resize((dia, dia), Image.LANCZOS)
+    if not COLOUR:
+        face = face.convert("L").convert("RGB")
+    m = Image.new("L", (dia, dia), 0)
+    ImageDraw.Draw(m).ellipse([0, 0, dia - 1, dia - 1], fill=255)
+    bx = round((box[0] + box[2]) / 2 - dia / 2)
+    by = round(box[3] - dia * 0.1)
+    by = min(by, page.height - dia - 4)
+    page.paste(face, (bx, by), m)
+    ImageDraw.Draw(page).ellipse([bx, by, bx + dia - 1, by + dia - 1], outline="black", width=3)
+    return [bx, by, bx + dia, by + dia]
+
+
+def draw_entry(page: Image.Image, entry: dict, cell_box, base: int, faces: dict | None = None,
+               drawn: list | None = None, cast: list | None = None, last: list | None = None) -> list[int]:
+    """One text item. The bubble shape says where the voice comes from: speech (round) is said in the room,
+    voice (round, white on black) comes from someone unseen, screen / phone (square, double outline) comes
+    through a device, narration is a plain box, title and tag are white on black.
+    `who` names the speaker: a speech oval gets a tail toward their face when the panel's `faces` has it, and a small
+    face badge when they are not in the panel's cast. `pos: "auto"` finds the place that hides no face and no box in
+    `drawn` and is read after `last`; render_page letters a crowded panel again at 88% and 76%."""
+    kind = entry["kind"]
+    faces = faces or {}
+    oval = kind in ("speech", "voice")
+    who = entry.get("who")
+    badge = oval and who and entry.get("badge", who not in (cast or []))
+    pos = entry.get("pos", "tr")
+
+    def measure(k: float):
+        size = round(base * entry.get("scale", 1.0) * k * {"title": 1.5, "tag": 1.25}.get(kind, 1.0))
+        extra = round(size * 2.6 * 0.9) if badge else 0  # the badge hangs below the oval
+        room = (cell_box[3] - cell_box[1]) - 28 - (size * 1.1 if not oval else size * 0.8) - extra
+        tile = text_block(entry, size, max_h=room / (1.22 if oval else 1.0))
+        if oval:  # the text rectangle must fit inside the ellipse: scale by about sqrt(2)
+            bw, bh = round(tile.width * 1.42 + size * 0.5), round(tile.height * 1.22 + size * 0.8)
+        else:
+            pad = round(size * 0.55)
+            bw, bh = tile.width + 2 * pad, tile.height + 2 * pad
+        return size, extra, tile, bw, bh
+
+    if pos == "auto":
+        tries = []
+        for k in (1.0,):  # one box shrunk alone looked wrong beside its neighbours (p3); render_page shrinks the panel
+            m = measure(k)
+            box, score = auto_place(m[3], m[4] + m[1], cell_box, faces, drawn or [], faces.get(who), last)
+            tries.append((score + (1 - k) * 2, m, box))
+            if score < 2.5:
+                break
+        _, (size, extra, tile, bw, bh), box = min(tries, key=lambda t: t[0])
+    else:
+        size, extra, tile, bw, bh = measure(1.0)
+        box = slot_box(pos, bw, bh + extra, cell_box)
+    pad_x, pad_y = (bw - tile.width) // 2, (bh - tile.height) // 2
+    box[3] = box[1] + bh
+    bx, by = box[0], box[1]
+    d = ImageDraw.Draw(page)
+    tail = oval and who in faces and not badge and entry.get("tail", True)
+    full = box[:3] + [box[3] + extra]  # what the overlap checks see
     if kind == "speech":
         d.ellipse(box, fill="white", outline="black", width=3)
+        if tail:  # drawn over the oval: its wedge covers the outline where it joins
+            draw_tail(page, box, faces[who], size, False)
+        if badge:
+            draw_badge(page, who, box, size, entry.get("face"))
+        page.paste(tile, (bx + pad_x, by + pad_y), tile)
+        return full
     elif kind == "voice":
         d.ellipse(box, fill="black", outline="white", width=3)
+        if tail:
+            draw_tail(page, box, faces[who], size, True)
+        if badge:
+            draw_badge(page, who, box, size, entry.get("face"))
         white = Image.new("RGBA", tile.size, (255, 255, 255, 255))
         white.putalpha(tile.split()[3])
         page.paste(white, (bx + pad_x, by + pad_y), white)
-        return box
+        return full
     elif kind in ("screen", "phone"):
         d.rounded_rectangle(box, radius=round(size * 0.35), fill="white", outline="black", width=3)
         g = 5
@@ -1440,6 +1617,64 @@ def place_panel(page: Image.Image, cell: dict, box, ch: dict) -> None:
         d.rectangle([x0, y0, x1 - 1, y1 - 1], outline="black", width=4)
 
 
+def repainted_from(pick: str, base: str) -> bool:
+    """True when `pick` came out of `repaint` (or a hand fix) of `base`, directly or through other fixes: the layout is
+    the same, so the faces marked on `base` still hold."""
+    if not (OUT / "log.jsonl").exists():
+        return False
+    parent = {}
+    for line in (OUT / "log.jsonl").read_text(encoding="utf-8").splitlines():
+        try:
+            r = json.loads(line)
+        except ValueError:
+            continue
+        if r.get("base"):
+            for f in r.get("files", []):
+                parent[f] = r["base"]
+    seen = set()
+    while pick in parent and pick not in seen:
+        seen.add(pick)
+        pick = parent[pick]
+        if pick == base:
+            return True
+    return False
+
+
+def face_boxes(cell: dict, box, ch: dict) -> dict:
+    """The panel's `faces` ({character: [x0, y0, x1, y1]} as fractions of the picked candidate, set once per pick by
+    looking at it) moved onto the page the way place_panel puts the picture there: mirror, zoom, cover crop."""
+    faces = cell.get("faces") or {}
+    pick = ch.get("panels", {}).get(cell["id"])
+    if not faces or not pick or cell.get("fill"):
+        return {}
+    if cell.get("faces_for") and cell["faces_for"] != pick and not repainted_from(pick, cell["faces_for"]):
+        return {}  # marked on another candidate: stale
+    W, H = Image.open(OUT / "panels" / pick).size
+    x0, y0, x1, y1 = box
+    w, h = x1 - x0, y1 - y0
+    if cell.get("screen"):
+        t = max(10, round(min(w, h) * 0.035))
+        x0, y0, w, h = x0 + t, y0 + t, w - 2 * t, h - 2 * t
+    s = max(w / W, h / H)
+    SW, SH = max(w, round(W * s)), max(h, round(H * s))
+    fx, fy = cell.get("focus", (0.5, 0.5))
+    left, top = round((SW - w) * fx), round((SH - h) * fy)
+    z = cell.get("zoom", 1.0)
+    ax, ay = cell.get("zoom_at", (0.5, 0.5))
+    out = {}
+    for who, (a0, b0, a1, b1) in faces.items():
+        if cell.get("mirror"):
+            a0, a1 = 1 - a1, 1 - a0
+        if z < 1:
+            a0, a1 = (1 - z) * ax + a0 * z, (1 - z) * ax + a1 * z
+            b0, b1 = (1 - z) * ay + b0 * z, (1 - z) * ay + b1 * z
+        fb = [max(x0, x0 + a0 * SW - left), max(y0, y0 + b0 * SH - top),
+              min(x0 + w, x0 + a1 * SW - left), min(y0 + h, y0 + b1 * SH - top)]
+        if fb[2] - fb[0] > 4 and fb[3] - fb[1] > 4:  # a face cropped out of the cell is not there to hide
+            out[who] = fb
+    return out
+
+
 def render_page(b: dict, page: dict, pi: int, ch: dict, wireframe: bool = False, issues: list[str] | None = None) -> Image.Image:
     """One page. Lettering boxes of one panel that cover each other go into `issues`: p6's count was hidden under its
     narration box and nobody saw it until the pages were out."""
@@ -1455,14 +1690,46 @@ def render_page(b: dict, page: dict, pi: int, ch: dict, wireframe: bool = False,
             place_panel(im, cell, box, ch)
         for s in cell.get("sfx", []):
             draw_sfx(im, s, box)
+        faces = {} if wireframe else face_boxes(cell, box, ch)
+        texts = cell.get("text", [])
+        # fixed boxes (tags, titles) first, so the "auto" ones are placed around them, in reading order; when a panel's
+        # boxes still hide a face, cover each other or read out of order, the whole panel is lettered again smaller
+        best = None
+        for k in ((1.0, 0.88, 0.76) if any(t.get("pos") == "auto" for t in texts) else (1.0,)):
+            trial = im.copy()
+            done, earlier = [], []
+            for e in sorted(texts, key=lambda t: t.get("pos", "tr") == "auto"):
+                bx = draw_entry(trial, e, box, round(base * k), faces, [b_ for _, b_ in done], cell.get("cast", []),
+                                list(earlier))
+                if e.get("pos") == "auto":
+                    earlier.append(bx)
+                done.append((e, bx))
+            bad = sum(covers(b_, f) > 0.2 for _, b_ in done for f in faces.values())
+            bad += sum(overlap(p_, q_) > 0.05 for i, (_, p_) in enumerate(done) for _, q_ in done[i + 1:])
+            bad += sum(reads_before(b_, a_) for i, b_ in enumerate(earlier) for a_ in earlier[:i])
+            if best is None or bad < best[0]:
+                best = (bad, trial, done)
+            if not bad:
+                break
+        im.paste(best[1])
         drawn = []
-        for e in cell.get("text", []):
-            bx = draw_entry(im, e, box, base)
+        for e, bx in best[2]:
+            pos = e.get("pos", "tr")
             for pe, pb in drawn:
                 if issues is not None and overlap(pb, bx) > 0.05:
-                    issues.append(f"page {pi} {cell['id']}: 「{e['text'].replace(chr(10), '')[:8]}」 ({e.get('pos', 'tr')}) covers "
+                    issues.append(f"page {pi} {cell['id']}: 「{e['text'].replace(chr(10), '')[:8]}」 ({pos}) covers "
                                   f"「{pe['text'].replace(chr(10), '')[:8]}」 ({pe.get('pos', 'tr')}); move one or shorten it")
+            for who, f in faces.items():
+                if issues is not None and covers(bx, f) > 0.2:
+                    issues.append(f"page {pi} {cell['id']}: 「{e['text'].replace(chr(10), '')[:8]}」 ({pos}) hides "
+                                  f"{round(covers(bx, f) * 100)}% of {who}'s face; move it")
             drawn.append((e, bx))
+        autos = [(e_, b_) for e_, b_ in drawn if e_.get("pos") == "auto"]
+        for i, (eb, b_) in enumerate(autos):
+            ea, a_ = next(((ea, a_) for ea, a_ in autos[:i] if reads_before(b_, a_)), (None, None))
+            if issues is not None and ea:
+                issues.append(f"page {pi} {cell['id']}: 「{eb['text'][:8]}」 is read before 「{ea['text'][:8]}」 (above it, or "
+                              f"right of it); shorten the lines or give them a fixed `pos`")
     ImageDraw.Draw(im).text((W // 2 - 8, H - 40), str(pi), fill="#888", font=ImageFont.truetype(font_path("plain"), 20))
     return im
 
@@ -2379,6 +2646,12 @@ def main() -> None:
                     help="scene ids (or 'all'): every picked panel set there, against its fixed layout")
     rv.add_argument("--cast", type=lambda v: v.split(","), default=None,
                     help="character ids (or 'all'): every picked panel of each, side by side with the sheet")
+    bg = sub.add_parser("badge")
+    bg.add_argument("who", help="character id; its out/refs/<id>_head.png is edited")
+    bg.add_argument("name", help="a name for the expression, e.g. scared; a text entry uses it as \"face\": \"<name>_<k>\"")
+    bg.add_argument("--prompt", required=True, help="the expression, e.g. 'eyes wide with fear, mouth open'")
+    bg.add_argument("--n", type=int, default=2)
+    bg.add_argument("--seed", type=int, default=0)
     rp = sub.add_parser("repaint")
     rp.add_argument("candidate", help="the candidate to start from, e.g. p34_1")
     rp.add_argument("--box", required=True, help="x0,y0,x1,y1 in its pixels, or fractions such as 0.3,0.1,0.6,0.5")
@@ -2482,7 +2755,7 @@ def main() -> None:
     global BOARD
     BOARD = a.board
     {"check": cmd_check, "styles": cmd_styles, "sheets": cmd_sheets, "choose": cmd_choose, "refs": cmd_refs,
-     "lint": cmd_lint, "review": cmd_review, "repaint": cmd_repaint, "fill": cmd_fill, "tone": cmd_tone, "crop": cmd_crop,
+     "lint": cmd_lint, "review": cmd_review, "repaint": cmd_repaint, "badge": cmd_badge, "fill": cmd_fill, "tone": cmd_tone, "crop": cmd_crop,
      "plan": cmd_plan, "panels": cmd_panels, "contact": cmd_contact, "pages": cmd_pages, "status": cmd_status,
      "export": cmd_export, "reel": cmd_reel, "pins": cmd_pins}[a.cmd](a)
 

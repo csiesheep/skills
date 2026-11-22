@@ -90,6 +90,26 @@ Run all of them from the comic's work folder.
 - **Leave colour examples out of the style sentence.** A first draft listed "a red shoe, a gold earring" there,
   and red shoes appeared on the wrong design. The style says only "skin, lips and a few small details". Each
   colour belongs to the character or scene that has it.
+- **Write a strong expression, then check it face by face.** The sheets are drawn "neutral expression". On
+  〈動物醫院的兩點十分〉 the panels kept that face. Three checkers rated 25 of 40 faces weak (the narrator in 16 of 17
+  panels, the vet in 7 of 8), one of them wrong. The owner's words: 「主角和院長表情都一樣，情緒太少」. Two rules:
+  - **In the prompt:** spell out the face in each panel's prompt, in manga terms. For example: "eyes wide open with
+    tiny pupils, eyebrows high, mouth open and trembling, cold sweat". Words like "scared" or "tense" alone are
+    not enough.
+  - **After picking:** have checkers rate every face against its intended emotion (ok, weak or wrong) and mark the
+    face boxes on a 0.1 grid. Those boxes become the panel's `faces`. Fix each weak face with
+    `manga.py repaint <pick> --box <face box widened by about 45%> --prompt "Change only the facial expression …"`,
+    with `--n 2`. This changes the face and keeps the rest of the picture. It took p25 from calm to terrified in one
+    run of about 40 s. Across 18 panels it took 19 GPU minutes, and every panel had one usable result.
+  - **Don't name an accessory the face in the box doesn't have.** A fixed "keep the same … glasses" in the prompt
+    put glasses on the narrator in 3 of 26 results (p11, p14, p17). List only what the people inside the box are
+    actually wearing.
+- **Lettering keeps clear of faces and names its speaker.** Give every speech and voice line a `who` and `pos:
+  "auto"`, and give the panel its `faces` (ghost-comic `board_format.md`). The owner (2026-11-22) asked for three
+  things:
+  - 「字框儘量不要擋住人臉」;
+  - a tail toward the speaker when two people in a panel talk;
+  - a small face under the bubble when the speaker is outside the panel.
 - **Keep ghost-comic's lettering, paneling and checks.** The style changes the picture, not the reading.
 
 ## Requirements
