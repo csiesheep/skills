@@ -1,0 +1,732 @@
+{
+ "title": "動物醫院平面圖 v6（照比例，一格 1 公尺）",
+ "subtitle": "玻璃門在上面：站在屋內面向玻璃門時，圖的右邊就是你的右邊",
+ "px_per_m": 92,
+ "origin": [
+  330,
+  300
+ ],
+ "size": [
+  1500,
+  2900
+ ],
+ "legend_y": 1760,
+ "rooms": [
+  {
+   "rect": [
+    0,
+    0,
+    4.2,
+    8.0
+   ],
+   "label": "候診區（4.2 × 8 公尺）",
+   "fill": [
+    236,
+    232,
+    222
+   ]
+  },
+  {
+   "rect": [
+    4.2,
+    1.8,
+    8.4,
+    6.0
+   ],
+   "label": "X 光室",
+   "fill": [
+    220,
+    226,
+    232
+   ]
+  },
+  {
+   "rect": [
+    0,
+    8.0,
+    1.2,
+    11.0
+   ],
+   "label": "走廊",
+   "fill": [
+    226,
+    222,
+    212
+   ]
+  },
+  {
+   "rect": [
+    1.2,
+    8.0,
+    2.6,
+    9.4
+   ],
+   "label": "廁所",
+   "fill": [
+    226,
+    222,
+    212
+   ]
+  },
+  {
+   "rect": [
+    1.2,
+    9.4,
+    2.6,
+    11.0
+   ],
+   "label": "上樓樓梯",
+   "fill": [
+    214,
+    208,
+    196
+   ]
+  },
+  {
+   "rect": [
+    0,
+    11.0,
+    2.8,
+    13.8
+   ],
+   "label": "倉庫",
+   "fill": [
+    226,
+    222,
+    212
+   ]
+  },
+  {
+   "rect": [
+    -1.8,
+    7.5,
+    -0.2,
+    12.0
+   ],
+   "label": "後巷",
+   "fill": [
+    210,
+    205,
+    195
+   ]
+  }
+ ],
+ "things": [
+  {
+   "rect": [
+    3.4,
+    0.0,
+    4.2,
+    1.1
+   ],
+   "label": "櫃台\n電話、抽屜",
+   "font": 15
+  },
+  {
+   "rect": [
+    3.6,
+    3.6,
+    4.2,
+    4.6
+   ],
+   "label": "控制台",
+   "font": 15
+  },
+  {
+   "rect": [
+    3.7,
+    5.6,
+    4.2,
+    7.4
+   ],
+   "label": "右長椅",
+   "fill": [
+    205,
+    190,
+    170
+   ],
+   "font": 15
+  },
+  {
+   "rect": [
+    0,
+    2.7,
+    0.55,
+    4.5
+   ],
+   "label": "左長椅",
+   "fill": [
+    205,
+    190,
+    170
+   ],
+   "font": 15
+  },
+  {
+   "rect": [
+    5.8,
+    3.3,
+    7.6,
+    4.5
+   ],
+   "label": "X光台\n（管頭吊在上方）",
+   "fill": [
+    190,
+    196,
+    206
+   ],
+   "font": 18
+  },
+  {
+   "rect": [
+    0.3,
+    13.35,
+    2.5,
+    13.8
+   ],
+   "label": "失物架",
+   "fill": [
+    190,
+    196,
+    206
+   ],
+   "font": 16
+  },
+  {
+   "rect": [
+    1.7,
+    11.6,
+    2.4,
+    12.4
+   ],
+   "label": "拖把\n貓砂",
+   "fill": [
+    205,
+    190,
+    170
+   ],
+   "font": 14
+  },
+  {
+   "rect": [
+    -1.8,
+    8.2,
+    -1.3,
+    11.4
+   ],
+   "label": "機車",
+   "font": 14
+  }
+ ],
+ "openings": [
+  {
+   "rect": [
+    1.5,
+    -0.02,
+    3.2,
+    0.02
+   ],
+   "kind": "glass",
+   "label": "玻璃雙拉門",
+   "label_at": [
+    2.35,
+    -0.45
+   ]
+  },
+  {
+   "rect": [
+    4.18,
+    2.0,
+    4.22,
+    2.8
+   ],
+   "kind": "door",
+   "label": "木門",
+   "label_at": [
+    4.8,
+    2.4
+   ]
+  },
+  {
+   "rect": [
+    4.18,
+    3.2,
+    4.22,
+    5.0
+   ],
+   "kind": "window",
+   "label": "大玻璃窗",
+   "label_at": [
+    4.95,
+    5.4
+   ]
+  },
+  {
+   "rect": [
+    -0.02,
+    0.5,
+    0.02,
+    7.0
+   ],
+   "kind": "window"
+  },
+  {
+   "rect": [
+    -0.02,
+    9.6,
+    0.02,
+    10.4
+   ],
+   "kind": "door",
+   "label": "後門",
+   "label_at": [
+    -0.6,
+    10.0
+   ]
+  },
+  {
+   "rect": [
+    1.18,
+    8.4,
+    1.22,
+    9.1
+   ],
+   "kind": "door"
+  },
+  {
+   "rect": [
+    1.18,
+    9.7,
+    1.22,
+    10.6
+   ],
+   "kind": "gap"
+  },
+  {
+   "rect": [
+    0.0,
+    7.98,
+    1.2,
+    8.02
+   ],
+   "kind": "gap"
+  },
+  {
+   "rect": [
+    0.2,
+    10.98,
+    1.0,
+    11.02
+   ],
+   "kind": "door",
+   "label": "倉庫門",
+   "label_at": [
+    1.75,
+    10.75
+   ]
+  }
+ ],
+ "lamps": [
+  {
+   "at": [
+    4.0,
+    1.85
+   ]
+  },
+  {
+   "at": [
+    4.0,
+    2.95
+   ],
+   "color": [
+    230,
+    60,
+    50
+   ]
+  }
+ ],
+ "cameras": [
+  {
+   "id": "①",
+   "at": [
+    2.35,
+    -1.3
+   ],
+   "look": [
+    2.35,
+    2.0
+   ],
+   "len": 2.2,
+   "wedge": false,
+   "color": [
+    30,
+    110,
+    60
+   ],
+   "sees": {
+    "left": [
+     "櫃台\n電話、抽屜"
+    ],
+    "right": [
+     "左長椅"
+    ]
+   },
+   "location": "lobby",
+   "view": "Camera in the dark alley right in front of the glass doors, close to the glass, looking straight in. On the LEFT of the frame the counter, then the wooden door and the big window further in; on the RIGHT of the frame the dark windows and the bench; the plain white back wall far ahead. The alley ground is dry.",
+   "mirror": false
+  },
+  {
+   "id": "A",
+   "at": [
+    2.1,
+    7.9
+   ],
+   "look": [
+    2.1,
+    0
+   ],
+   "fov": 110,
+   "len": 6.5,
+   "wedge": false,
+   "color": [
+    30,
+    110,
+    60
+   ],
+   "sees": {
+    "right": [
+     "櫃台\n電話、抽屜",
+     "木門",
+     "大玻璃窗",
+     "右長椅"
+    ],
+    "left": [
+     "左長椅"
+    ]
+   },
+   "location": "lobby",
+   "view": "Camera near the back wall at eye height, looking straight down the long room at the glass doors far ahead. On the RIGHT of the frame, from far to near: the counter, the wooden door, the big window with the control desk, the long bench. On the LEFT of the frame the dark windows and the other bench.",
+   "mirror": false
+  },
+  {
+   "id": "B",
+   "at": [
+    1.0,
+    6.0
+   ],
+   "look": [
+    1.6,
+    0.3
+   ],
+   "len": 4.4,
+   "wedge": false,
+   "color": [
+    30,
+    90,
+    170
+   ],
+   "sees": {
+    "right": [
+     "櫃台\n電話、抽屜",
+     "木門"
+    ],
+    "left": [
+     "左長椅"
+    ]
+   },
+   "location": "lobby",
+   "view": "Camera low near the left wall, looking along the room toward the glass doors and a little to the right. The bench is in the left foreground, the glass doors far ahead, the counter and the wooden door on the RIGHT of the frame.",
+   "mirror": false
+  },
+  {
+   "id": "C",
+   "at": [
+    1.4,
+    3.0
+   ],
+   "look": [
+    3.9,
+    0.6
+   ],
+   "len": 3.0,
+   "wedge": false,
+   "color": [
+    150,
+    70,
+    150
+   ],
+   "sees": {
+    "left": [
+     "玻璃雙拉門"
+    ],
+    "right": [
+     "木門"
+    ]
+   },
+   "location": "lobby",
+   "view": "Camera in the middle of the room facing the corner with the counter. The glass doors are on the LEFT of the frame, the counter in the middle, the wooden door on the RIGHT of the frame.",
+   "mirror": false
+  },
+  {
+   "id": "D",
+   "at": [
+    3.75,
+    0.5
+   ],
+   "look": [
+    2.0,
+    7.5
+   ],
+   "len": 6.0,
+   "wedge": false,
+   "color": [
+    170,
+    100,
+    20
+   ],
+   "sees": {
+    "left": [
+     "木門",
+     "大玻璃窗",
+     "右長椅"
+    ],
+    "right": [
+     "左長椅"
+    ]
+   },
+   "location": "lobby",
+   "view": "Camera standing behind the counter at eye height, looking into the room toward the back wall: the back of the counter's monitor in the right foreground; ahead the plain white back wall with a dark corridor opening at its far left end; along the right wall, in this order from NEAREST to FARTHEST: first the dark-brown wooden door close to the camera, then the big glass window with the control desk in the middle distance, and last the long bench at the far end near the back wall; on the left the dark windows and the other bench. One single picture, not split into panels. There are NO glass doors in this view.",
+   "mirror": true
+  },
+  {
+   "id": "G",
+   "at": [
+    0.6,
+    7.5
+   ],
+   "look": [
+    0.6,
+    11.0
+   ],
+   "len": 3.2,
+   "wedge": false,
+   "color": [
+    110,
+    110,
+    110
+   ]
+  },
+  {
+   "id": "X1",
+   "at": [
+    8.0,
+    5.6
+   ],
+   "look": [
+    4.4,
+    3.6
+   ],
+   "len": 4.0,
+   "wedge": false,
+   "color": [
+    30,
+    110,
+    60
+   ],
+   "sees": {
+    "right": [
+     "木門"
+    ],
+    "left": [
+     "大玻璃窗"
+    ]
+   },
+   "location": "xray",
+   "view": "Camera in the far corner of the room at eye height, looking toward the table and the wall with the window: the wooden door on the left of the frame, the big window beside it, the table in the middle with the tube head above it.",
+   "mirror": true
+  },
+  {
+   "id": "X2",
+   "at": [
+    3.3,
+    4.1
+   ],
+   "look": [
+    6.0,
+    4.1
+   ],
+   "len": 2.8,
+   "wedge": false,
+   "color": [
+    30,
+    90,
+    170
+   ],
+   "location": "xray",
+   "view": "Seen from the waiting-room side: a light-grey control desk with a monitor and an intercom under the big black-framed window, and through the glass the table with the tube head above it. Camera at the desk, looking straight through the window.",
+   "mirror": false
+  },
+  {
+   "id": "E",
+   "at": [
+    0.6,
+    11.1
+   ],
+   "look": [
+    1.4,
+    13.8
+   ],
+   "len": 2.6,
+   "wedge": false,
+   "color": [
+    30,
+    110,
+    60
+   ],
+   "sees": {
+    "left": [
+     "拖把\n貓砂"
+    ]
+   },
+   "location": "store",
+   "view": "Camera at the door looking at the shelf on the far wall; the mop and the cat litter on the LEFT of the frame.",
+   "mirror": false
+  },
+  {
+   "id": "F",
+   "at": [
+    -1.0,
+    11.8
+   ],
+   "look": [
+    -1.0,
+    7.6
+   ],
+   "len": 4.2,
+   "wedge": false,
+   "color": [
+    30,
+    110,
+    60
+   ],
+   "sees": {
+    "right": [
+     "後門"
+    ],
+    "left": [
+     "機車"
+    ]
+   },
+   "location": "alley",
+   "view": "Camera at the end of the alley looking along it. The clinic's back door is in the wall on the RIGHT of the frame, the scooters along the wall on the LEFT of the frame.",
+   "mirror": false
+  },
+  {
+   "id": "監1",
+   "at": [
+    2.1,
+    6.8
+   ],
+   "look": [
+    2.1,
+    0.2
+   ],
+   "fov": 90,
+   "len": 3.0,
+   "wedge": false,
+   "color": [
+    110,
+    110,
+    110
+   ],
+   "sees": {
+    "left": [
+     "左長椅"
+    ],
+    "right": [
+     "櫃台"
+    ]
+   }
+  },
+  {
+   "id": "監2",
+   "at": [
+    0.6,
+    8.2
+   ],
+   "look": [
+    0.2,
+    11.0
+   ],
+   "fov": 60,
+   "len": 2.4,
+   "wedge": false,
+   "color": [
+    110,
+    110,
+    110
+   ],
+   "sees": {
+    "right": [
+     "後門"
+    ],
+    "left": [
+     "倉庫門"
+    ]
+   }
+  },
+  {
+   "id": "監3",
+   "at": [
+    2.9,
+    7.8
+   ],
+   "look": [
+    3.9,
+    2.4
+   ],
+   "fov": 60,
+   "len": 3.2,
+   "wedge": false,
+   "color": [
+    110,
+    110,
+    110
+   ],
+   "sees": {
+    "right": [
+     "木門"
+    ]
+   }
+  }
+ ],
+ "legend": {
+  "fixed": [
+   "站在屋內面向玻璃門：櫃台在門的右邊，右牆往屋內依序是木門（窄窗、圓燈、紅燈）、大玻璃窗（窗前是控制台，窗外是 X 光室）、右長椅（靠牆，阿斌躺）。",
+   "左牆整面黑框暗窗，靠門口這半邊有左長椅（她坐）。後牆是平的白牆，靠左牆那端是走廊口。",
+   "走廊：一邊是廁所和上樓樓梯，另一邊是後門（通後巷），盡頭是倉庫。",
+   "櫃台上有電話、抽屜和監視器主機；控制台有 X 光電腦、螢幕和對講機。天花板白色格子、方形日光燈；淺灰磁磚。沒有冷氣、出風口、海報。"
+  ],
+  "cameras": [
+   "A＝屋內深處面向玻璃門　B＝左長椅後方斜看門和櫃台　C＝屋內看櫃台，門在左",
+   "D＝櫃台後看進屋內：木門和大窗在畫面左邊，暗窗和長椅在右邊，走廊口在遠處右邊，看不到玻璃門",
+   "G＝走廊口看倉庫門（我的背影在前景）　①＝巷子裡貼著玻璃往裡看，櫃台在畫面左邊",
+   "X1＝X 光室內看窗牆，窗在左、木門在右　X2＝控制台前隔窗看台子　E＝倉庫門口看失物架　F＝後巷看後門，後門在右",
+   "監1＝天花板朝玻璃門，門、櫃台、左長椅同框　監2＝走廊天花板朝倉庫門　監3＝後牆上方拍 X 光室木門"
+  ]
+ },
+ "locations": {
+  "lobby": {
+   "bible": "A small 24-hour animal clinic's waiting room at night, nobody in it. It is a long rectangular room. FIXED look, the same in every picture. LEFT and RIGHT below are as seen by someone inside the room facing the entrance: the entrance wall at one end has a pair of automatic glass sliding doors with thin black metal frames under a grey sensor box, the night outside completely black; a light-grey reception counter with a computer monitor, a pen cup and a telephone stands against the right wall right next to the glass doors; the right wall, going deeper into the room: the counter, then a dark-brown wooden door with one narrow vertical glass strip and a round white lamp above it, then a large rectangular glass window in a black frame, with a small light-grey control desk holding a monitor and an intercom in front of it on the waiting-room side, and through the window the white X-ray room with a steel X-ray table and an X-ray tube head hanging above it, then a long dark-brown wooden slatted bench against the right wall; the left wall has tall black-framed dark windows all along it and, on the half nearer the entrance, a long dark-brown wooden slatted bench; the back wall at the far end is plain white with a dark corridor opening at its left end. Pale grey square floor tiles. White ceiling tile grid with flat square white light panels. Bare walls, nothing hanging, no writing anywhere."
+  },
+  "xray": {
+   "bible": "A small X-ray room of an animal clinic, nobody in it. FIXED look: white walls, pale grey floor tiles, a single X-ray table in the middle with a flat steel top, the X-ray tube head hanging above it on a metal arm; one wall has a large rectangular glass window in a black frame and, beside it, a dark-brown wooden door with a narrow vertical glass strip and a round white lamp and a small red lamp above it. Bare walls, no writing."
+  },
+  "store": {
+   "bible": "A small storeroom, nobody in it. FIXED look: a tall grey metal shelf against the far wall holding dog collars, leashes and a few old grey plastic pet carriers, one of them on the bottom shelf; a mop and two bags of cat litter by the door; a bare bulb hanging in the middle of the ceiling; bare grey concrete floor; plain walls, no writing."
+  },
+  "alley": {
+   "bible": "A narrow back alley behind the animal clinic at dawn, nobody in it. FIXED look: the clinic's plain grey back door in its wall; a row of parked scooters along the opposite wall; wet grey concrete ground; a faint pale grey-pink dawn sky between the buildings; no signs, no writing."
+  }
+ }
+}

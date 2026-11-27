@@ -17,7 +17,10 @@
    e. Voice. Does it read as a person telling friends what happened over late-night snacks, or as an essay or a PTT
       post? Name the two lines that sound least like speech. Is anything on avoid.md, or close enough that a viewer
       of that channel would recognise it?
-   f. At most four concrete fixes (which line, what is wrong, the replacement).
+   f. The place. Open the floor plan picture <story folder>/plan/plan_building.png. Does anything in the story need a place,
+      door or object it does not have? Could each record or witness really have seen what the story says? Test every
+      absolute (一次都沒有, 從頭到尾, 每天, 那三天) against everyone's movements in the story.
+   g. At most four concrete fixes (which line, what is wrong, the replacement).
 ```
 
 ## 怎麼讀第 5 部分
