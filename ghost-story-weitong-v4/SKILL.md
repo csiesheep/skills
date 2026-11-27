@@ -1,6 +1,6 @@
 ---
 name: ghost-story-weitong-v4
-description: Write one long Taiwanese ghost story (8 to 10 minutes read aloud, about 2,200 to 2,700 characters) in the 說書長篇 style distilled from all 209 stories crawled from a large Taiwanese animated ghost-story YouTube channel (微疼) - a narrator telling friends what happened, friends who tease each other, jokes front-loaded and withdrawn before the fear, a ghost hidden in the everyday, records and witnesses that do not match, a short ending that explains only half. Its mechanics only, never the channel's names, catchphrases, cast or stories. Checked with weitong_check.py and scored by independent reviewers round by round. Use when the user asks for ghost-story-weitong-v4, 微疼風格, 用微疼的寫法, 說書長篇, a long narrated ghost story for YouTube or a voice track, 8 到 10 分鐘的鬼故事, 長篇有笑點的鬼故事. For an under-3-minute video story with its screenplay use ghost-story-v3; for a PTT-style story use ghost-story.
+description: Write one long Taiwanese ghost story (8 to 10 minutes read aloud, about 2,200 to 2,700 characters) in the 說書長篇 style distilled from all 209 stories crawled from a large Taiwanese animated ghost-story YouTube channel (微疼) - a narrator telling friends what happened, friends who tease each other, jokes front-loaded and withdrawn before the fear, a ghost hidden in the everyday, records and witnesses that do not match, a short ending that explains only half. Draws the story's floor plan and a who-is-where ledger before any prose, so the picture can follow. Its mechanics only, never the channel's names, catchphrases, cast or stories. Checked with weitong_check.py and scored by independent reviewers round by round. Use when the user asks for ghost-story-weitong-v4, 微疼風格, 用微疼的寫法, 說書長篇, a long narrated ghost story for YouTube or a voice track, 8 到 10 分鐘的鬼故事, 長篇有笑點的鬼故事. For an under-3-minute video story with its screenplay use ghost-story-v3; for a PTT-style story use ghost-story.
 ---
 
 # Ghost story, 說書長篇 (weitong)
@@ -57,7 +57,7 @@ All optional; anything the owner says wins.
 ## Steps
 
 Work in `C:/Users/sheep/Pictures/gui_chang_shi/backlog/<english_short_name>/`: `story.md` (the current text),
-`plan.md`, and every earlier version in `drafts/` (`v1.md`, `v2.md`, ...).
+`plan.md`, `plan/plan_building.json` (the floor plan, step 1b), and every earlier version in `drafts/` (`v1.md`, `v2.md`, ...).
 
 ### 1. The plan, before any prose
 
@@ -84,6 +84,32 @@ Read `references/style.md`, `references/avoid.md`, `references/phrasebank.md` an
 Then check line 4 to 6 against his stories: open `research/weiteng/story_json/` and search the titles and
 `peak_scare_desc` for the same object and twist. The same pair is replaced, not reworded.
 
+### 1b. The floor plan and the ledger, before any prose
+
+A story that will be drawn or filmed has to happen in one real place. On vet_night_xray the place was decided after the
+story, and the comic and the video paid for it (six floor plans, and the holes below, all found by reviewers after the
+story had shipped to the next skill). No scene picture is drawn here; that is ghost-comic-v2's step 0.
+
+1. **The floor plan.** Write `plan/plan_building.json` (format and example: ghost-comic-v2's `scripts/building_plan.py` and
+   `assets/example_plan_building.json`) and run:
+   ```
+   py -X utf8 ~/.claude/skills/ghost-comic-v2/scripts/building_plan.py backlog/<name>/plan/plan_building.json backlog/<name>/plan/plan_building.png
+   ```
+   Entrance at the top of the page. Every place the story uses and how they connect, every door someone walks through,
+   the furniture something happens on, where the stairs and the toilet are if anyone uses them. **Every recording or
+   witness is a camera on the plan**, with an explicit `"fov"` and `"sees"` listing what the story says it caught. The script
+   checks side and angle only, not walls or distance, so check by eye that no wall is in the way: one security camera over
+   the counter cannot also film the storeroom.
+2. **The ledger.** Add to `plan.md` as line 11, one row per night or scene: who is where at the key moment, which doors
+   open and for whom, where each key object is, and how the narrator gets there and home.
+3. **Check every absolute against the ledger** before writing it: 一次都沒有, 從頭到尾, 每天, 那三天, 沒有人. vet_night_xray shipped
+   with both of these:
+   - 「自動門一次都沒有開過」, while 阿斌 came and went through that door every night;
+   - 「那三天早上我騎車回家」, on the third morning he had crouched in the alley until dawn and not gone home, and he lived on
+     the same lane as the clinic.
+4. **Send `plan_building.png` to the owner and wait for 「平面圖對」 before step 2.** A change to the place after the prose
+   can change the story. When the gates are handed over, decide, record why in `plan.md`, and still send it.
+
 ### 2. The structure draft
 
 Write `drafts/v1.md`: first line `[經驗] <title>`, then the whole story from `plan.md`, every beat, clue, joke and
@@ -96,8 +122,8 @@ python -X utf8 ~/.claude/skills/ghost-story-weitong-v4/scripts/weitong_check.py 
 ```
 
 Fix every structural 必改 (length, beats, jokes, distances, callbacks, avoid.md). **Ignore the 口氣 rows and 台詞佔比
-here**: step 3 is what fixes those. Then read the draft once for logic only: who is where, who has which phone, what
-was seen against what is said later. Moving_box13's first review found three such holes (2026-11-21); fixing them
+here**: step 3 is what fixes those. Then read the draft once for logic only, against the floor plan and the ledger: who is where, who has which phone, what
+was seen against what is said later, and whether each record could have caught it. Moving_box13's first review found three such holes (2026-11-21); fixing them
 before the retelling is cheaper than after.
 
 ### 3. Retell it aloud (a fresh writer)
@@ -108,7 +134,8 @@ tests ("too clean, too designed"). v8, retold from scratch by a fresh writer who
 transcripts, was the first version the owner accepted (2026-11-21).
 
 Give a **fresh subagent** (Opus) this job:
-- Read the structure draft (plot fixed: keep every beat, clue and payoff in order, and every marker), then
+- Read the structure draft (plot fixed: keep every beat, clue and payoff in order, and every marker), the floor plan
+  and `plan.md`'s ledger (no new place, door, journey or absolute that they do not allow), then
   `references/phrasebank.md` (especially §5b to §9), `references/jokes.md`, and `drafts/blind_notes.md` if one exists.
 - Read **three of his transcripts in full** to hear him, choosing ones similar in setting or length, from
   `C:/Users/sheep/Pictures/gui_chang_shi/research/weiteng/nuwa_src/fp_all/` (local only, never copied into the story
@@ -199,8 +226,8 @@ step 1. Deliver it only on the owner's word, and say in the delivery that it nev
 
 As in ghost-story step 5b:
 - Save the text as `drafts/vN.md`. Give a **fresh subagent** ghost-story's `references/review_brief.md` filled in,
-  **plus part 5 from `references/review_addendum.md`**, with the story stripped of markers (`<!-- ... -->` removed)
-  and without `plan.md`.
+  **plus part 5 from `references/review_addendum.md`**, with the story stripped of markers (`<!-- ... -->` removed),
+  with the floor plan picture, and without `plan.md`.
 - Review the **retold** text, so the scores are for the version that ships. Apply every fix that costs a line or two,
   written in the retold voice (dialogue rather than narration); rerun the checker. A fix that changes more than a
   few lines in the first half goes through the blind test again.
@@ -218,14 +245,16 @@ A round that fails the rubric is a rewrite from step 1, not a line fix.
 
 Write `speakers.md` next to the story: the cast (one line each: who, voice, temperament), then a table of every line
 of dialogue in order (number, its first words, who says it, its tone), then two or three notes for the voice actor
-(the ghost's repeated line, where all laughter stops, any line that must fool the listener the first time). The story
+(the ghost's repeated line, where all laughter stops, any line that must fool the listener the first time). When two
+untagged lines in a row could be either person, read them as a question and an answer before assigning them
+(vet_night_xray's 「那隻貓⋯」 / 「就是灰灰。」 went to one speaker and reads as two). The story
 itself keeps his tagless dialogue; the table is what makes it voiceable and drawable, because without his animation
 and voice acting a reader cannot always tell who speaks (owner, 2026-11-21). Example:
 `backlog/moving_box13/speakers.md`.
 
 End `speakers.md` with 「不能縮掉的句子」: plan.md line 10, each line quoted as it now reads in the story.
 
-Give the owner: the story (markers removed) as plain text, `speakers.md`, one line of mechanism / ghost entry /
+Give the owner: the story (markers removed) as plain text, `speakers.md`, the final `plan/plan_building.png`, one line of mechanism / ghost entry /
 ending, the length in characters and minutes, the last round's table. **Then wait.**
 
 **When the owner hands the gates over** (「you can decide everything until the comic is ready」, vet_night_xray
@@ -255,6 +284,7 @@ story, or cut down with ghost-story-v3) is the owner's call.
   had changed on disk while they wrote. Trust the counts to about ±10%.
 - Transcripts are Whisper ASR: names come out in many spellings, and the last line is cut off in some, so the
   counts of fixed lines are lower bounds.
+- Step 1b was written from vet_night_xray's repairs and has not yet been run from the start of a new story.
 - Nothing here measures his pictures, music or delivery, which carry much of an animated video. The skill writes
   the words only.
 - The voice numbers come from ASR, which drops some particles and has no punctuation: his true rates are a little

@@ -14,6 +14,8 @@ Read first, fully:
    stay, in the same order, and you must keep every marker, placed just before the sentence it marks (you may add
    or remove <!-- 笑 <type> --> markers if you change jokes; types: 吐槽角色、旁白吐槽、自嘲、日常荒謬、鬼的人性反應、
    其他; keep the ids on the jokes that have callbacks).
+   Also <story folder>/plan/plan_building.png and line 11 of <story folder>/plan.md (who is where each night). They are
+   fixed: add no new place, door, journey, or absolute (一次都沒有, 從頭到尾, 每天) that they do not allow.
 2. <skill dir>/references/phrasebank.md — especially sections 5b to 9.
 3. <skill dir>/references/jokes.md — his joke constructions.
 4. <story folder>/drafts/blind_notes.md if it exists — earlier judges' reasons and their rewrites of our lines.

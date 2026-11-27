@@ -4,7 +4,7 @@ Run from the comic's work folder (the one with board.json), like manga.py:
 
   py -X utf8 ink_tint.py apply          put the style into board.json (and choices.json), colour on, style said last
   py -X utf8 ink_tint.py tint [ids]     redraw each picked ink sheet with faint colour; the picks then point at them
-  py -X utf8 ink_tint.py check          what in board.json still fights the style (no GPU)
+  py -X utf8 ink_tint.py check          what in board.json still fights the style, and which shared scene has no floor plan / which panel has no camera (no GPU)
 
 Why each step exists (the style test of 2026-11-21, 〈卡丁車的白色安全帽〉):
 - On a 1,200 to 1,800 character panel prompt, Qwen Image 2.1 dropped a style given only at the start; the same
@@ -103,6 +103,21 @@ def check() -> int:
         found = sorted({m.group(0).lower() for m in FIGHTS.finditer(text)})
         if found:
             hits.append(f"  {name}: {', '.join(found)}")
+    # floor plan first (2026-11-22): a scene that three or more panels share needs a plan and a camera per panel
+    used: dict = {}
+    for c in cells(b):
+        sc = c.get("scene")
+        for sid in ([sc] if isinstance(sc, str) else (sc or [])):
+            used.setdefault(sid, []).append(c)
+    plans = b.get("plans", {})
+    for sid, cs in used.items():
+        if len(cs) >= 3 and sid not in plans:
+            hits.append(f"  scenes.{sid}: {len(cs)} panels share it and board.plans.{sid} (a floor plan the owner confirmed) is missing: "
+                        "run building_plan.py first")
+        elif sid in plans:
+            for c in cs:
+                if not c.get("camera"):
+                    hits.append(f"  {c['id']}: no `camera` (a letter from the plan of scene {sid})")
     if b.get("style") != KEY:
         hits.insert(0, f"  style is {b.get('style')!r}, not {KEY!r}: run `apply`")
     if not b.get("colour"):

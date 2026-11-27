@@ -1,0 +1,66 @@
+{
+ "k3": {
+  "clip": "clips/k3_s11.mp4"
+ },
+ "k6m": {
+  "clip": "clips/k6m_s21.mp4",
+  "offset": 2.1,
+  "speech": [
+   2.4,
+   7.16
+  ],
+  "amb": 0.7
+ },
+ "k2b": {
+  "clip": "clips/k2e_s31.mp4",
+  "offset": 2.0,
+  "zoom": 0.25,
+  "focus": [
+   0.5,
+   0.5
+  ],
+  "motion": "push",
+  "amt": 0.04
+ },
+ "d1m": {
+  "clip": "clips/d1m_s41c.mp4",
+  "speech": [
+   6.58,
+   9.46
+  ],
+  "me_at": 3.36,
+  "lead": 0.6,
+  "tail": 0.4
+ },
+ "d2m": {
+  "clip": "clips/d2m_s42c.mp4",
+  "speech": [
+   5.96,
+   9.62
+  ],
+  "me_at": 2.14,
+  "lead": 0.6,
+  "tail": 0.3
+ },
+ "pkfl": {
+  "clip": "clips/pkfl_s1.mp4"
+ },
+ "shf": {
+  "clip": "clips/bh3fl_s1.mp4",
+  "zoom": 0.15,
+  "focus": [
+   0.6,
+   0.42
+  ]
+ },
+ "shp": {
+  "clip": "clips/bh3fl_s1.mp4",
+  "offset": 5.3,
+  "max_t": 6.0,
+  "zoom": 0.15,
+  "focus": [
+   0.73,
+   0.38
+  ]
+ }
+}

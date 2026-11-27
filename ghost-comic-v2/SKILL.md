@@ -1,6 +1,6 @@
 ---
 name: ghost-comic-v2
-description: Turn a ghost story into colour comic pages in the 水墨淡彩 style - Chinese ink wash brushwork with faint tints of colour on the living and an ink-grey ghost - drawn with Qwen Image 2.1 on the local ComfyUI and laid out by ghost-comic's manga.py (same board, gates, checker, reader check, export and reels). Adds what the style needs - the style said again at the end of every panel prompt, sheets drawn in plain ink and then tinted by editing the picked picture, colour kept through refs and pages, and the wording that keeps a lit ghost frightening. Use whenever the user asks for ghost-comic-v2, 水墨漫畫, 水墨淡彩, 淡彩漫畫, an ink-wash or colour version of a ghost comic, 用新風格畫漫畫, or wants a story drawn like 〈卡丁車的白色安全帽〉, even if they only say "用水墨風格畫成漫畫". For the black-and-white manga line art use ghost-comic.
+description: Turn a ghost story into colour comic pages in the 水墨淡彩 style - Chinese ink wash brushwork with faint tints of colour on the living and an ink-grey ghost - drawn with Qwen Image 2.1 on the local ComfyUI and laid out by ghost-comic's manga.py (same board, gates, checker, reader check, export and reels). Works in a fixed order: a to-scale floor plan first, then one empty-room scene picture per camera checked against it, and only then the panels. Adds what the style needs - the style said again at the end of every panel prompt, sheets drawn in plain ink and then tinted by editing the picked picture, colour kept through refs and pages, and the wording that keeps a lit ghost frightening. Use whenever the user asks for ghost-comic-v2, 水墨漫畫, 水墨淡彩, 淡彩漫畫, an ink-wash or colour version of a ghost comic, 用新風格畫漫畫, or wants a story drawn like 〈卡丁車的白色安全帽〉, even if they only say "用水墨風格畫成漫畫". For the black-and-white manga line art use ghost-comic.
 ---
 
 # Ghost comic v2: 水墨淡彩
@@ -21,13 +21,83 @@ gate, board, gates, panels, independent check, pages, reader check, fix round, e
 file only says what changes. Scripts:
 - `<v1>/scripts/manga.py` and `<v1>/scripts/from_screenplay.py`, where `<v1>` is the installed `ghost-comic`
   folder beside this one;
-- `<this skill>/scripts/ink_tint.py`.
+- `<this skill>/scripts/ink_tint.py` and `<this skill>/scripts/building_plan.py`;
+- ghost-film-v2's `scripts/fresh_draw.py` and `scripts/edit_stills.py` for the scene pictures.
+
+**A film of this comic** is made with ghost-film-v2 in the same 水墨淡彩 look (its 「Look」 rule under 「Before
+starting」): new 9:16 stills use this comic's refs and style text, and never the realistic `film.py` model.
 
 Run all of them from the comic's work folder.
 
 ## What changes, step by step
 
-1. **Board.** Write it as ghost-comic says (from a v3/v2 screenplay with `from_screenplay.py`, or by hand), then:
+0. **Floor plan, then scene pictures, then everything else.** The owner's order (2026-11-22: 「先產生平面圖，再產生場景圖」,
+   「當然要照film的正規做法」). No character panel is drawn before steps 0.1 to 0.4 are done.
+
+   **Why.** 〈動物醫院的兩點十分〉 was drawn with one sentence per room. The counter came out on the left in 5 of 41 panels and on
+   the right in 8, and a wall air-conditioner appeared in one shot and was gone in the next (「房間的格局會變」). Fixing it
+   afterwards took six plans and several rounds of 「平面圖和場景圖不一致」. Three of those plans were wrong in ways nobody
+   could see by eye: one was a mirror image of every picture, and two had cameras that could not see what their shots asked for.
+
+   **0.1 The floor plan** (no GPU). One drawing for the whole location, to scale, in `plan/plan_building.json`. If the story
+   came from ghost-story-weitong-v4 it is in the story folder, and the owner has seen it: from the comic folder run
+   `mkdir plan; cp ../plan/plan_building.json plan/`. From then on `comic/plan/` is the one in use; if it changes, copy it
+   back and recheck the story's ledger. Example: `assets/example_plan_building.json`. Add the cameras once the comic
+   script (step 1) says which shots there are.
+   ```
+   py -X utf8 "<this skill>/scripts/building_plan.py" plan/plan_building.json plan/plan_building.png
+   ```
+   - **The entrance goes at the top of the page.** Someone inside facing it then has the page's right on their right.
+   - Put in every room, door, window and piece of furniture the story uses, how the rooms connect, and everything a line
+     depends on: this story's plan lacked the toilet, the stairs, the phone and the security cameras until a reviewer asked.
+   - One camera per setup, with an explicit `"fov"` and `"sees": {"left": [...], "right": [...]}`. Every run checks that each
+     thing is on that side **and inside that field of view**, and exits 1 if not. Two cameras facing each other must show
+     one wall on opposite sides; this check is what finds it. **It does not know about walls or distance** and skips a
+     camera without `sees` (a run lists those), so check by eye that no wall stands between a camera and what it films.
+   - A security camera or any other recording device in the story is a camera on the plan: what the footage shows has to
+     be inside its view.
+   - Send the picture. The owner confirms 「平面圖對」. When the gates are handed over, decide, record why in
+     `pipeline_notes.md`, and still send it.
+
+   **0.2 The fixed parts and the views.** In the same spec:
+   - `locations.<id>.bible`: one text block per location with every fixed part, its material and colour. It is said word
+     for word in every picture of that location.
+   - each camera's `location` and `view`: where it stands, and what is on the left, ahead and on the right **of the frame**.
+   - **A reverse angle (a camera facing the way the others face away from) gets `"mirror": true`.** Qwen puts the important wall
+     on the right whatever the text says. Told the true sides, the view from behind the counter moved the X-ray window onto
+     the back wall in 4 of 4 candidates. Written with that wall on the right, its things listed **from nearest to farthest**,
+     then mirrored after picking, 2 of 4 were right (the other 2 came out as two pictures stacked in one). Without the
+     nearest-to-farthest order the door and the window swapped places in all 4.
+
+   **0.3 One empty master per camera** (Qwen, about 65 s for 4 candidates).
+   ```
+   py -X utf8 "<this skill>/scripts/building_plan.py" jobs plan/plan_building.json plan/masters_jobs.json
+   py -X utf8 "<ghost-film>/scripts/fresh_draw.py" plan/masters_jobs.json
+   py -X utf8 "<this skill>/scripts/building_plan.py" pick plan/plan_building.json D plan/masters/D_3.png plan/picked/D_master.png
+   ```
+   Run them from the comic's work folder. `jobs` refuses a plan that fails its check. `pick` mirrors when the camera says so.
+   Judge each candidate **after** mirroring, against that camera's line in the plan: which things, which side, which order
+   from near to far, what must not be there. A candidate with something the plan does not have (an air conditioner, a
+   door on the wrong wall) is rejected here. A negative in a prompt does not stop it: 「no air conditioner」 still gave
+   one in several panel candidates. An empty master without one, edited, stays without one.
+
+   **0.4 All the masters on one sheet, beside the plan.** Compare the fixed parts across cameras (the same counter, door, bench
+   and window; what is seen through the window), give the sheet and the plan to a fresh checker, and send them to the owner:
+   「場景圖對」. If a view cannot be drawn after two rounds, use the nearest view that is true to the plan and change the shot.
+   (Eight candidates never put the glass door on the left of camera C.)
+
+   **0.5 The board follows the plan.**
+   - `board.plans.<id>` points at the plan picture; every panel of that location gets `"camera": "A"`. `ink_tint.py check` reports
+     a scene shared by three or more panels with no plan, and a panel with no camera.
+   - **A panel that shows the room is a same-framing edit of its camera's master**, not a `manga.py panels` draw (step 4). A new
+     angle is a new camera on the plan and a new master, never an edit of another angle: an edit keeps the old perspective.
+   - People come out small in a master's wide framing. Give the cell `"camera_crop": [centre x, centre y, zoom]`, zoom 1.2 to 2.
+   - The checker's brief includes the plan: does this panel match it? A wrong side is a story-level fault and is redrawn.
+
+   **Adding this to a comic that is already drawn:** make the plan from what most of the panels show, draw the masters, and redraw
+   the panels that disagree. Redrawing only the outliers from text was not enough on 〈動物醫院〉: six panels were redrawn to
+   the right layout, and the owner still saw a different counter, door and bench from shot to shot.
+1. **Board (after 0.1, before 0.2: the cameras come from its shots).** Write it as ghost-comic says (from a v3/v2 screenplay with `from_screenplay.py`, or by hand), then:
    ```
    py -X utf8 "<this skill>/scripts/ink_tint.py" apply
    ```
@@ -48,7 +118,10 @@ Run all of them from the comic's work folder.
 2. **Gate 1, style.** Skip it: the style is fixed. Draw one panel for the owner only if they ask to compare
    (`manga.py styles --panel <id>` with the old options still in `style_options`).
 3. **Gate 2, designs, in two passes.**
-   1. `manga.py sheets` draws 3 versions of every character and scene in plain ink (the style's `sheet` text says
+   Scenes come from step 0. First replace every TODO in `scenes.<id>` and `consistency.scene.<id>` with that location's
+   bible, or `sheets` refuses to run. Key `board.plans` by these scene ids (`s2`), not the plan's location ids. Then run
+   `manga.py sheets --only <the characters>`.
+   1. `manga.py sheets` draws 3 versions of every character in plain ink (the style's `sheet` text says
       "almost no colour"). The owner picks as in ghost-comic: `manga.py choose me=2 ...`.
    2. Then add the colour by editing the picked sheet:
       ```
@@ -70,14 +143,24 @@ Run all of them from the comic's work folder.
      the owner asks for colour on her.
    - **Then refs and the rest:** send the tinted sheets with what the tint added, then run `manga.py refs`. With
      `colour` on, refs keep their colour (ghost-comic makes them greyscale).
-4. **Gate 3, layout, then panels.** As in ghost-comic. Panels need **one pass**: drawn against tinted refs they
-   came out ink and tint together, so nothing is drawn twice.
+4. **Gate 3, layout, then panels.** The layout as in ghost-comic. Panels with a `camera` are edits of the masters:
+   ```
+   py -X utf8 "<this skill>/scripts/building_plan.py" panels
+   py -X utf8 "<ghost-film>/scripts/edit_stills.py" plan/panel_jobs_512x992.json      (one file per panel size)
+   py -X utf8 "<v1>/scripts/manga.py" choose p12=p12e_1.png
+   ```
+   `panels` crops each master to the cell's shape, moves the cell's references up one (the master is `<image1>`) and keeps
+   its prompt, style sentence included. `edit_stills.py` skips a name that has outputs: to retry, delete them. Only the cells
+   with no room in them (a close-up on a blank ground, an X-ray film, a phone) go through `manga.py panels --only <ids>`.
+   Panels need **one pass**: drawn against tinted refs they came out ink and tint together.
    - **Measured on 〈卡丁車〉 p2 and p17:** about 80 s per image with 2 or 3 references, 2 candidates per panel.
    - **Pages:** `manga.py pages` keeps the colour.
    - **Checker brief:** add one line to every `review` brief: "the picture is Chinese ink wash with faint
      colour; fail a candidate drawn as watercolour illustration, clean line art or full colour".
 
 ## From a ghost-story-weitong-v4 long story
+
+v4 now hands over `plan/plan_building.json` with the story: step 0.1 starts from it.
 
 The first whole comic in this style, 〈動物醫院的兩點十分〉 (2026-11-22), came from a v4 story: 2,868 characters
 told aloud in about 10.6 minutes. It became 10 pages, 41 panels and about 100 GPU minutes. v4 writes no
@@ -117,7 +200,7 @@ accepted with a known flaw.
   doll face at the design gate.
 - **Sheets in rough dry brush.** Smooth sheets gave indoor panels that read as fine-line watercolour illustration.
   `ink_tint.py`'s sheet style now asks for rough, broken dry-brush strokes.
-- **Scenes say "the walls are bare: no posters, no notices, no signs, no writing".** Without it, every indoor
+- **Scenes say "the walls are bare: no air conditioner, no air vent, no posters, no notices, no signs, no writing".** Without it, every indoor
   panel got a wall of fake notices, and a checker failed them all.
 - **`scene_tint` names where each colour sits.** "the green snack packets" put pale green on the waiting room's
   bench cushions. Write "the green snack packet taped on top of each machine".
@@ -186,6 +269,11 @@ side by side (`~/.claude/skills/ghost-comic` and `~/.claude/skills/ghost-comic-v
     - Four blind readers, two before the owner's review and two after it, followed the plot. Their speaker and
       reading-order trouble was fixed in the lettering.
     - `pages` keeps the colour.
+  - **Floor plan and scene pictures, 2026-11-22**, on 〈動物醫院〉: the plan, its check, `jobs` and `pick` (`tests/`, 10 tests,
+    no GPU); nine masters; seven video stills as same-framing edits of them, in which the room stayed the same.
 - **Not tested yet:**
+  - a whole comic drawn through step 0 from the start. Beyond those seven stills, `panels` was run on two real cells (p12 at
+    512x992, p9 at 800x992, 2 candidates each): the room stayed the master's in all 4, and the person stood on the right
+    side of the counter in 1 of p9's 2, so still check who is where;
   - `export` and `reel` with `colour` on;
   - `tint`'s default wording with nothing written in `tint` or `scene_tint`, which came out too faint.
